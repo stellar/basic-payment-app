@@ -4,7 +4,7 @@
 
 <footer class="footer items-center p-4 bg-base-300">
     <div class="items-center grid-flow-col">
-        <ul class="menu menu-vertical lg:menu-horizontal">
+        <ul class="menu menu-vertical md:menu-horizontal">
             <li><a href="https://www.stellar.org/terms-of-service" target="_blank">Terms of Service</a></li>
             <li><a href="https://www.stellar.org/privacy-policy" target="_blank">Privacy Policy</a></li>
         </ul>
