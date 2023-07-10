@@ -9,7 +9,6 @@ import { getTransferServerSep6 } from "$lib/stellar/sep1"
  */
 export async function getSep6Info(domain) {
     let transferServer = await getTransferServerSep6(domain)
-
     let res = await fetch(`${transferServer}/info`)
     let json = await res.json()
     return json
