@@ -23,7 +23,7 @@
                         {parseFloat(payment.starting_balance).toFixed(2)}
                     {:else if payment.type === 'account_merge'}
                         {#await payment.effects() then effects}
-                            {#each effects.records.filter(e => e.type === 'account_credited') as effect}
+                            {#each effects.records.filter((e) => e.type === 'account_credited') as effect}
                                 {parseFloat(effect.amount).toFixed(2)}
                             {/each}
                         {/await}

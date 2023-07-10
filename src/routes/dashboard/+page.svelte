@@ -1,6 +1,6 @@
 <script>
-    import AssetStats from "./components/AssetStats.svelte";
-    import RecentPayments from "./components/RecentPayments.svelte";
+    import AssetStats from './components/AssetStats.svelte'
+    import RecentPayments from './components/RecentPayments.svelte'
 </script>
 
 <h1>Hello there!</h1>

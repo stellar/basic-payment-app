@@ -87,4 +87,3 @@ export async function getServerSigningKey(domain) {
     let { SIGNING_KEY } = await fetchStellarToml(domain)
     return SIGNING_KEY
 }
-

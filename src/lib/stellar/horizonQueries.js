@@ -23,8 +23,11 @@ export async function fetchAccount(publicKey) {
         if (err.response?.status === 404) {
             throw error(404, 'account not funded on network')
         } else {
-            // @ts-ignore
-            throw error(err.response?.status ?? 400, `${err.response?.title} - ${err.response?.detail}`
+            throw error(
+                // @ts-ignore
+                err.response?.status ?? 400,
+                // @ts-ignore
+                `${err.response?.title} - ${err.response?.detail}`
             )
         }
     }
@@ -47,6 +50,11 @@ export async function fetchAccountBalances(publicKey) {
  * @returns {Promise<Array.<PaymentOperationRecord>>} - Array containing details for each recent payment
  */
 export async function fetchRecentPayments(publicKey, limit = 10) {
-    const { records } = await server.payments().forAccount(publicKey).limit(limit).order('desc').call()
+    const { records } = await server
+        .payments()
+        .forAccount(publicKey)
+        .limit(limit)
+        .order('desc')
+        .call()
     return records
 }

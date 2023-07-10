@@ -1,4 +1,4 @@
-import { getTransferServerSep6 } from "$lib/stellar/sep1"
+import { getTransferServerSep6 } from '$lib/stellar/sep1'
 
 /** @module $lib/stellar/sep6 */
 
@@ -22,12 +22,7 @@ export async function getSep6Info(domain) {
  * @param {string} domain - Domain of the anchor that is handling the transfer
  * @returns {Promise<Object>} - JSON response from the server
  */
-export async function initiateTransfer6(
-    authToken,
-    endpoint,
-    formData,
-    domain
-) {
+export async function initiateTransfer6(authToken, endpoint, formData, domain) {
     let transferServer = await getTransferServerSep6(domain)
 
     let searchParams = new URLSearchParams(formData)
@@ -80,12 +75,7 @@ export async function getTransferStatus6(opts) {
  * @param {string} domain - Domain of the anchor to query for transfer records
  * @returns {Promise<Object>} - JSON response from the server
  */
-export async function queryTransfers6(
-    authToken,
-    assetCode,
-    publicKey,
-    domain
-) {
+export async function queryTransfers6(authToken, assetCode, publicKey, domain) {
     let transferServer = await getTransferServerSep6(domain)
 
     let res = await fetch(

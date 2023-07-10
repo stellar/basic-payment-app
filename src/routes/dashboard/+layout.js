@@ -1,4 +1,8 @@
-import { fetchAccount, fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
+import {
+    fetchAccount,
+    fetchAccountBalances,
+    fetchRecentPayments,
+} from '$lib/stellar/horizonQueries'
 
 /** @type {import ('./$types').LayoutLoad} */
 export async function load() {
