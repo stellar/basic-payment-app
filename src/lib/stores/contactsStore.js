@@ -5,7 +5,6 @@ import { error, fail } from '@sveltejs/kit'
 
 /**
  * @typedef {Object} ContactEntry
- * @property {string} [id] - Unique identifier for each contact
  * @property {boolean} favorite - Whether or not the contact is marked as a "favorite"
  * @property {string} address - Public Stellar address associated with this contact
  * @property {string} name - Human-readable name to identify this contact with
@@ -35,9 +34,8 @@ function createContacts() {
          */
         add: (contact) =>
             update((list) => {
-                let id = contact.id ?? uuidv4()
                 if (StrKey.isValidEd25519PublicKey(contact.address)) {
-                    return [...list, { id, ...contact }]
+                    return [...list, { id: uuidv4(), ...contact }]
                 } else {
                     throw error(400, { message: 'invalid public key' })
                 }

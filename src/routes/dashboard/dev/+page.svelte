@@ -22,6 +22,6 @@
         </div>
     </div>
     <input class="join-item btn w-fit" type="checkbox" aria-label="Fund New Contacts" bind:checked={addContactsOpts.fundContacts} />
-    <input class="join-item btn w-fit" type="checkbox" aria-label="Add Trustlines" bind:checked={addContactsOpts.addTrustlines} />
+    <input class="join-item btn w-fit" type="checkbox" aria-label="Add Trustlines" bind:checked={addContactsOpts.addTrustlines} disabled={!addContactsOpts.fundContacts} />
     <button class="btn btn-accent join-item" on:click={() => addContacts(addContactsOpts)}>Add Contacts</button>
 </div>
