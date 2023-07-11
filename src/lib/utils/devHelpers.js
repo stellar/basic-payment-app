@@ -11,9 +11,13 @@ import { fetchAssets } from '$lib/utils/stellarExpert'
  * @param {boolean} opts.fundContacts - Whether or not the contact accounts should be funded by Friendbot
  * @param {boolean} opts.addTrustlines - Whether or not the contact accounts should have trustlines created for some non-native assets
  */
-export async function addContacts({numContacts, fundContacts, addTrustlines}) {
+export async function addContacts({ numContacts, fundContacts, addTrustlines }) {
     // console.log("I am being called `addContacts`")
-    const usersRes = await fetch(`https://dummyjson.com/users?limit=${numContacts}&skip=${get(contacts).length}&select=firstName`)
+    const usersRes = await fetch(
+        `https://dummyjson.com/users?limit=${numContacts}&skip=${
+            get(contacts).length
+        }&select=firstName`
+    )
     const { users } = await usersRes.json()
 
     let assets = [{}]
@@ -35,8 +39,6 @@ export async function addContacts({numContacts, fundContacts, addTrustlines}) {
                 await addContactTrustlines(kp, assets)
             }
         }
-
-
     })
 }
 

@@ -8,12 +8,15 @@
     import Footer from './components/Footer.svelte'
     import { errorMessage } from '$lib/stores/alertsStore'
 
-    function handleError(e) {
-        errorMessage.set(e.error.body.message)
+    /** @param {Event} err */
+    function handleError(err) {
+        console.log('here is the handleError err', err)
+        errorMessage.set(err.error.body.message)
     }
 </script>
 
 <svelte:window on:error={handleError} />
+
 <div class="flex min-h-screen flex-col">
     <Navbar />
     <Drawer>

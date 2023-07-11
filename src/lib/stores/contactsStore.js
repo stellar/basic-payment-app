@@ -8,7 +8,7 @@ import { error, fail } from '@sveltejs/kit'
  * @property {boolean} favorite - Whether or not the contact is marked as a "favorite"
  * @property {string} address - Public Stellar address associated with this contact
  * @property {string} name - Human-readable name to identify this contact with
-*/
+ */
 
 function createContacts() {
     const { subscribe, set, update } = persisted('bpa:contactList', [])

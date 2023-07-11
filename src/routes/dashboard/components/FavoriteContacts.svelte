@@ -31,7 +31,7 @@
                     <td>
                         <div class="flex items-center space-x-3">
                             <div class="avatar">
-                                <div class="w-10 rounded-full not-prose">
+                                <div class="not-prose w-10 rounded-full">
                                     <img
                                         src="https://id.lobstr.co/{contact.address}.png"
                                         alt="Avatar Tailwind CSS Component"

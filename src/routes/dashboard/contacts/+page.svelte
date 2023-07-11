@@ -29,22 +29,44 @@
     <tbody>
         <tr>
             <th class="text-center">
-                <input type="checkbox" class="checkbox checkbox-accent checkbox-sm" bind:checked={newContact.favorite} />
+                <input
+                    type="checkbox"
+                    class="checkbox-accent checkbox checkbox-sm"
+                    bind:checked={newContact.favorite}
+                />
             </th>
             <td>
                 <label for="name">
                     <span class="label-text hidden">Name</span>
                 </label>
-                <input bind:value={newContact.name} id="name" name="name" type="text" placeholder="Name" class="w-full input input-bordered input-sm" />
+                <input
+                    bind:value={newContact.name}
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Name"
+                    class="input-bordered input input-sm w-full"
+                />
             </td>
             <td>
                 <label for="address">
                     <span class="label-text hidden">Address</span>
                 </label>
-                <input bind:value={newContact.address} id="address" name="address" type="text" placeholder="Address" class="w-full input input-bordered input-sm" />
+                <input
+                    bind:value={newContact.address}
+                    id="address"
+                    name="address"
+                    type="text"
+                    placeholder="Address"
+                    class="input-bordered input input-sm w-full"
+                />
             </td>
             <td class="text-center">
-                <button type="submit" class="btn btn-success btn-square btn-sm" on:click={() => contacts.add(newContact)}>
+                <button
+                    type="submit"
+                    class="btn-success btn-sm btn-square btn"
+                    on:click={() => contacts.add(newContact)}
+                >
                     <UserPlusIcon size="16" />
                 </button>
             </td>
@@ -62,7 +84,7 @@
                 <td>
                     <div class="flex items-center space-x-3">
                         <div class="avatar">
-                            <div class="w-10 rounded-full not-prose">
+                            <div class="not-prose w-10 rounded-full">
                                 <img
                                     src="https://id.lobstr.co/{contact.address}.png"
                                     alt="Avatar Tailwind CSS Component"
@@ -76,8 +98,8 @@
                 </td>
                 <td>{contact.address}</td>
                 <td class="text-center">
-                    <button class="btn-error btn-square btn btn-sm">
-                        <Trash2Icon size="16"/>
+                    <button class="btn-error btn-sm btn-square btn">
+                        <Trash2Icon size="16" />
                     </button>
                 </td>
             </tr>

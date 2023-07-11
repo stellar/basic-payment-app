@@ -9,11 +9,11 @@ export async function fetchAssets() {
     let res = await fetch(
         `${baseUrl}/asset?${new URLSearchParams({
             // these are all the defaults, but you could customize them if needed
-            'search': '',
-            'sort': 'rating',
-            'order': 'desc',
-            'limit': '10',
-            'cursor': '0',
+            search: '',
+            sort: 'rating',
+            order: 'desc',
+            limit: '10',
+            cursor: '0',
         })}`
     )
 

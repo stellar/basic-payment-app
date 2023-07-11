@@ -94,7 +94,7 @@ export async function submit(transaction) {
     } catch (err) {
         throw error(400, {
             message: err.response.data.title,
-            result_codes: err.response.data.extras.result_codes
+            result_codes: err.response.data.extras.result_codes,
         })
     }
 }
