@@ -2,6 +2,6 @@
     <li><a href="/dashboard/send">Send Payments</a></li>
     <li><a href="/dashboard/assets">Manage Assets</a></li>
     <li><a href="/dashboard/contacts">Manage Contacts</a></li>
-    <li><a href="#">Transfers</a></li>
+    <li><a href="/dashboard/transfers">Transfers</a></li>
     <li><a href="/dashboard/dev">Dev Helpers</a></li>
 </ul>

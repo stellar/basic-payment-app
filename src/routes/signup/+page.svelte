@@ -9,6 +9,8 @@
     let keypair = Keypair.random()
     let publicKey = ''
     let secretKey = ''
+    let showSecret = false
+    let pinCode = ''
 
     $: if (browser) {
         publicKey = keypair.publicKey()
@@ -50,23 +52,31 @@
                             </button>
                         </label>
                     </div>
-                    <div class="form-control my-1">
-                        <label for="secretKey" class="label">
-                            <span class="label-text">Secret Key</span>
+                    <div class="form-control">
+                        <label class="label cursor-pointer pb-0">
+                            <span class="label-text">Show secret key?</span>
+                            <input type="checkbox" class="toggle toggle-accent" bind:checked={showSecret} />
                         </label>
-                        <input
-                            type="text"
-                            placeholder="S..."
-                            id="secretKey"
-                            class="input-bordered input"
-                            bind:value={secretKey}
-                        />
                     </div>
+                    {#if showSecret}
+                        <div class="form-control mb-1">
+                            <label for="secretKey" class="label">
+                                <span class="label-text">Secret Key</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="S..."
+                                id="secretKey"
+                                class="input-bordered input"
+                                bind:value={secretKey}
+                            />
+                        </div>
+                    {/if}
                     <div class="form-control my-1">
                         <label for="pincode" class="label">
                             <span class="label-text">Pincode</span>
                         </label>
-                        <input type="password" id="pincode" class="input-bordered input" />
+                        <input type="password" id="pincode" class="input-bordered input" minlength="6" maxlength="6" />
                     </div>
                     <div class="form-control my-1">
                         <button class="btn-primary btn">Signup</button>
