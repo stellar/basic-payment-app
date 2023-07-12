@@ -1,7 +1,7 @@
 <script>
     /** @type {import('./$types').LayoutData} */
     export let data
-    console.log('dashboard/+layout.svelte data', data)
+    console.log('routes/dashboard/+layout.svelte data', data)
 
     import Navbar from './components/Navbar.svelte'
     import Drawer from './components/Drawer.svelte'
