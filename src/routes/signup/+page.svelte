@@ -10,7 +10,7 @@
     let publicKey = ''
     let secretKey = ''
     let showSecret = false
-    let pinCode = ''
+    let pincode = ''
 
     $: if (browser) {
         publicKey = keypair.publicKey()
@@ -55,7 +55,11 @@
                     <div class="form-control">
                         <label class="label cursor-pointer pb-0">
                             <span class="label-text">Show secret key?</span>
-                            <input type="checkbox" class="toggle toggle-accent" bind:checked={showSecret} />
+                            <input
+                                type="checkbox"
+                                class="toggle-accent toggle"
+                                bind:checked={showSecret}
+                            />
                         </label>
                     </div>
                     {#if showSecret}
@@ -76,7 +80,14 @@
                         <label for="pincode" class="label">
                             <span class="label-text">Pincode</span>
                         </label>
-                        <input type="password" id="pincode" class="input-bordered input" minlength="6" maxlength="6" />
+                        <input
+                            type="password"
+                            id="pincode"
+                            class="input-bordered input"
+                            minlength="6"
+                            maxlength="6"
+                            bind:value={pincode}
+                        />
                     </div>
                     <div class="form-control my-1">
                         <button class="btn-primary btn">Signup</button>

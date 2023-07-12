@@ -30,20 +30,21 @@
         </div>
     </div>
     <input
-        class="join-item btn btn-outline"
+        class="btn-outline join-item btn"
         type="checkbox"
         aria-label="Fund New Contacts"
         bind:checked={addContactsOpts.fundContacts}
     />
     <input
-        class="join-item btn btn-outline"
+        class="btn-outline join-item btn"
         type="checkbox"
         aria-label="Add Trustlines"
         bind:checked={addContactsOpts.addTrustlines}
         disabled={!addContactsOpts.fundContacts}
     />
-    <button class="btn-primary join-item btn btn-accent" on:click={() => addContacts(addContactsOpts)}
-        >Add Contacts</button
+    <button
+        class="btn-primary btn-accent join-item btn"
+        on:click={() => addContacts(addContactsOpts)}>Add Contacts</button
     >
 </div>
 
