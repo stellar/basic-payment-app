@@ -100,7 +100,10 @@
                     <TruncatedKey keyText={contact.address} />
                 </td>
                 <td class="text-center">
-                    <button class="btn-error btn-sm btn-square btn" on:click={() => contacts.remove(contact.id)}>
+                    <button
+                        class="btn-error btn-sm btn-square btn"
+                        on:click={() => contacts.remove(contact.id)}
+                    >
                         <Trash2Icon size="16" />
                     </button>
                 </td>

@@ -93,7 +93,9 @@
                     </td>
                     <td>
                         {#if balance.asset_type !== 'native'}
-                            <button class="btn btn-error btn-sm btn-square"><Trash2Icon size="16" /></button>
+                            <button class="btn-error btn-square btn-sm btn"
+                                ><Trash2Icon size="16" /></button
+                            >
                         {/if}
                     </td>
                 </tr>

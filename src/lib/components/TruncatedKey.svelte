@@ -7,11 +7,11 @@
 </script>
 
 <div class="flex items-center gap-2">
-    <div class="flex flex-shrink min-w-0">
-        <span class="font-mono truncate">{keyText.slice(0, -3)}</span>
+    <div class="flex min-w-0 flex-shrink">
+        <span class="truncate font-mono">{keyText.slice(0, -3)}</span>
         <span class="font-mono">{keyText.slice(-3)}</span>
     </div>
-    <button class="btn btn-square btn-sm btn-ghost" use:copy={keyText}>
+    <button class="btn-ghost btn-square btn-sm btn" use:copy={keyText}>
         <CopyIcon size="16" />
     </button>
 </div>
