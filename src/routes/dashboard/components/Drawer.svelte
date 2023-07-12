@@ -1,7 +1,7 @@
 <script>
     import SidebarMenu from './SidebarMenu.svelte'
     // import { errorMessage } from '$lib/stores/alertsStore'
-    import ErrorAlert from './ErrorAlert.svelte'
+    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
 </script>
 
 <div class="drawer grow lg:drawer-open">

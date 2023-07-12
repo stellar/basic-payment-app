@@ -4,6 +4,9 @@
     console.log('routes/dashboard/assets/+page.svelte data', data)
 
     import { fetchAssets } from '$lib/utils/stellarExpert'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+    import { Trash2Icon } from 'svelte-feather-icons'
+
     let addAsset = ''
     let customAssetCode = ''
     let customAssetIssuer = ''
@@ -17,7 +20,7 @@
 <h3>Add Trusted Assets</h3>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
 
-<select class="select-bordered select join-item my-2 w-full shrink" bind:value={addAsset}>
+<select class="select-bordered select my-2 w-full" bind:value={addAsset}>
     <option disabled selected value="">Select Asset</option>
     <option disabled
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
@@ -60,25 +63,41 @@
 <h3>Existing Balances</h3>
 <p>View, edit, or remove asset trustlines on your Stellar account.</p>
 
-<table class="table w-full table-auto">
-    <thead>
-        <tr>
-            <th>Balance</th>
-            <th>Asset</th>
-            <th>Issuer</th>
-            <th>Limit</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each data.balances as balance}
+<div class="flex items-center">
+    <table class="table table-auto">
+        <thead>
             <tr>
-                <th>{balance.balance}</th>
-                <td>{balance.asset_code ?? 'XLM'}</td>
-                <td>{balance.asset_issuer ?? 'n/a'}</td>
-                <td>{balance.limit ?? 'n/a'}</td>
-                <td>Delete and stuff</td>
+                <th>Asset</th>
+                <th>Balance</th>
+                <th class="w-xs">Issuer</th>
+                <th>Actions</th>
             </tr>
-        {/each}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {#each data.balances as balance}
+                <tr>
+                    <th>
+                        {#if 'asset_code' in balance}
+                            {balance.asset_code}
+                        {:else}
+                            XLM
+                        {/if}
+                    </th>
+                    <td>{balance.balance}</td>
+                    <td>
+                        {#if 'asset_issuer' in balance}
+                            <TruncatedKey keyText={balance.asset_issuer} />
+                        {:else}
+                            n/a
+                        {/if}
+                    </td>
+                    <td>
+                        {#if balance.asset_type !== 'native'}
+                            <button class="btn btn-error btn-sm btn-square"><Trash2Icon size="16" /></button>
+                        {/if}
+                    </td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>

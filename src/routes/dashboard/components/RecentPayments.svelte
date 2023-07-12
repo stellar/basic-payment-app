@@ -1,5 +1,6 @@
 <script>
     import { page } from '$app/stores'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     console.log('routes/dashboard/components/RecentPayments.svelte page', $page)
 </script>
 
@@ -46,21 +47,21 @@
                 <td>
                     {#if 'to' in payment}
                         {#if payment.to === $page.data.publicKey}
-                            {payment.from}
+                            <TruncatedKey keyText={payment.from} />
                         {:else}
-                            {payment.to}
+                            <TruncatedKey keyText={payment.to} />
                         {/if}
                     {:else if 'funder' in payment}
                         {#if payment.funder === $page.data.publicKey}
-                            {payment.account}
+                            <TruncatedKey keyText={payment.account} />
                         {:else}
-                            {payment.funder}
+                            <TruncatedKey keyText={payment.funder} />
                         {/if}
                     {:else if 'into' in payment}
                         {#if payment.into === $page.data.publicKey}
-                            {payment.account}
+                            <TruncatedKey keyText={payment.account} />
                         {:else}
-                            {payment.into}
+                            <TruncatedKey keyText={payment.into} />
                         {/if}
                     {/if}
                 </td>

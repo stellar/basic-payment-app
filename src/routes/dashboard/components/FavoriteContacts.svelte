@@ -2,6 +2,7 @@
     export const ssr = false
     export const prerender = false
     import { contacts } from '$lib/stores/contactsStore'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte';
     // console.log('routes/dashboard/components/FavoriteContacts.svelte $contacts', $contacts)
     $: favoriteContacts = $contacts?.filter((contact) => contact.favorite)
     // console.log('routes/dashboard/components/FavoriteContacts.svelte favoriteContacts', favoriteContacts)
@@ -43,7 +44,9 @@
                             </div>
                         </div>
                     </td>
-                    <td>{contact.address}</td>
+                    <td>
+                        <TruncatedKey keyText={contact.address} />
+                    </td>
                     <th>
                         <button class="btn-ghost btn-xs btn">Stellar.Expert</button>
                     </th>
