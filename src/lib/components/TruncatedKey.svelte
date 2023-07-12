@@ -2,7 +2,8 @@
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
 
-    export let keyText = 'GAIH3ULLFQ4DGSECF2AR555KZ4KNDGEKN4AFI4SU2M7B43MGK3QJZNSR'
+    /** @param {string} keyText - Stellar `StrKey` to display in a truncated manner with a copy button */
+    export let keyText = ''
 </script>
 
 <div class="flex items-center gap-2">

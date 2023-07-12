@@ -1,8 +1,8 @@
 <script>
     // /** @type {import('./$types').PageData} */
     // export let data;
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import { contacts } from '$lib/stores/contactsStore'
-    import { addContacts } from '$lib/utils/devHelpers'
     import { Trash2Icon, UserPlusIcon } from 'svelte-feather-icons'
 
     $: newContact = {
@@ -96,9 +96,11 @@
                         </div>
                     </div>
                 </td>
-                <td>{contact.address}</td>
+                <td>
+                    <TruncatedKey keyText={contact.address} />
+                </td>
                 <td class="text-center">
-                    <button class="btn-error btn-sm btn-square btn">
+                    <button class="btn-error btn-sm btn-square btn" on:click={() => contacts.remove(contact.id)}>
                         <Trash2Icon size="16" />
                     </button>
                 </td>
