@@ -63,7 +63,7 @@ export async function createPaymentTransaction({ source, destination, asset, amo
     })
 
     let sendAsset = Asset.native()
-    if (asset !== 'native') {
+    if (asset && asset !== 'native') {
         sendAsset = new Asset(asset.split(':')[0], asset.split(':')[1])
     }
 

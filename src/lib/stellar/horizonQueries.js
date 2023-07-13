@@ -1,12 +1,14 @@
 import { error } from '@sveltejs/kit'
 import { Server, TransactionBuilder, Networks, StrKey } from 'stellar-sdk'
 
-const server = new Server('https://horizon-testnet.stellar.org')
+const horizonUrl = 'https://horizon-testnet.stellar.org'
+const server = new Server(horizonUrl)
 
 /** @module $lib/stellar/horizonQueries */
 /** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
 /** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
 /** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
+/** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
 /** @typedef {import('stellar-sdk').Transaction} Transaction */
 
 /**
@@ -38,7 +40,7 @@ export async function fetchAccount(publicKey) {
 /**
  * Fetches and returns balance details for an account on the Stellar network.
  * @param {string} publicKey - Public Stellar address holding balances to query
- * @returns {Promise<Array.<BalanceLine>>} - Array containing balance information for each asset the account holds
+ * @returns {Promise<BalanceLine[]>} - Array containing balance information for each asset the account holds
  */
 export async function fetchAccountBalances(publicKey) {
     const { balances } = await fetchAccount(publicKey)
@@ -98,4 +100,27 @@ export async function submit(transaction) {
             result_codes: err.response.data.extras.result_codes,
         })
     }
+}
+
+/**
+ * Fetches `home_domain` from asset issuer accounts on the Stellar network and returns an array of balances
+ * @param {BalanceLine[]} balances Array of balances to query issuer accounts of
+ * @returns {Promise<BalanceLine[]>} Array of balance details for assets that do have a `home_domain` setting
+ */
+export async function fetchAssetsWithHomeDomains(balances) {
+    let homeDomains = await Promise.all(
+        balances.map(async (asset) => {
+            if (asset.asset_type !== 'native') {
+                let account = await fetchAccount(asset.asset_issuer)
+                if ('home_domain' in account) {
+                    return {
+                        ...asset,
+                        home_domain: account.home_domain,
+                    }
+                }
+            }
+        })
+    )
+
+    return homeDomains.filter((balance) => balance)
 }
