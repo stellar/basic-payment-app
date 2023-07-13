@@ -23,13 +23,18 @@ export async function createCreateAccountTransaction({ source, destination, amou
         transaction.addMemo(Memo.text(memo))
     }
 
-    transaction.addOperation(Operation.createAccount({
-        destination: destination,
-        startingBalance: amount.toString(),
-    }))
+    transaction.addOperation(
+        Operation.createAccount({
+            destination: destination,
+            startingBalance: amount.toString(),
+        })
+    )
 
     let builtTransaction = transaction.setTimeout(300).build()
-    console.log('$src/stellar/transactions.js createCreateAccountTransaction builtTransaction', builtTransaction)
+    console.log(
+        '$src/stellar/transactions.js createCreateAccountTransaction builtTransaction',
+        builtTransaction
+    )
     return {
         transaction: builtTransaction.toXDR(),
         network_passphrase: networkPassphrase,
@@ -66,14 +71,19 @@ export async function createPaymentTransaction({ source, destination, asset, amo
         transaction.addMemo(Memo.text(memo))
     }
 
-    transaction.addOperation(Operation.payment({
-        destination: destination,
-        amount: amount.toString(),
-        asset: sendAsset,
-    }))
+    transaction.addOperation(
+        Operation.payment({
+            destination: destination,
+            amount: amount.toString(),
+            asset: sendAsset,
+        })
+    )
 
     let builtTransaction = transaction.setTimeout(300).build()
-    console.log('$src/stellar/transactions.js createPaymentTransaction builtTransaction', builtTransaction)
+    console.log(
+        '$src/stellar/transactions.js createPaymentTransaction builtTransaction',
+        builtTransaction
+    )
     return {
         transaction: builtTransaction.toXDR(),
         network_passphrase: networkPassphrase,
@@ -100,14 +110,19 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
         networkPassphrase: networkPassphrase,
         fee: '100000',
     })
-    .addOperation(Operation.changeTrust({
-        asset: trustAsset,
-        limit: limit?.toString()
-    }))
-    .setTimeout(300)
-    .build()
+        .addOperation(
+            Operation.changeTrust({
+                asset: trustAsset,
+                limit: limit?.toString(),
+            })
+        )
+        .setTimeout(300)
+        .build()
 
-    console.log('$src/stellar/transactions.js createChangeTrustTransaction transaction', transaction)
+    console.log(
+        '$src/stellar/transactions.js createChangeTrustTransaction transaction',
+        transaction
+    )
     return {
         transaction: transaction.toXDR(),
         network_passphrase: networkPassphrase,

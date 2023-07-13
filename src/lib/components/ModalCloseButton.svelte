@@ -1,8 +1,8 @@
 <script>
-    import { XIcon } from "svelte-feather-icons"
+    import { XIcon } from 'svelte-feather-icons'
     export let onClose
 </script>
 
-<button class="absolute top-3 right-6 z-10 btn btn-square bg-base-300" on:click={onClose}>
+<button class="btn-square btn absolute right-6 top-3 z-10 bg-base-300" on:click={onClose}>
     <XIcon />
 </button>

@@ -50,7 +50,7 @@
                             <label for="publicKey" class="label">
                                 <span class="label-text">Public Key</span>
                             </label>
-                            <div class="flex input input-bordered">
+                            <div class="input-bordered input flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
                             <label for="publicKey" class="label">
@@ -77,7 +77,7 @@
                                 <label for="secretKey" class="label">
                                     <span class="label-text">Secret Key</span>
                                 </label>
-                                <div class="flex input input-bordered">
+                                <div class="input-bordered input flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
                             </div>

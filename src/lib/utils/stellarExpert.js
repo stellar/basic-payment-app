@@ -17,7 +17,7 @@ const baseUrl = `https://api.stellar.expert/explorer/${network}`
  * @property {Object} rating Composite asset rating
  * @property {number} paging_token Paging token
  *
-*/
+ */
 
 /**
  * Fetches and returns the most highly rated assets, according to the Stellar.Expert calculations.

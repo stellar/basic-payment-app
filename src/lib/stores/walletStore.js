@@ -1,4 +1,4 @@
-import { error } from "@sveltejs/kit"
+import { error } from '@sveltejs/kit'
 
 /**
  * Compares a submitted pincode to make sure it is valid for the stored, encrypted keypair.
@@ -8,7 +8,7 @@ import { error } from "@sveltejs/kit"
  * @param {boolean} [opts.signup=false] - Whether or not the confirmation is for the initial signup
  * @throws - Will throw an error if the signup pincodes don't match, or if the provided pincode doesn't decrypt the keypair.
  */
-export const confirmCorrectPincode = ({pincode, firstPincode = '', signup = false}) => {
+export const confirmCorrectPincode = ({ pincode, firstPincode = '', signup = false }) => {
     if (signup) {
         if (pincode !== firstPincode) {
             throw error(400, { message: 'pincode mismatch' })

@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import { Server, TransactionBuilder, Networks } from 'stellar-sdk'
+import { Server, TransactionBuilder, Networks, StrKey } from 'stellar-sdk'
 
 const server = new Server('https://horizon-testnet.stellar.org')
 
@@ -16,21 +16,22 @@ const server = new Server('https://horizon-testnet.stellar.org')
  * @throws {error} Will throw an error if the account is not funded on the Stellar network.
  */
 export async function fetchAccount(publicKey) {
-    try {
-        let account = await server.accounts().accountId(publicKey).call()
-        return account
-    } catch (err) {
-        // @ts-ignore
-        if (err.response?.status === 404) {
-            throw error(404, 'account not funded on network')
-        } else {
-            throw error(
-                // @ts-ignore
-                err.response?.status ?? 400,
-                // @ts-ignore
-                `${err.response?.title} - ${err.response?.detail}`
-            )
+    if (StrKey.isValidEd25519PublicKey(publicKey)) {
+        try {
+            let account = await server.accounts().accountId(publicKey).call()
+            return account
+        } catch (err) {
+            if (err.response?.status === 404) {
+                throw error(404, 'account not funded on network')
+            } else {
+                throw error(
+                    err.response?.status ?? 400,
+                    `${err.response?.title} - ${err.response?.detail}`
+                )
+            }
         }
+    } else {
+        throw error(400, { message: 'invalid public key' })
     }
 }
 

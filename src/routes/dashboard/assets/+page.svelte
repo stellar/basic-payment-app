@@ -32,23 +32,19 @@
 
         console.log('here are my txOpts', txOpts)
         let { transaction, network_passphrase } = await createChangeTrustTransaction({
-            ...txOpts
+            ...txOpts,
         })
 
-        open(
-            ConfirmationModal,
-            {
-                transactionXDR: transaction,
-                transactionNetwork: network_passphrase
-            }
-        )
+        open(ConfirmationModal, {
+            transactionXDR: transaction,
+            transactionNetwork: network_passphrase,
+        })
     }
 </script>
 
 <h1>Assets</h1>
-<p>Here we will manage our assets!</p>
 
-<h3>Add Trusted Assets</h3>
+<h2>Add Trusted Assets</h2>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
 
 <select class="select-bordered select my-2 w-full" bind:value={addAsset}>
@@ -57,18 +53,20 @@
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
     >
     <option value="SRT:GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B"
-        >testanchor SRT-GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B</option
+        >testanchor SRT:GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B</option
     >
     <option value="USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5"
-        >testanchor USDC-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5</option
+        >testanchor USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5</option
     >
     {#await fetchAssets() then assets}
         <option disabled
             >The following assets have been ranked by Stellar.Expert to be high-quality</option
         >
         {#each assets as { asset }}
-            {@const assetString = `${asset.split('-')[0]}:${asset.split('-')[1]}`}
-            <option value={assetString}>{assetString}</option>
+            {#if asset !== 'XLM'}
+                {@const assetString = `${asset.split('-')[0]}:${asset.split('-')[1]}`}
+                <option value={assetString}>{assetString}</option>
+            {/if}
         {/each}
     {/await}
     <option disabled>Need something else?</option>
@@ -90,9 +88,11 @@
         />
     </div>
 {/if}
-<button class="btn-primary btn-block btn my-2" on:click={previewChangeTrustTransaction}>Add Asset</button>
+<button class="btn-primary btn-block btn my-2" on:click={previewChangeTrustTransaction}
+    >Add Asset</button
+>
 
-<h3>Existing Balances</h3>
+<h2>Existing Balances</h2>
 <p>View, edit, or remove asset trustlines on your Stellar account.</p>
 
 <div class="flex items-center">
@@ -125,8 +125,12 @@
                     </td>
                     <td>
                         {#if balance.asset_type !== 'native'}
-                            <button class="btn-error btn-square btn-sm btn" on:click={previewChangeTrustTransaction(false, `${balance.asset_code}:${balance.asset_issuer}`)}
-                                ><Trash2Icon size="16" /></button
+                            <button
+                                class="btn-error btn-square btn-sm btn"
+                                on:click={previewChangeTrustTransaction(
+                                    false,
+                                    `${balance.asset_code}:${balance.asset_issuer}`
+                                )}><Trash2Icon size="16" /></button
                             >
                         {/if}
                     </td>

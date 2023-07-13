@@ -65,12 +65,12 @@
 
 <h2>Launch Modal Rocket</h2>
 <p>Test the modal thing to see what comes up... I guess?</p>
-<button class="btn btn-primary" on:click={makeTheModal}>svelte-simple-modal</button>
+<button class="btn-primary btn" on:click={makeTheModal}>svelte-simple-modal</button>
 <!-- Open the modal using ID.showModal() method -->
-<button class="btn btn-accent" onclick="my_modal_5.showModal()">daisyui modal</button>
+<button class="btn-accent btn" onclick="my_modal_5.showModal()">daisyui modal</button>
 <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
     <form method="dialog" class="modal-box">
-        <h3 class="font-bold text-lg">Hello!</h3>
+        <h3 class="text-lg font-bold">Hello!</h3>
         <p class="py-4">Press ESC key or click the button below to close</p>
         <div class="modal-action">
             <!-- if there is a button in form, it will close the modal -->

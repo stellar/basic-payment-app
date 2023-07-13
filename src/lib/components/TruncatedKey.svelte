@@ -6,7 +6,7 @@
     export let keyText = ''
 </script>
 
-<div class="flex items-center gap-2 max-w-full">
+<div class="flex max-w-full items-center gap-2">
     <div class="relative flex min-w-0 flex-shrink">
         <span class="truncate font-mono">{keyText.slice(0, -3)}</span>
         <span class="font-mono">{keyText.slice(-3)}</span>
