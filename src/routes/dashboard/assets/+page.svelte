@@ -16,10 +16,7 @@
     let customAssetCode = ''
     let customAssetIssuer = ''
     let asset = ''
-    $: {
-        asset = addAsset ?? `${customAssetCode}:${customAssetIssuer}`
-        console.log('i have built this asset:', asset)
-    }
+    $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
 
     const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = null) => {
         let txOpts = {}
@@ -30,7 +27,6 @@
             txOpts.limit = '0'
         }
 
-        console.log('here are my txOpts', txOpts)
         let { transaction, network_passphrase } = await createChangeTrustTransaction({
             ...txOpts,
         })
