@@ -5,11 +5,18 @@
 
     import { addContacts } from '$lib/utils/devHelpers'
     import { contacts } from '$lib/stores/contactsStore'
+    import { getContext } from 'svelte'
+    const { open } = getContext('simple-modal')
+    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
 
     let addContactsOpts = {
         numContacts: 1,
         fundContacts: false,
         addTrustlines: false,
+    }
+
+    function makeTheModal() {
+        open(ConfirmationModal)
     }
 </script>
 
@@ -55,3 +62,19 @@
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
 <button class="btn-success btn">I need a friend!</button>
+
+<h2>Launch Modal Rocket</h2>
+<p>Test the modal thing to see what comes up... I guess?</p>
+<button class="btn btn-primary" on:click={makeTheModal}>svelte-simple-modal</button>
+<!-- Open the modal using ID.showModal() method -->
+<button class="btn btn-accent" onclick="my_modal_5.showModal()">daisyui modal</button>
+<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+    <form method="dialog" class="modal-box">
+        <h3 class="font-bold text-lg">Hello!</h3>
+        <p class="py-4">Press ESC key or click the button below to close</p>
+        <div class="modal-action">
+            <!-- if there is a button in form, it will close the modal -->
+            <button class="btn">Close</button>
+        </div>
+    </form>
+</dialog>

@@ -4,6 +4,33 @@
     console.log('routes/dashboard/send/+page.svelte data', data)
 
     import { contacts } from '$lib/stores/contactsStore'
+    import { createPaymentTransaction } from '$lib/stellar/transactions'
+    import { getContext } from 'svelte'
+    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    const { open } = getContext('simple-modal')
+
+    let destination = ''
+    let amount = ''
+    let asset = 'native'
+    let memo = ''
+
+    const previewPaymentTransaction = async () => {
+        let { transaction, network_passphrase } = await createPaymentTransaction({
+            source: data.publicKey,
+            destination: destination,
+            asset: asset,
+            amount: amount,
+            memo: memo,
+        })
+
+        open(
+            ConfirmationModal,
+            {
+                transactionXDR: transaction,
+                transactionNetwork: network_passphrase
+            }
+        )
+    }
 </script>
 
 <h1>Send a Payment</h1>
@@ -14,7 +41,7 @@
     <label for="destination" class="label">
         <span class="label-text">Destination</span>
     </label>
-    <select id="destination" name="destination" class="select-bordered select">
+    <select id="destination" name="destination" class="select-bordered select" bind:value={destination}>
         <option value="" disabled selected>Select Recipient</option>
         {#each $contacts as contact (contact.id)}
             <option value={contact.address}>{contact.name}</option>
@@ -36,12 +63,13 @@
                     id="amount"
                     name="amount"
                     class="input-bordered input join-item w-full"
-                    placeholder="0.01"
                     type="text"
+                    placeholder="0.01"
+                    bind:value={amount}
                 />
             </div>
         </div>
-        <select class="select-bordered select join-item">
+        <select id="asset" name="asset" class="select-bordered select join-item" bind:value={asset}>
             <option value="" disabled>Select Asset</option>
             <option value="native">XLM</option>
             {#each data.balances as balance}
@@ -69,12 +97,13 @@
         class="input-bordered input"
         placeholder="Maximum 28 characters"
         maxlength="28"
+        bind:value={memo}
     />
 </div>
 <!-- /Memo -->
 
 <!-- Button -->
 <div class="form-control my-5">
-    <button class="btn-primary btn">Preview Transaction</button>
+    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->

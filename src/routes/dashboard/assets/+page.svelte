@@ -5,13 +5,44 @@
 
     import { fetchAssets } from '$lib/utils/stellarExpert'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import { Trash2Icon } from 'svelte-feather-icons'
+
+    import { createChangeTrustTransaction } from '$lib/stellar/transactions'
+    import { getContext } from 'svelte'
+    const { open } = getContext('simple-modal')
 
     let addAsset = ''
     let customAssetCode = ''
     let customAssetIssuer = ''
-    $: assetCode = addAsset ? addAsset.split('-')[0] : customAssetCode ?? ''
-    $: assetIssuer = addAsset ? addAsset.split('-')[1] : customAssetIssuer ?? ''
+    let asset = ''
+    $: {
+        asset = addAsset ?? `${customAssetCode}:${customAssetIssuer}`
+        console.log('i have built this asset:', asset)
+    }
+
+    const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = null) => {
+        let txOpts = {}
+        txOpts.source = data.publicKey
+        txOpts.asset = removeAsset ?? asset
+
+        if (!addingAsset) {
+            txOpts.limit = '0'
+        }
+
+        console.log('here are my txOpts', txOpts)
+        let { transaction, network_passphrase } = await createChangeTrustTransaction({
+            ...txOpts
+        })
+
+        open(
+            ConfirmationModal,
+            {
+                transactionXDR: transaction,
+                transactionNetwork: network_passphrase
+            }
+        )
+    }
 </script>
 
 <h1>Assets</h1>
@@ -25,10 +56,10 @@
     <option disabled
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
     >
-    <option value="SRT-GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B"
+    <option value="SRT:GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B"
         >testanchor SRT-GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B</option
     >
-    <option value="USDC-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5"
+    <option value="USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5"
         >testanchor USDC-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5</option
     >
     {#await fetchAssets() then assets}
@@ -36,7 +67,8 @@
             >The following assets have been ranked by Stellar.Expert to be high-quality</option
         >
         {#each assets as { asset }}
-            <option value={asset}>{asset}</option>
+            {@const assetString = `${asset.split('-')[0]}:${asset.split('-')[1]}`}
+            <option value={assetString}>{assetString}</option>
         {/each}
     {/await}
     <option disabled>Need something else?</option>
@@ -58,7 +90,7 @@
         />
     </div>
 {/if}
-<button class="btn-primary btn-block btn my-2">Add Asset</button>
+<button class="btn-primary btn-block btn my-2" on:click={previewChangeTrustTransaction}>Add Asset</button>
 
 <h3>Existing Balances</h3>
 <p>View, edit, or remove asset trustlines on your Stellar account.</p>
@@ -93,7 +125,7 @@
                     </td>
                     <td>
                         {#if balance.asset_type !== 'native'}
-                            <button class="btn-error btn-square btn-sm btn"
+                            <button class="btn-error btn-square btn-sm btn" on:click={previewChangeTrustTransaction(false, `${balance.asset_code}:${balance.asset_issuer}`)}
                                 ><Trash2Icon size="16" /></button
                             >
                         {/if}

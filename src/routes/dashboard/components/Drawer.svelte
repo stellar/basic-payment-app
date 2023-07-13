@@ -1,6 +1,5 @@
 <script>
     import SidebarMenu from './SidebarMenu.svelte'
-    // import { errorMessage } from '$lib/stores/alertsStore'
     import ErrorAlert from '$lib/components/ErrorAlert.svelte'
 </script>
 

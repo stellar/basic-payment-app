@@ -1,6 +1,6 @@
 <script>
     import { page } from '$app/stores'
-    console.log('routes/dashboard/components/AssetStates.svelte page', $page)
+    console.log('routes/dashboard/components/AssetStates.svelte $page', $page)
 </script>
 
 <h3>Assets Overview</h3>
@@ -14,8 +14,4 @@
             </div>
         </div>
     {/each}
-    <div class="stat">
-        <div class="stat-title">USDC Balance</div>
-        <div class="stat-value">$123.45</div>
-    </div>
 </div>

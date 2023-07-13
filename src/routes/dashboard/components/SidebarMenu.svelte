@@ -1,7 +1,17 @@
+<script>
+    import { page } from '$app/stores'
+
+    const dashboardRoutes = [
+        { route: '/dashboard/send', text: 'Payments'},
+        { route: '/dashboard/assets', text: 'Assets'},
+        { route: '/dashboard/contacts', text: 'Contacts'},
+        { route: '/dashboard/transfers', text: 'Transfers'},
+        { route: '/dashboard/dev', text: 'Dev Helpers'},
+    ]
+</script>
+
 <ul class="menu h-full w-80 bg-base-200 p-4 text-base-content">
-    <li><a href="/dashboard/send">Send Payments</a></li>
-    <li><a href="/dashboard/assets">Manage Assets</a></li>
-    <li><a href="/dashboard/contacts">Manage Contacts</a></li>
-    <li><a href="/dashboard/transfers">Transfers</a></li>
-    <li><a href="/dashboard/dev">Dev Helpers</a></li>
+    {#each dashboardRoutes as route}
+        <li><a href={route.route} class={$page.route.id === route.route ? 'active' : ''}>{route.text}</a></li>
+    {/each}
 </ul>

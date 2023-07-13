@@ -1,5 +1,4 @@
 const daisyui = require('daisyui')
-// const forms = require('@tailwindcss/forms')
 const typography = require('@tailwindcss/typography')
 
 /** @type {import('tailwindcss').Config} */
