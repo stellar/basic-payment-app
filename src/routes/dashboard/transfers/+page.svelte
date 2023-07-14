@@ -84,13 +84,19 @@
      * @param {Object} opts Options object
      * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
      * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param {Object} opts.sep6Info Info published by the anchor detailing what assets/transfer methods are available
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
-    const launchTransferModalSep6 = ({ homeDomain, assetCode, endpoint }) => {
+    const launchTransferModalSep6 = ({ homeDomain, assetCode, endpoint, sep6Info }) => {
         open(TransferModalSep6, {
             homeDomain: homeDomain,
-            assetCode: assetCode,
-            endpoint: endpoint,
+            transferData: {
+                endpoint: endpoint,
+            },
+            formData: {
+                asset_code: assetCode,
+            },
+            sep6Info: sep6Info,
         })
     }
 
@@ -188,6 +194,7 @@
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
                                                             endpoint: endpoint,
+                                                            sep6Info: sep6Info,
                                                         })}
                                                     >
                                                         {#if endpoint === 'deposit'}
