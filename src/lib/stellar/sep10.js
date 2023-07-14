@@ -80,7 +80,8 @@ function validateChallengeTransaction({
  * @param {Object} opts Options object
  * @param {string} opts.transactionXDR Signed SEP-10 challenge transaction to be submitted to the authentication server
  * @param {string} opts.homeDomain Domain that handles SEP-10 authentication for this anchor
- * @returns
+ * @returns {Promise<string>} JSON web token which can be used to authenticate with this anchor server
+ * @throws Will throw an error if the server responds with one.
  */
 export async function submitChallengeTransaction({ transactionXDR, homeDomain }) {
     let webAuthEndpoint = await getWebAuthEndpoint(homeDomain)
