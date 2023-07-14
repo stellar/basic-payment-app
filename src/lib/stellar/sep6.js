@@ -3,7 +3,7 @@ import { getTransferServerSep6 } from '$lib/stellar/sep1'
 /** @module $lib/stellar/sep6 */
 
 /**
- * Fetches and returns basic information about what the transfer server suppports.
+ * Fetches and returns basic information about what the SEP-6 transfer server suppports.
  * @param {string} domain - Domain to get the SEP-6 info for
  * @returns {Promise<Object>} - SEP-6 info published by the domain
  */
@@ -16,11 +16,11 @@ export async function getSep6Info(domain) {
 
 /**
  * Initiates a transfer using the SEP-6 protocol.
- * @param {string} authToken - Authentication token for a Stellar account received through SEP-10 web authentication
- * @param {string} endpoint - URL endpoint to be requested, also indicates which direction the transfer is moving
- * @param {Object} formData - Big ol' object that should be done better, but it's pretty much ALL the
- * @param {string} domain - Domain of the anchor that is handling the transfer
- * @returns {Promise<Object>} - JSON response from the server
+ * @param {string} authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} endpoint URL endpoint to be requested, also indicates which direction the transfer is moving
+ * @param {Object} formData Big ol' object that should be done better, but it's pretty much ALL the
+ * @param {string} domain Domain of the anchor that is handling the transfer
+ * @returns {Promise<Object>} JSON response from the server
  */
 export async function initiateTransfer6(authToken, endpoint, formData, domain) {
     let transferServer = await getTransferServerSep6(domain)
