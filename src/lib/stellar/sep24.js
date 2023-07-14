@@ -1,4 +1,4 @@
-import { getTransferServerSep24 } from "$lib/stellar/sep1";
+import { getTransferServerSep24 } from '$lib/stellar/sep1'
 
 /**
  * Fetches and returns basic information about what the SEP-24 transfer server supports.
@@ -22,7 +22,7 @@ export async function getSep24Info(domain) {
  * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
  * @param {Object} [opts.urlFields] urlFields that do... something? (I'll have to remember this soon.)
  */
-export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlFields = {}}) {
+export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlFields = {} }) {
     let transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     let res = await fetch(`${transferServerSep24}/transactions/${endpoint}/interactive`, {

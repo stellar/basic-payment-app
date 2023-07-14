@@ -48,18 +48,15 @@
             urlFields: {
                 asset_code: assetCode,
                 account: data.publicKey,
-            }
+            },
         })
 
         let interactiveUrl = `${url}&callback=postMessage`
         let popup = window.open(interactiveUrl, 'bpaTransfer24Window', 'popup')
-        window.addEventListener(
-            'message',
-            async (event) => {
-                console.log('here is the event i heard from the popup window', event)
-                popup?.close()
-            }
-        )
+        window.addEventListener('message', async (event) => {
+            console.log('here is the event i heard from the popup window', event)
+            popup?.close()
+        })
     }
 </script>
 
@@ -103,17 +100,22 @@
                 <div class="flex w-full flex-col lg:flex-row">
                     {#if 'TRANSFER_SERVER' in stellarToml}
                         {#await getSep6Info(asset.home_domain) then sep6Info}
-                            <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
+                            <div
+                                class="card rounded-box grid flex-grow place-items-center bg-base-300"
+                            >
                                 <div class="card-body w-full">
                                     <h4>SEP-6 Transfers</h4>
-                                    <div class="join join-vertical lg:join-horizontal w-full">
+                                    <div class="join-vertical join w-full lg:join-horizontal">
                                         {#each Object.entries(sep6Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
-                                                <button class={transferbuttonClasses[endpoint]} on:click={launchTransferModalSep6({
-                                                    homeDomain: asset.home_domain,
-                                                    assetCode: asset.asset_code,
-                                                    endpoint: endpoint,
-                                                })}>
+                                                <button
+                                                    class={transferbuttonClasses[endpoint]}
+                                                    on:click={launchTransferModalSep6({
+                                                        homeDomain: asset.home_domain,
+                                                        assetCode: asset.asset_code,
+                                                        endpoint: endpoint,
+                                                    })}
+                                                >
                                                     {#if endpoint === 'deposit'}
                                                         <LogInIcon />
                                                         Deposit
@@ -134,24 +136,29 @@
                     {/if}
                     {#if 'TRANSFER_SERVER_SEP0024' in stellarToml}
                         {#await getSep24Info(asset.home_domain) then sep24Info}
-                            <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
+                            <div
+                                class="card rounded-box grid flex-grow place-items-center bg-base-300"
+                            >
                                 <div class="card-body w-full">
                                     <h4>SEP-24 Transfers</h4>
-                                    <div class="join join-vertical lg:join-horizontal w-full">
+                                    <div class="join-vertical join w-full lg:join-horizontal">
                                         {#each Object.entries(sep24Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
-                                                <button class={transferbuttonClasses[endpoint]} on:click={launchTransferWindowSep24({
-                                                    homeDomain: asset.home_domain,
-                                                    assetCode: asset.asset_code,
-                                                    endpoint: endpoint,
-                                                })}>
+                                                <button
+                                                    class={transferbuttonClasses[endpoint]}
+                                                    on:click={launchTransferWindowSep24({
+                                                        homeDomain: asset.home_domain,
+                                                        assetCode: asset.asset_code,
+                                                        endpoint: endpoint,
+                                                    })}
+                                                >
                                                     {#if endpoint === 'deposit'}
-                                                    <LogInIcon />
-                                                    Deposit
-                                                {:else}
-                                                    Withdraw
-                                                    <LogOutIcon />
-                                                {/if}
+                                                        <LogInIcon />
+                                                        Deposit
+                                                    {:else}
+                                                        Withdraw
+                                                        <LogOutIcon />
+                                                    {/if}
                                                 </button>
                                             {/if}
                                         {/each}

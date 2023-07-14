@@ -1,6 +1,4 @@
 <script>
-    export const ssr = false
-    export const prerender = false
     import { contacts } from '$lib/stores/contactsStore'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     // console.log('routes/dashboard/components/FavoriteContacts.svelte $contacts', $contacts)
