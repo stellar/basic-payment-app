@@ -3,9 +3,64 @@
     export let data
     console.log('routes/dashboard/transfers/+page.svelte data', data)
 
+    import { getContext } from 'svelte'
+    const { open } = getContext('simple-modal')
     import { LogInIcon, LogOutIcon } from 'svelte-feather-icons'
     import { fetchAssetsWithHomeDomains } from '$lib/stellar/horizonQueries'
     import { fetchStellarToml } from '$lib/stellar/sep1'
+    import { getSep6Info } from '$lib/stellar/sep6'
+    import { getSep24Info, initiateTransfer24 } from '$lib/stellar/sep24'
+    import TransferModalSep6 from '$lib/components/TransferModalSep6.svelte'
+    import { webAuthStore } from '$lib/stores/webAuthStore'
+
+    const transferbuttonClasses = {
+        deposit: 'btn lg:w-1/2 join-item btn-accent',
+        withdraw: 'btn lg:w-1/2 join-item btn-secondary',
+    }
+
+    /**
+     * Launch the SEP-6 modal to begin the transfer process and gather information from the user
+     * @param {Object} opts Options object
+     * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
+     * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
+     */
+    const launchTransferModalSep6 = ({ homeDomain, assetCode, endpoint }) => {
+        open(TransferModalSep6, {
+            homeDomain: homeDomain,
+            assetCode: assetCode,
+            endpoint: endpoint,
+        })
+    }
+
+    /**
+     * Launch the interactive SEP-24 popup window for the user to interact directly with the anchor to begin a transfer.
+     * @param {Object} opts Options object
+     * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
+     * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
+     */
+    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, endpoint }) => {
+        let { id, type, url } = await initiateTransfer24({
+            authToken: $webAuthStore[homeDomain],
+            endpoint: endpoint,
+            homeDomain: homeDomain,
+            urlFields: {
+                asset_code: assetCode,
+                account: data.publicKey,
+            }
+        })
+
+        let interactiveUrl = `${url}&callback=postMessage`
+        let popup = window.open(interactiveUrl, 'bpaTransfer24Window', 'popup')
+        window.addEventListener(
+            'message',
+            async (event) => {
+                console.log('here is the event i heard from the popup window', event)
+                popup?.close()
+            }
+        )
+    }
 </script>
 
 <h1>Transfers</h1>
@@ -47,41 +102,63 @@
                 <p>{thisAsset.desc}</p>
                 <div class="flex w-full flex-col lg:flex-row">
                     {#if 'TRANSFER_SERVER' in stellarToml}
-                        <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
-                            <div class="card-body w-full">
-                                <h4>SEP-6 Transfers</h4>
-                                <div class="join join-vertical lg:join-horizontal w-full">
-                                    <button class="btn w-1/2 join-item btn-accent">
-                                        <LogInIcon />
-                                        Deposit
-                                    </button>
-                                    <button class="btn w-1/2 join-item btn-secondary">
-                                        Withdraw
-                                        <LogOutIcon />
-                                    </button>
+                        {#await getSep6Info(asset.home_domain) then sep6Info}
+                            <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
+                                <div class="card-body w-full">
+                                    <h4>SEP-6 Transfers</h4>
+                                    <div class="join join-vertical lg:join-horizontal w-full">
+                                        {#each Object.entries(sep6Info) as [endpoint, details]}
+                                            {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
+                                                <button class={transferbuttonClasses[endpoint]} on:click={launchTransferModalSep6({
+                                                    homeDomain: asset.home_domain,
+                                                    assetCode: asset.asset_code,
+                                                    endpoint: endpoint,
+                                                })}>
+                                                    {#if endpoint === 'deposit'}
+                                                        <LogInIcon />
+                                                        Deposit
+                                                    {:else}
+                                                        Withdraw
+                                                        <LogOutIcon />
+                                                    {/if}
+                                                </button>
+                                            {/if}
+                                        {/each}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {/await}
                     {/if}
                     {#if 'TRANSFER_SERVER' in stellarToml && 'TRANSFER_SERVER_SEP0024' in stellarToml}
                         <div class="divider lg:divider-horizontal" />
                     {/if}
                     {#if 'TRANSFER_SERVER_SEP0024' in stellarToml}
-                        <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
-                            <div class="card-body w-full">
-                                <h4>SEP-24 Transfers</h4>
-                                <div class="join join-vertical lg:join-horizontal w-full">
-                                    <button class="btn w-1/2 join-item btn-accent">
-                                        <LogInIcon />
-                                        Deposit
-                                    </button>
-                                    <button class="btn w-1/2 join-item btn-secondary">
-                                        Withdraw
-                                        <LogOutIcon />
-                                    </button>
+                        {#await getSep24Info(asset.home_domain) then sep24Info}
+                            <div class="card rounded-box grid flex-grow place-items-center bg-base-300">
+                                <div class="card-body w-full">
+                                    <h4>SEP-24 Transfers</h4>
+                                    <div class="join join-vertical lg:join-horizontal w-full">
+                                        {#each Object.entries(sep24Info) as [endpoint, details]}
+                                            {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
+                                                <button class={transferbuttonClasses[endpoint]} on:click={launchTransferWindowSep24({
+                                                    homeDomain: asset.home_domain,
+                                                    assetCode: asset.asset_code,
+                                                    endpoint: endpoint,
+                                                })}>
+                                                    {#if endpoint === 'deposit'}
+                                                    <LogInIcon />
+                                                    Deposit
+                                                {:else}
+                                                    Withdraw
+                                                    <LogOutIcon />
+                                                {/if}
+                                                </button>
+                                            {/if}
+                                        {/each}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {/await}
                     {/if}
                 </div>
             {/if}
