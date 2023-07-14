@@ -47,9 +47,7 @@
         }
     }
 
-    /**
-     * @param {string} pincode Pincode that was confirmed by the modal window
-     */
+    /** @param {string} pincode Pincode that was confirmed by the modal window */
     const onConfirm = async (pincode) => {
         console.log('routes/dashboard/send/+page.svelte onConfirm has been triggered')
         let signedTransaction = await walletStore.sign({

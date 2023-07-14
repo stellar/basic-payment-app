@@ -8,6 +8,7 @@
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    import { walletStore } from '$lib/stores/walletStore'
 
     let addContactsOpts = {
         numContacts: 1,
@@ -22,6 +23,18 @@
 
 <h1>Dev Helpers</h1>
 <p>Some useful tools to help flesh out some features of BasicPay as you get used to it.</p>
+
+<h2>Keypair Information</h2>
+<p>
+    These can be helpful to know in case you need to manually create some transactions that we
+    aren't setup to do.
+</p>
+<dl>
+    <dt><strong>Public Key</strong></dt>
+    <dd><code>{$walletStore.publicKey}</code></dd>
+    <dt><strong>Secret Key</strong></dt>
+    <dd><code>{$walletStore.devInfo.secretKey}</code></dd>
+</dl>
 
 <h2>Make Friends</h2>
 <p>Populate the contact list with new contact entries.</p>

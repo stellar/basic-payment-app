@@ -10,6 +10,8 @@
 
     import { createChangeTrustTransaction } from '$lib/stellar/transactions'
     import { getContext } from 'svelte'
+    import { walletStore } from '$lib/stores/walletStore'
+    import { submit } from '$lib/stellar/horizonQueries'
     const { open } = getContext('simple-modal')
 
     let addAsset = ''
@@ -17,6 +19,18 @@
     let customAssetIssuer = ''
     let asset = ''
     $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
+    let changeTrustXDR = ''
+    let changeTrustNetwork = ''
+
+    /** @param {string} pincode Pincode that was confirmed by the modal window */
+    const onConfirm = async (pincode) => {
+        let signedTransaction = await walletStore.sign({
+            transactionXDR: changeTrustXDR,
+            network: changeTrustNetwork,
+            pincode: pincode,
+        })
+        await submit(signedTransaction)
+    }
 
     const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = null) => {
         let txOpts = {}
@@ -31,9 +45,13 @@
             ...txOpts,
         })
 
+        changeTrustXDR = transaction
+        changeTrustNetwork = network_passphrase
+
         open(ConfirmationModal, {
             transactionXDR: transaction,
             transactionNetwork: network_passphrase,
+            onConfirm: onConfirm,
         })
     }
 </script>
