@@ -20,7 +20,6 @@
         ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
         : null
     export let firstPincode = ''
-    let isWaiting = false
 
     export let onConfirm = async () => {}
     const _onConfirm = async () => {
@@ -36,7 +35,6 @@
             close()
         } catch (err) {
             console.log('_onConfirm err', err)
-            // errorMessage.set('pincode mismatch')
             errorMessage.set(err.body.message)
         }
         isWaiting = false
@@ -49,6 +47,7 @@
         close()
     }
 
+    let isWaiting = false
     let pincode = ''
 </script>
 
@@ -125,11 +124,19 @@
                 />
             </div>
             <div class="my-6 flex justify-end gap-3">
-                <button on:click|preventDefault={_onConfirm} class="btn-success btn" disabled={isWaiting}>
+                <button
+                    on:click|preventDefault={_onConfirm}
+                    class="btn-success btn"
+                    disabled={isWaiting}
+                >
                     {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
                     {confirmButton}
                 </button>
-                <button on:click|preventDefault={_onReject} class="btn-error btn" disabled={isWaiting}>
+                <button
+                    on:click|preventDefault={_onReject}
+                    class="btn-error btn"
+                    disabled={isWaiting}
+                >
                     {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
                     {rejectButton}
                 </button>

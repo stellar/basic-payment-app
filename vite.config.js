@@ -22,12 +22,12 @@ export default defineConfig({
         rollupOptions: {
             plugins: [
                 inject({
-                    window: path.resolve('src/lib/window.js')
-                })
-            ]
-        }
+                    window: path.resolve('src/lib/window.js'),
+                }),
+            ],
+        },
     },
     ssr: {
-        noExternal: ['@stellar/wallet-sdk', '@albedo-link/intent']
-    }
+        noExternal: ['@stellar/wallet-sdk', '@albedo-link/intent'],
+    },
 })

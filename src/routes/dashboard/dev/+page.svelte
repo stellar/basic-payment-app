@@ -81,4 +81,6 @@
 
 <h2>Throw it On the Ground!</h2>
 <p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>
-<button class="btn btn-error" on:click={() => localStorage.clear()}>You can't buy me hot dog man!</button>
+<button class="btn-error btn" on:click={() => localStorage.clear()}
+    >You can't buy me hot dog man!</button
+>

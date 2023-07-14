@@ -70,7 +70,7 @@ function createWalletStore() {
                 console.error('Error signing transaction', err)
                 throw error(400, err)
             }
-        }
+        },
     }
 }
 
@@ -91,7 +91,7 @@ export const confirmCorrectPincode = async ({ pincode, firstPincode = '', signup
             let keyId = get(walletStore).keyId
             await keyManager.loadKey(keyId, pincode)
         } catch (err) {
-            throw error(400, { message: 'invalid pincode'})
+            throw error(400, { message: 'invalid pincode' })
         }
     } else {
         if (pincode !== firstPincode) {

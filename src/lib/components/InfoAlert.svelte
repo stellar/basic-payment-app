@@ -6,7 +6,7 @@
 {#if $infoMessage}
     <div class="alert alert-info dark:prose-invert">
         <InfoIcon />
-        <span>Error: {$infoMessage}</span>
+        <span>{@html $infoMessage}</span>
         <button class="btn-neutral btn-sm btn" on:click={() => infoMessage.set('')}>Dismiss</button>
     </div>
 {/if}

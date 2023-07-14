@@ -49,7 +49,7 @@
             body: 'Please re-type your 6-digit pincode to encrypt the secret key.',
             rejectButton: 'Cancel',
             onConfirm: onConfirm,
-            onReject: onReject
+            onReject: onReject,
         })
     }
 </script>
