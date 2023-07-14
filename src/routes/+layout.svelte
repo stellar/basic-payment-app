@@ -9,8 +9,10 @@
 
     /** @param {Event} err */
     const handleError = (err) => {
-        console.log('here is the handleError err', err)
-        errorMessage.set(err.error.body.message)
+        if (err.message !== 'ResizeObserver loop limit exceeded') {
+            console.log('here is the handleError err', err)
+            errorMessage.set(err.error.body.message)
+        }
     }
 </script>
 

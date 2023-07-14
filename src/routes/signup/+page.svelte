@@ -3,12 +3,16 @@
     export let data
     console.log('routes/signup/+page.svelte data', data)
 
-    import { Keypair, sign } from 'stellar-sdk'
+    import { Keypair } from 'stellar-sdk'
     import { browser } from '$app/environment'
+    import { goto } from '$app/navigation'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import { getContext } from 'svelte'
+    import { walletStore } from '$lib/stores/walletStore'
+    import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
     const { open } = getContext('simple-modal')
+    let pincodeConfirmed
 
     let keypair = Keypair.random()
     let publicKey = ''
@@ -21,12 +25,31 @@
         secretKey = keypair.secret()
     }
 
+    const onConfirm = async () => {
+        console.log('pincode confirmed, and `onConfirm` has been fired!')
+        await walletStore.register({
+            publicKey: publicKey,
+            secretKey: secretKey,
+            pincode: pincode,
+        })
+        await fundWithFriendbot(publicKey)
+        if ($walletStore.publicKey) {
+            goto('/dashboard')
+        }
+    }
+
+    const onReject = () => {
+        console.log('pincode rejected, and `onReject` has been fired!!!')
+    }
+
     const signup = () => {
         open(ConfirmationModal, {
             firstPincode: pincode,
             title: 'Confirm Pincode',
             body: 'Please re-type your 6-digit pincode to encrypt the secret key.',
             rejectButton: 'Cancel',
+            onConfirm: onConfirm,
+            onReject: onReject
         })
     }
 </script>

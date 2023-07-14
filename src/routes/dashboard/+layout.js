@@ -1,10 +1,12 @@
 import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
+import { get } from 'svelte/store'
+import { walletStore } from '$lib/stores/walletStore'
 
 /** @type {import ('./$types').LayoutLoad} */
 export async function load() {
-    const publicKey = 'GAXQIC2BSZ5HZP3BD6RZQSD3LB66TB6A2TA5W3LZX2VDFMBAKHC4B62J'
+    const publicKey = get(walletStore).publicKey
     return {
-        publicKey,
+        publicKey: publicKey,
         balances: await fetchAccountBalances(publicKey),
         payments: await fetchRecentPayments(publicKey),
     }

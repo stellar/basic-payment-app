@@ -68,6 +68,7 @@ export async function fetchRecentPayments(publicKey, limit = 10) {
  * @param {string} publicKey - Public Stellar address which should be funded using the Testnet Friendbot
  */
 export async function fundWithFriendbot(publicKey) {
+    console.log(`i am requesting a friendbot funding for ${publicKey}`)
     await server.friendbot(publicKey).call()
 }
 

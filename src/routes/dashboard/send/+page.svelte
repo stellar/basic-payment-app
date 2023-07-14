@@ -9,10 +9,11 @@
         createCreateAccountTransaction,
         createPaymentTransaction,
     } from '$lib/stellar/transactions'
-    import { fetchAccount } from '$lib/stellar/horizonQueries'
+    import { fetchAccount, submit } from '$lib/stellar/horizonQueries'
     import { getContext } from 'svelte'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import InfoAlert from '$lib/components/InfoAlert.svelte'
+    import { walletStore } from '$lib/stores/walletStore'
     const { open } = getContext('simple-modal')
 
     let destination = ''
@@ -22,6 +23,8 @@
     let asset = 'native'
     let memo = ''
     let createAccount = false
+    let transactionXDR = ''
+    let transactionNetwork = ''
 
     /**
      * Check whether or not the account exists and is funded on the Stellar network.
@@ -44,6 +47,20 @@
         }
     }
 
+    /**
+     * @param {string} pincode Pincode that was confirmed by the modal window
+     */
+    const onConfirm = async (pincode) => {
+        console.log('routes/dashboard/send/+page.svelte onConfirm has been triggered')
+        let signedTransaction = await walletStore.sign({
+            transactionXDR: transactionXDR,
+            network: transactionNetwork,
+            pincode: pincode,
+        })
+        await submit(signedTransaction)
+        console.log('I guess I did it?')
+    }
+
     const previewPaymentTransaction = async () => {
         let { transaction, network_passphrase } = createAccount
             ? await createCreateAccountTransaction({
@@ -60,9 +77,13 @@
                   memo: memo,
               })
 
+        transactionXDR = transaction
+        transactionNetwork = network_passphrase
+
         open(ConfirmationModal, {
             transactionXDR: transaction,
             transactionNetwork: network_passphrase,
+            onConfirm: onConfirm,
         })
     }
 </script>

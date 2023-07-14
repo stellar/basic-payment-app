@@ -2,7 +2,7 @@
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
     import ErrorAlert from './ErrorAlert.svelte'
-    import { confirmCorrectPincode } from '$lib/stores/walletStore'
+    import { confirmCorrectPincode, walletStore } from '$lib/stores/walletStore'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { getContext } from 'svelte'
     import { Networks, TransactionBuilder } from 'stellar-sdk'
@@ -20,39 +20,40 @@
         ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
         : null
     export let firstPincode = ''
-    export let publicKey = ''
+    let isWaiting = false
 
-    let pincode = ''
-    const confirm = async () => {
+    export let onConfirm = async () => {}
+    const _onConfirm = async () => {
+        isWaiting = true
         try {
-            if (firstPincode) {
-                confirmCorrectPincode({
-                    pincode,
-                    firstPincode,
-                    signup: true,
-                })
-            }
+            console.log('confirm button clicked, and `_onConfirm` has been fired')
+            await confirmCorrectPincode({
+                pincode: pincode,
+                firstPincode: firstPincode,
+                signup: firstPincode ? true : false,
+            })
+            await onConfirm(pincode)
+            close()
         } catch (err) {
-            errorMessage.set(
-                `${err.body.message}. ${
-                    err.body.result_codes
-                        ? `extra result_codes: <code>${JSON.stringify(
-                              err.body.result_codes
-                          )}</code>`
-                        : ''
-                }`
-            )
+            console.log('_onConfirm err', err)
+            // errorMessage.set('pincode mismatch')
+            errorMessage.set(err.body.message)
         }
+        isWaiting = false
     }
 
-    const reject = () => {
+    export let onReject = () => {}
+    const _onReject = () => {
+        console.log('reject button clicked, and `_onReject` has been fired')
+        onReject()
         close()
     }
+
+    let pincode = ''
 </script>
 
 <div class="prose p-3">
     <h1>{title}</h1>
-    <ErrorAlert />
     <p>{body}</p>
 
     {#if transaction}
@@ -109,6 +110,7 @@
         </div>
     {/if}
 
+    <ErrorAlert />
     {#if hasPincodeForm}
         <form>
             <div class="form-control">
@@ -123,12 +125,14 @@
                 />
             </div>
             <div class="my-6 flex justify-end gap-3">
-                <button on:click|preventDefault={confirm} class="btn-success btn"
-                    >{confirmButton}</button
-                >
-                <button on:click|preventDefault={reject} class="btn-error btn"
-                    >{rejectButton}</button
-                >
+                <button on:click|preventDefault={_onConfirm} class="btn-success btn" disabled={isWaiting}>
+                    {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
+                    {confirmButton}
+                </button>
+                <button on:click|preventDefault={_onReject} class="btn-error btn" disabled={isWaiting}>
+                    {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
+                    {rejectButton}
+                </button>
             </div>
         </form>
     {/if}

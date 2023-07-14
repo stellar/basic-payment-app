@@ -57,7 +57,7 @@
 
 <h2>Burn Bridges</h2>
 <p>Clear out everyone from the contacts list and start fresh</p>
-<button class="btn-error btn" on:click={contacts.empty}>Empty Contacts List</button>
+<button class="btn-warning btn" on:click={contacts.empty}>Empty Contacts List</button>
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
@@ -78,3 +78,7 @@
         </div>
     </form>
 </dialog>
+
+<h2>Throw it On the Ground!</h2>
+<p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>
+<button class="btn btn-error" on:click={() => localStorage.clear()}>You can't buy me hot dog man!</button>
