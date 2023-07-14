@@ -23,8 +23,8 @@
     let asset = 'native'
     let memo = ''
     let createAccount = false
-    let transactionXDR = ''
-    let transactionNetwork = ''
+    let paymentXDR = ''
+    let paymentNetwork = ''
 
     /**
      * Check whether or not the account exists and is funded on the Stellar network.
@@ -53,8 +53,8 @@
     const onConfirm = async (pincode) => {
         console.log('routes/dashboard/send/+page.svelte onConfirm has been triggered')
         let signedTransaction = await walletStore.sign({
-            transactionXDR: transactionXDR,
-            network: transactionNetwork,
+            transactionXDR: paymentXDR,
+            network: paymentNetwork,
             pincode: pincode,
         })
         await submit(signedTransaction)
@@ -77,8 +77,8 @@
                   memo: memo,
               })
 
-        transactionXDR = transaction
-        transactionNetwork = network_passphrase
+        paymentXDR = transaction
+        paymentNetwork = network_passphrase
 
         open(ConfirmationModal, {
             transactionXDR: transaction,
