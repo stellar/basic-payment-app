@@ -48,7 +48,7 @@ export async function createCreateAccountTransaction({ source, destination, amou
  * @param {string} opts.destination Public Stellar address to receive the payment
  * @param {string} [opts.asset=native] Asset to be sent to the destination address (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
  * @param {number|string} opts.amount Amount of the asset to send in the payment
- * @param {string} [opts.memo] Memo to add to the transaction
+ * @param {string|Object} [opts.memo] Memo to add to the transaction, either a string or a Buffer object
  * @returns {Promise<{
  *     transaction: string,
  *     network_passphrase: string,
@@ -68,7 +68,11 @@ export async function createPaymentTransaction({ source, destination, asset, amo
     }
 
     if (memo) {
-        transaction.addMemo(Memo.text(memo))
+        if (typeof(memo) === 'string') {
+            transaction.addMemo(Memo.text(memo))
+        } else if (typeof(memo) === 'object') {
+            transaction.addMemo(Memo.hash(memo.toString('hex')))
+        }
     }
 
     transaction.addOperation(

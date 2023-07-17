@@ -21,11 +21,10 @@
         : null
     export let firstPincode = ''
 
-    export let onConfirm = async () => {}
+    export let onConfirm = async (pincode) => {}
     const _onConfirm = async () => {
         isWaiting = true
         try {
-            console.log('confirm button clicked, and `_onConfirm` has been fired')
             await confirmCorrectPincode({
                 pincode: pincode,
                 firstPincode: firstPincode,
@@ -34,7 +33,6 @@
             await onConfirm(pincode)
             close()
         } catch (err) {
-            console.log('_onConfirm err', err)
             errorMessage.set(err.body.message)
         }
         isWaiting = false

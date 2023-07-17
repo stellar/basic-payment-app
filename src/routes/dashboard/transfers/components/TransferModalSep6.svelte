@@ -1,0 +1,85 @@
+<script>
+    import { page } from '$app/stores'
+    import { Buffer } from 'buffer'
+    import { createPaymentTransaction } from '$lib/stellar/transactions'
+    import StepsBar from '$lib/components/StepsBar.svelte'
+    import TransferDetails from './TransferDetails.svelte'
+    import KycInformation from './KYCInformation.svelte'
+    import SubmitTransfer from './SubmitTransfer.svelte'
+    import Confirmation from './Confirmation.svelte'
+    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    import { walletStore } from '$lib/stores/walletStore'
+    import { getContext } from 'svelte'
+    import { submit } from '$lib/stellar/horizonQueries'
+    const { open, close } = getContext('simple-modal')
+
+    export let title = 'Initiate SEP-6 Transfer'
+    export let body = 'Please follow the steps to begin a transfer with your chosen anchor.'
+    export let homeDomain = ''
+    export let sep6Info = {}
+    export let assetIssuer = ''
+
+    export let transferData = {
+        endpoint: '',
+        customer_id: '',
+        transfer_id: '',
+        transfer_submitted: false,
+    }
+    export let formData = {
+        account: $page.publicKey,
+        asset_code: '',
+        type: '',
+    }
+
+    let sep12Fields = []
+    let transferJson = {}
+    export let paymentXDR = ''
+    export let paymentNetwork = ''
+    export let submitPayment = async (opts) => {}
+    let steps = ['Transfer Details', 'KYC Information', 'Submit Transfer', 'Confirmation']
+    let currentActive = 1
+    let stepsBar
+    $: activeStep = steps[currentActive - 1]
+
+    const handleStep = (stepIncrement) => {
+        stepsBar.handleStep(stepIncrement)
+    }
+</script>
+
+<div class="prose p-3">
+    <h1>{title}</h1>
+    <p>{body}</p>
+    <StepsBar steps={steps} bind:currentActive={currentActive} bind:this={stepsBar} />
+    <form>
+        {#if activeStep === 'Transfer Details'}
+            <TransferDetails
+                bind:transferData={transferData}
+                bind:formData={formData}
+                bind:sep6Info={sep6Info}
+            />
+        {:else if activeStep === 'KYC Information'}
+            <KycInformation bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} />
+        {:else if activeStep === 'Submit Transfer'}
+            <SubmitTransfer bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} bind:transferData={transferData} />
+        {:else if activeStep === 'Confirmation'}
+            <Confirmation bind:transferData={transferData} bind:homeDomain={homeDomain} bind:formData={formData} bind:transferJson={transferJson} />
+            {#if transferData.endpoint === 'withdraw'}
+                <button class="btn-primary btn my-1" on:click={() => submitPayment({
+                        withdrawDetails: transferJson,
+                        assetCode: formData.asset_code,
+                        assetIssuer: assetIssuer,
+                        amount: formData.amount,
+                    })}
+                    >Send Stellar Payment</button
+                >
+            {/if}
+        {/if}
+    </form>
+
+    <div class="my-4">
+        <button class="btn" on:click={() => handleStep(-1)} disabled={currentActive === 1}>Prev</button>
+        <button class="btn" on:click={() => handleStep(1)} disabled={currentActive === steps.length}
+            >Next</button
+        >
+    </div>
+</div>

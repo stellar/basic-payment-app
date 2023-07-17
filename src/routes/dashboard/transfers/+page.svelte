@@ -3,14 +3,16 @@
     export let data
     console.log('routes/dashboard/transfers/+page.svelte data', data)
 
+    import { Buffer } from 'buffer'
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
     import { LogInIcon, LogOutIcon } from 'svelte-feather-icons'
-    import { fetchAssetsWithHomeDomains } from '$lib/stellar/horizonQueries'
+    import { fetchAssetsWithHomeDomains, submit } from '$lib/stellar/horizonQueries'
+    import { createPaymentTransaction } from '$lib/stellar/transactions'
     import { fetchStellarToml } from '$lib/stellar/sep1'
     import { getSep6Info } from '$lib/stellar/sep6'
     import { getSep24Info, initiateTransfer24 } from '$lib/stellar/sep24'
-    import TransferModalSep6 from '$lib/components/TransferModalSep6.svelte'
+    import TransferModalSep6 from './components/TransferModalSep6.svelte'
     import { isTokenExpired, webAuthStore } from '$lib/stores/webAuthStore'
     import { getChallengeTransaction, submitChallengeTransaction } from '$lib/stellar/sep10'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
@@ -19,6 +21,8 @@
     let challengeXDR = ''
     let challengeNetwork = ''
     let challengeHomeDomain = ''
+    let paymentXDR = ''
+    let paymentNetwork = ''
 
     const transferButtonClasses = {
         deposit: 'btn lg:w-1/2 join-item btn-accent',
@@ -66,8 +70,7 @@
             domain: homeDomain,
         })
 
-        challengeXDR = transaction,
-        challengeNetwork = network_passphrase
+        ;(challengeXDR = transaction), (challengeNetwork = network_passphrase)
         challengeHomeDomain = homeDomain
 
         open(ConfirmationModal, {
@@ -75,7 +78,7 @@
             body: 'Please confirm your ownership of this account by signing this challenge transaction. This transaction has already been checked and verified and everything looks good from what we can tell. Feel free to double-check that everything lines up with the SEP-10 specification yourself, though.',
             transactionXDR: challengeXDR,
             transactionNetwork: challengeNetwork,
-            onConfirm: onAuthConfirm
+            onConfirm: onAuthConfirm,
         })
     }
 
@@ -84,12 +87,16 @@
      * @param {Object} opts Options object
      * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
      * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param {string} opts.assetIssuer Public Stellar address that issues the asset being transferred
      * @param {Object} opts.sep6Info Info published by the anchor detailing what assets/transfer methods are available
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
-    const launchTransferModalSep6 = ({ homeDomain, assetCode, endpoint, sep6Info }) => {
+    const launchTransferModalSep6 = ({ homeDomain, assetCode, assetIssuer, endpoint, sep6Info }) => {
         open(TransferModalSep6, {
             homeDomain: homeDomain,
+            assetIssuer: assetIssuer,
+            paymentXDR: paymentXDR,
+            paymentNetwork: paymentNetwork,
             transferData: {
                 endpoint: endpoint,
             },
@@ -97,6 +104,45 @@
                 asset_code: assetCode,
             },
             sep6Info: sep6Info,
+            submitPayment: submitPayment,
+        })
+    }
+
+    const onPaymentConfirm = async (pincode) => {
+        let signedTransaction = await walletStore.sign({
+            transactionXDR: paymentXDR,
+            network: paymentNetwork,
+            pincode: pincode,
+        })
+        await submit(signedTransaction)
+    }
+
+    /**
+     * Builds a Stellar payment to present to the user which will complete a transfer to the Anchor.
+     * @param {Object} opts Options object
+     * @param {Object} opts.withdrawDetails Object containing details about how a withdraw should proceed
+     * @param {string} opts.assetCode Stellar asset code to be transferred in the payment transaction
+     * @param {string} opts.assetIssuer Public Stellar address that issues the asset
+     * @param {string|number} opts.amount Amount of the asset to send in the payment
+     */
+    let submitPayment = async ({ withdrawDetails, assetCode, assetIssuer, amount }) => {
+        let { transaction, network_passphrase } = await createPaymentTransaction({
+            source: data.publicKey,
+            destination: withdrawDetails.account_id,
+            asset: `${assetCode}:${assetIssuer}`,
+            amount: amount,
+            memo: Buffer.from(withdrawDetails.memo, 'base64'),
+        })
+
+        paymentXDR = transaction
+        paymentNetwork = network_passphrase
+
+        close()
+
+        open(ConfirmationModal, {
+            transactionXDR: paymentXDR,
+            transactionNetwork: paymentNetwork,
+            onConfirm: onPaymentConfirm,
         })
     }
 
@@ -169,10 +215,17 @@
                 )[0]}
                 <p>{thisAsset.desc}</p>
                 {#if authStatus !== 'auth_valid'}
-                    <button id={`authButton${asset.asset_code}`} name={`authButton${asset.asset_code}`} class="btn btn-primary" on:click={auth(asset.home_domain)}>Authenticate with Anchor</button>
+                    <button
+                        id={`authButton${asset.asset_code}`}
+                        name={`authButton${asset.asset_code}`}
+                        class="btn-primary btn"
+                        on:click={auth(asset.home_domain)}>Authenticate with Anchor</button
+                    >
                     <div class="form-control">
                         <label class="label" for={`authButton${asset.asset_code}`}>
-                            <span class="label-text">Please authenticate before attempting any transfers.</span>
+                            <span class="label-text"
+                                >Please authenticate before attempting any transfers.</span
+                            >
                         </label>
                     </div>
                 {:else}
@@ -193,6 +246,7 @@
                                                         on:click={launchTransferModalSep6({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
+                                                            assetIssuer: asset.asset_issuer,
                                                             endpoint: endpoint,
                                                             sep6Info: sep6Info,
                                                         })}

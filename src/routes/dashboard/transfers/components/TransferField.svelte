@@ -9,7 +9,7 @@
     export let value = ''
 </script>
 
-<div class="form-control">
+<div class="form-control my-1">
     <label class="label" for={`transfer-field-${field}`}>
         <span class="label-text">{field}</span>
         {#if fieldInfo.optional}

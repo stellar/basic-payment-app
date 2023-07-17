@@ -5,7 +5,6 @@
     let stepMarkers
 
     export const handleStep = (stepIncrement) => {
-        console.log('there you are')
         stepMarkers = document.querySelectorAll('.step')
         if (stepIncrement == 1) {
             currentActive++

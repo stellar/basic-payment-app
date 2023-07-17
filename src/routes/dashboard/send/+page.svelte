@@ -56,7 +56,6 @@
             pincode: pincode,
         })
         await submit(signedTransaction)
-        console.log('I guess I did it?')
     }
 
     const previewPaymentTransaction = async () => {
