@@ -28,15 +28,19 @@ export async function initiateTransfer6({ authToken, endpoint, formData, domain 
 
     let searchParams = new URLSearchParams(formData)
 
+    console.log('authToken', authToken)
+    console.log('formData', formData)
     let res = await fetch(`${transferServer}/${endpoint}?${searchParams}`, {
         method: 'GET',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
     })
-
+    console.log('initiateTransfer6 res', res)
     let json = await res.json()
+    console.log('initiateTransfer6 json', json)
     return json
 }
 
@@ -57,6 +61,7 @@ export async function getTransferStatus6({ authToken, transferId, domain }) {
         })}`,
         {
             method: 'GET',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,

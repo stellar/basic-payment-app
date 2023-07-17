@@ -1,10 +1,10 @@
 <script>
     import { page } from '$app/stores'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
-    import { initiateTransfer6, getTransferStatus6 } from "$lib/stellar/sep6"
-    import { createPaymentTransaction } from "$lib/stellar/transactions"
+    import { initiateTransfer6, getTransferStatus6 } from '$lib/stellar/sep6'
+    import { createPaymentTransaction } from '$lib/stellar/transactions'
     import { walletStore } from '$lib/stores/walletStore'
-    import { webAuthStore } from "$lib/stores/webAuthStore"
+    import { webAuthStore } from '$lib/stores/webAuthStore'
     import { getContext } from 'svelte'
     const { open, close } = getContext('simple-modal')
 
@@ -37,14 +37,11 @@
             return json
         }
     }
-
-    export let submitPayment = async () => {}
 </script>
 
 <p>
-    <em>You may not be finished yet.</em> We have submitted your transfer to the anchor,
-    and any further details and/or instructions are listed below. You may need to initiate
-    a transfer to/from your bank.
+    <em>You may not be finished yet.</em> We have submitted your transfer to the anchor, and any further
+    details and/or instructions are listed below. You may need to initiate a transfer to/from your bank.
 </p>
 {#await submitTransfer()}
     <p>loading...</p>

@@ -9,7 +9,10 @@
     export let sep12Fields = []
 
     const startSep12 = async () => {
-        let json = await getSep12Fields({ authToken: $webAuthStore[homeDomain], homeDomain: homeDomain })
+        let json = await getSep12Fields({
+            authToken: $webAuthStore[homeDomain],
+            homeDomain: homeDomain,
+        })
         if (json.fields) {
             for (let field in json.fields) {
                 sep12Fields.push(field)

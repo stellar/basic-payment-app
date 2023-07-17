@@ -25,11 +25,7 @@
         transfer_id: '',
         transfer_submitted: false,
     }
-    export let formData = {
-        account: $page.publicKey,
-        asset_code: '',
-        type: '',
-    }
+    export let formData = {}
 
     let sep12Fields = []
     let transferJson = {}
@@ -60,24 +56,37 @@
         {:else if activeStep === 'KYC Information'}
             <KycInformation bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} />
         {:else if activeStep === 'Submit Transfer'}
-            <SubmitTransfer bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} bind:transferData={transferData} />
+            <SubmitTransfer
+                bind:homeDomain={homeDomain}
+                bind:sep12Fields={sep12Fields}
+                bind:transferData={transferData}
+            />
         {:else if activeStep === 'Confirmation'}
-            <Confirmation bind:transferData={transferData} bind:homeDomain={homeDomain} bind:formData={formData} bind:transferJson={transferJson} />
+            <Confirmation
+                bind:transferData={transferData}
+                bind:homeDomain={homeDomain}
+                bind:formData={formData}
+                bind:transferJson={transferJson}
+            />
             {#if transferData.endpoint === 'withdraw'}
-                <button class="btn-primary btn my-1" on:click={() => submitPayment({
-                        withdrawDetails: transferJson,
-                        assetCode: formData.asset_code,
-                        assetIssuer: assetIssuer,
-                        amount: formData.amount,
-                    })}
-                    >Send Stellar Payment</button
+                <button
+                    class="btn-primary btn my-1"
+                    on:click={() =>
+                        submitPayment({
+                            withdrawDetails: transferJson,
+                            assetCode: formData.asset_code,
+                            assetIssuer: assetIssuer,
+                            amount: formData.amount,
+                        })}>Send Stellar Payment</button
                 >
             {/if}
         {/if}
     </form>
 
     <div class="my-4">
-        <button class="btn" on:click={() => handleStep(-1)} disabled={currentActive === 1}>Prev</button>
+        <button class="btn" on:click={() => handleStep(-1)} disabled={currentActive === 1}
+            >Prev</button
+        >
         <button class="btn" on:click={() => handleStep(1)} disabled={currentActive === steps.length}
             >Next</button
         >

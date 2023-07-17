@@ -70,7 +70,8 @@
             domain: homeDomain,
         })
 
-        ;(challengeXDR = transaction), (challengeNetwork = network_passphrase)
+        challengeXDR = transaction
+        challengeNetwork = network_passphrase
         challengeHomeDomain = homeDomain
 
         open(ConfirmationModal, {
@@ -91,7 +92,13 @@
      * @param {Object} opts.sep6Info Info published by the anchor detailing what assets/transfer methods are available
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
-    const launchTransferModalSep6 = ({ homeDomain, assetCode, assetIssuer, endpoint, sep6Info }) => {
+    const launchTransferModalSep6 = ({
+        homeDomain,
+        assetCode,
+        assetIssuer,
+        endpoint,
+        sep6Info,
+    }) => {
         open(TransferModalSep6, {
             homeDomain: homeDomain,
             assetIssuer: assetIssuer,
@@ -101,6 +108,7 @@
                 endpoint: endpoint,
             },
             formData: {
+                account: data.publicKey,
                 asset_code: assetCode,
             },
             sep6Info: sep6Info,

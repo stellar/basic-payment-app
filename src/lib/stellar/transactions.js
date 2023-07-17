@@ -68,9 +68,9 @@ export async function createPaymentTransaction({ source, destination, asset, amo
     }
 
     if (memo) {
-        if (typeof(memo) === 'string') {
+        if (typeof memo === 'string') {
             transaction.addMemo(Memo.text(memo))
-        } else if (typeof(memo) === 'object') {
+        } else if (typeof memo === 'object') {
             transaction.addMemo(Memo.hash(memo.toString('hex')))
         }
     }
