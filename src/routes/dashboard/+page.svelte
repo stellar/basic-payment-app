@@ -6,6 +6,16 @@
 </script>
 
 <AssetStats />
-<RecentPayments />
-<FavoriteContacts />
-<TransferHistory />
+
+<div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
+    <div class="overflow-x-auto">
+        <RecentPayments />
+    </div>
+    <div class="overflow-x-auto">
+        <FavoriteContacts />
+    </div>
+</div>
+
+<div class="overflow-x-auto">
+    <TransferHistory />
+</div>
