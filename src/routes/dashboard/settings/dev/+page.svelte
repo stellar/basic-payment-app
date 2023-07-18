@@ -8,6 +8,7 @@
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import { walletStore } from '$lib/stores/walletStore'
 
     let addContactsOpts = {
@@ -31,9 +32,13 @@
 </p>
 <dl>
     <dt><strong>Public Key</strong></dt>
-    <dd><code>{$walletStore.publicKey}</code></dd>
+    <dd>
+        <TruncatedKey keyText={$walletStore.publicKey} />
+    </dd>
     <dt><strong>Secret Key</strong></dt>
-    <dd><code>{$walletStore.devInfo.secretKey}</code></dd>
+    <dd>
+        <TruncatedKey keyText={$walletStore.devInfo.secretKey} />
+    </dd>
 </dl>
 
 <h2>Make Friends</h2>

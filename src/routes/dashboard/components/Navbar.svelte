@@ -1,6 +1,5 @@
 <script>
     import { page } from '$app/stores'
-    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import { MenuIcon } from 'svelte-feather-icons'
 </script>
 
