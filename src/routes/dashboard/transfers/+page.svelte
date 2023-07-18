@@ -184,7 +184,12 @@
         window.addEventListener('message', async (event) => {
             console.log('here is the event i heard from the popup window', event)
             popup?.close()
-            transfers.addTransfer(homeDomain, 'sep24', event.data.transaction.id)
+            transfers.addTransfer({
+                homeDomain: homeDomain,
+                protocol: 'sep24',
+                assetCode: assetCode,
+                transferID: event.data.transaction.id,
+            })
             if (event.data.transaction.kind === 'withdrawal') {
                 let { transaction, network_passphrase } = await createPaymentTransaction({
                     source: data.publicKey,

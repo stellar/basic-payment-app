@@ -34,7 +34,12 @@
             if (json.id) {
                 transferData.transfer_submitted = true
                 transferData.transfer_id = json.id
-                transfers.addTransfer(homeDomain, 'sep6', json.id)
+                transfers.addTransfer({
+                    homeDomain: homeDomain,
+                    protocol: 'sep6',
+                    assetCode: formData.asset_code,
+                    transferID: json.id,
+                })
             }
             transferJson = json
             return json

@@ -1,4 +1,5 @@
 import { getTransferServerSep24 } from '$lib/stellar/sep1'
+import { error } from '@sveltejs/kit'
 
 /**
  * Fetches and returns basic information about what the SEP-24 transfer server supports.
@@ -37,4 +38,39 @@ export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlF
     let json = await res.json()
 
     return json
+}
+
+/**
+ * Queries and returns information about all SEP-24 transfers for a given address and asset.
+ * @param {Object} opts Options object
+ * @param {string} opts.authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} opts.assetCode Asset code returned transfers must include\
+ * @param {string} opts.homeDomain Domain of the anchor to query for transfer records
+ * @returns {Promise<Object>} JSON response from the server
+ * @throws Will throw an error if the server response is not `ok`.
+ */
+export async function queryTransfers24({ authToken, assetCode, homeDomain }) {
+    let transferServerSep24 = await getTransferServerSep24(homeDomain)
+
+    let res = await fetch(
+        `${transferServerSep24}/transactions?${new URLSearchParams({
+            asset_code: assetCode,
+        })}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+        }
+    )
+
+    let json = await res.json()
+    if (!res.ok) {
+        throw error(res.status, {
+            message: json.error,
+        })
+    } else {
+        return json
+    }
 }

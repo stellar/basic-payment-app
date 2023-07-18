@@ -8,22 +8,27 @@ function createTransfersStore() {
 
         /**
          * Adds a new transfer ID to the list of tracked anchor transfers.
-         * @param {string} homeDomain Home domain of the anchor server facilitating the transfer
-         * @param {('sep6'|'sep24')} protocol Which standard was used for this transfer (SEP-6 or SEP-24)
-         * @param {string} transferID Transfer details to add to the list of
+         * @param {Object} opts Options object
+         * @param {string} opts.homeDomain Home domain of the anchor server facilitating the transfer
+         * @param {('sep6'|'sep24')} opts.protocol Which standard was used for this transfer (SEP-6 or SEP-24)
+         * @param {string} opts.assetCode Asset code involved in the transfer
+         * @param {string} opts.transferID Transfer details to add to the list of
          */
-        addTransfer: (homeDomain, protocol, transferID) =>
+        addTransfer: ({ homeDomain, protocol, assetCode, transferID }) =>
             update((store) => {
                 let newStore = { ...store }
                 if (homeDomain in newStore) {
                     if (protocol in newStore[homeDomain]) {
-                        newStore[homeDomain][protocol].push(transferID)
+                        newStore[homeDomain][protocol].push({
+                            id: transferID,
+                            asset_code: assetCode,
+                        })
                     } else {
-                        newStore[homeDomain][protocol] = [transferID]
+                        newStore[homeDomain][protocol] = [{ id: transferID, asset_code: assetCode }]
                     }
                 } else {
                     newStore[homeDomain] = {
-                        [protocol]: [transferID],
+                        [protocol]: [{ id: transferID, asset_code: assetCode }],
                     }
                 }
                 return newStore
