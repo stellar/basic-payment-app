@@ -26,7 +26,6 @@
     }
 
     const onConfirm = async () => {
-        console.log('pincode confirmed, and `onConfirm` has been fired!')
         await walletStore.register({
             publicKey: publicKey,
             secretKey: secretKey,
@@ -38,9 +37,7 @@
         }
     }
 
-    const onReject = () => {
-        console.log('pincode rejected, and `onReject` has been fired!!!')
-    }
+    const onReject = () => {}
 
     const signup = () => {
         open(ConfirmationModal, {
@@ -119,8 +116,15 @@
                                 bind:value={pincode}
                             />
                         </div>
-                        <div class="form-control my-1">
+                        <div class="form-control mt-6">
                             <button type="submit" class="btn-primary btn">Signup</button>
+                        </div>
+                        <div class="form-control my-1">
+                            <div class="label">
+                                <a class="link-hover label-text-alt link" href="/login">
+                                    Existing users, login here.
+                                </a>
+                            </div>
                         </div>
                     </form>
                 </div>
