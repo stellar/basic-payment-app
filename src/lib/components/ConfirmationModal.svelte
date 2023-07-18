@@ -40,7 +40,6 @@
 
     export let onReject = () => {}
     const _onReject = () => {
-        console.log('reject button clicked, and `_onReject` has been fired')
         onReject()
         close()
     }
@@ -135,7 +134,6 @@
                     class="btn-error btn"
                     disabled={isWaiting}
                 >
-                    {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
                     {rejectButton}
                 </button>
             </div>

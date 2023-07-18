@@ -7,6 +7,8 @@
     import { webAuthStore } from '$lib/stores/webAuthStore'
     import { getContext } from 'svelte'
     const { open, close } = getContext('simple-modal')
+    import { transfers } from '$lib/stores/transfersStore'
+    console.log('here are the transfers', $transfers)
 
     export let transferData = {}
     export let formData = {}
@@ -32,6 +34,7 @@
             if (json.id) {
                 transferData.transfer_submitted = true
                 transferData.transfer_id = json.id
+                transfers.addTransfer(homeDomain, 'sep6', json.id)
             }
             transferJson = json
             return json

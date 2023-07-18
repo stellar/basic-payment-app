@@ -17,6 +17,7 @@
     import { getChallengeTransaction, submitChallengeTransaction } from '$lib/stellar/sep10'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import { walletStore } from '$lib/stores/walletStore'
+    import { transfers } from '$lib/stores/transfersStore'
 
     let challengeXDR = ''
     let challengeNetwork = ''
@@ -116,6 +117,10 @@
         })
     }
 
+    /**
+     * After a withdraw transaction has been presented to the user, and they've confirmed with the correct pincode, sign and submit the transaction to the Stellar network.
+     * @param {string} pincode The 6-digit pincode the user has confirmed that will unencrypt the Stellar secret key for signing
+     */
     const onPaymentConfirm = async (pincode) => {
         let signedTransaction = await walletStore.sign({
             transactionXDR: paymentXDR,
@@ -159,9 +164,10 @@
      * @param {Object} opts Options object
      * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
      * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param {string} opts.assetIssuer Public Stellar address that issues the asset
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
-    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, endpoint }) => {
+    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, assetIssuer, endpoint }) => {
         let { id, type, url } = await initiateTransfer24({
             authToken: $webAuthStore[homeDomain],
             endpoint: endpoint,
@@ -174,9 +180,29 @@
 
         let interactiveUrl = `${url}&callback=postMessage`
         let popup = window.open(interactiveUrl, 'bpaTransfer24Window', 'popup')
+
         window.addEventListener('message', async (event) => {
             console.log('here is the event i heard from the popup window', event)
             popup?.close()
+            transfers.addTransfer(homeDomain, 'sep24', event.data.transaction.id)
+            if (event.data.transaction.kind === 'withdrawal') {
+                let { transaction, network_passphrase } = await createPaymentTransaction({
+                    source: data.publicKey,
+                    destination: event.data.transaction.withdraw_anchor_account,
+                    asset: `${assetCode}:${assetIssuer}`,
+                    amount: event.data.transaction.amount_in,
+                    memo: Buffer.from(event.data.transaction.withdraw_memo, 'base64'),
+                })
+
+                paymentXDR = transaction
+                paymentNetwork = network_passphrase
+
+                open(ConfirmationModal, {
+                    transactionXDR: paymentXDR,
+                    transactionNetwork: paymentNetwork,
+                    onConfirm: onPaymentConfirm,
+                })
+            }
         })
     }
 </script>
@@ -293,6 +319,7 @@
                                                         on:click={launchTransferWindowSep24({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
+                                                            assetIssuer: asset.asset_issuer,
                                                             endpoint: endpoint,
                                                         })}
                                                     >

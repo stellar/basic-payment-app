@@ -10,6 +10,10 @@ const networkPassphrase = Networks.TESTNET
  * @param {string} opts.destination Public Stellar address to be created on the network
  * @param {number|string} opts.amount Amount to be sent as the destination account's starting balance
  * @param {string} [opts.memo] Memo to add to the transaction
+ * @returns {Promise<{
+ *     transaction: string,
+ *     network_passphrase: string,
+ * }>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
 export async function createCreateAccountTransaction({ source, destination, amount, memo }) {
     let server = new Server(horizonUrl)
@@ -132,3 +136,17 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
         network_passphrase: networkPassphrase,
     }
 }
+
+/**
+ * Constructs and returns a Stellar transaction that will contain a path payment operation to send/receive different assets.
+ * @param {Object} opts Options object
+ * @param {string} opts.source Public Stellar address to use as the source account of the transaction
+ * @param {string} opts.destination Public Stellar address to receive the payment
+ * @param {number|string} opts.amount Amount of the asset to send in the payment
+ * @param {string|Object} [opts.memo] Memo to add to the transaction, either a string or a Buffer object
+ * @returns {Promise<{
+ *     transaction: string,
+ *     network_passphrase: string,
+ * }>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
+ */
+export async function createPathPaymentTransaction({ source, destination, amount, memo }) {}
