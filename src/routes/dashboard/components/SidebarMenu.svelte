@@ -6,7 +6,6 @@
         { route: '/dashboard/assets', text: 'Assets' },
         { route: '/dashboard/contacts', text: 'Contacts' },
         { route: '/dashboard/transfers', text: 'Transfers' },
-        { route: '/dashboard/dev', text: 'Dev Helpers' },
     ]
 </script>
 

@@ -1,5 +1,6 @@
 <script>
     import { page } from '$app/stores'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import { MenuIcon } from 'svelte-feather-icons'
 </script>
 
@@ -15,22 +16,20 @@
             <button tabindex="0" class="btn-ghost btn-circle avatar btn">
                 <div class="w-10 rounded-full">
                     <img
-                        src="https://id.lobstr.co/GDF2FCG35RSXIYSNT4TET7VMZWA4L3LPD4EHJKT473ODKI4PFPPBOTSJ.png"
+                        src={`https://id.lobstr.co/${$page.data.publicKey}.png`}
                         alt="stellar-account-identicon"
                     />
                 </div>
             </button>
             <ul
-                class="menu-compact dropdown-content menu rounded-box mt-3 w-52 bg-base-100 p-2 shadow"
+                class="menu-compact dropdown-content menu rounded-box mt-3 w-52 bg-base-100 p-2 shadow z-10"
             >
                 <li>
-                    <a href="#" class="justify-between">
-                        Profile
-                        <span class="badge">New</span>
+                    <a href="/dashboard/settings/kyc" class="justify-between">
+                        Manage KYC Information
                     </a>
                 </li>
-                <li><a href="#">Settings</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="/dashboard/settings/dev">Dev Helpers</a></li>
             </ul>
         </div>
     </div>
