@@ -1,6 +1,8 @@
 import { getTransferServerSep24 } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
 
+/** @module $lib/stellar/sep24 */
+
 /**
  * Fetches and returns basic information about what the SEP-24 transfer server supports.
  * @param {string} domain Domain to get the SEP-24 info for

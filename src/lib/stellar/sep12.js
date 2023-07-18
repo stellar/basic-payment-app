@@ -1,5 +1,7 @@
 import { getKycServer } from '$lib/stellar/sep1'
 
+/** @module $lib/stellar/sep12 */
+
 /**
  * Sends a `GET` request to query KYC status for a customer, returns current status of KYC submission
  * @param {Object} opts Options object

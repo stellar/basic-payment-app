@@ -134,19 +134,17 @@ export async function fetchAssetsWithHomeDomains(balances) {
  * @param {string|number} opts.sourceAmount Amount of the Stellar asset that should be debited from the srouce account
  * @param {string} opts.destinationPublicKey Public Stellar address that will receive the destination asset
  * @returns {Promise<PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
- * @throws Will throw an error if there is a problem fetching payment paths.
+ * @throws Will throw an error if there are no available payment paths.
  */
 export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinationPublicKey }) {
-    try {
-        let asset = new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
-        let response = await server
-            .strictSendPaths(asset, sourceAmount.toString(), destinationPublicKey)
-            .call()
-        console.log('here are the paths', response)
+    let asset = sourceAsset === 'native' ? Asset.native() : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
+    let response = await server
+        .strictSendPaths(asset, sourceAmount.toString(), destinationPublicKey)
+        .call()
+    if (response.records.length > 0) {
         return response.records
-    } catch (err) {
-        console.error('error finding strictSend payment paths', err)
-        throw error(400, err)
+    } else {
+        throw error(400, { message: 'no strict send paths available' })
     }
 }
 
@@ -157,22 +155,21 @@ export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinati
  * @param {string} opts.destinationAsset Stellar asset which should be received in the destination account
  * @param {string|number} opts.destinationAmount Amount of the Stellar asset that should be credited to the destination account
  * @returns {Promise<PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
- * @throws Will throw an error if there is a problem fetching payment paths.
+ * @throws Will throw an error if there are no available payment paths.
  */
 export async function findStrictReceivePaths({
     sourcePublicKey,
     destinationAsset,
     destinationAmount,
 }) {
-    try {
-        let asset = new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
-        let response = await server
-            .strictReceivePaths(sourcePublicKey, asset, destinationAmount.toString())
-            .call()
-        console.log('here are the strict receive paths', response)
+    let asset = destinationAsset === 'native' ? Asset.native() : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
+    let response = await server
+        .strictReceivePaths(sourcePublicKey, asset, destinationAmount.toString())
+        .call()
+    console.log('here is the response from horizon', response)
+    if (response.records.length > 0) {
         return response.records
-    } catch (err) {
-        console.error('error finding strictReceive payment paths', err)
-        throw error(400, err)
+    } else {
+        throw error(400, { message: 'no strict receive paths available' })
     }
 }

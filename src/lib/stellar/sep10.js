@@ -2,6 +2,8 @@ import { Utils } from 'stellar-sdk'
 import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
 
+/** @module $lib/stellar/sep10 */
+
 /**
  * Requests, validates, and returns a SEP-10 challenge transaction from an anchor server.
  * @param {Object} opts Options object

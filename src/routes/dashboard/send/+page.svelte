@@ -7,9 +7,11 @@
     import { infoMessage } from '$lib/stores/alertsStore'
     import {
         createCreateAccountTransaction,
+        createPathPaymentStrictReceiveTransaction,
+        createPathPaymentStrictSendTransaction,
         createPaymentTransaction,
     } from '$lib/stellar/transactions'
-    import { fetchAccount, submit, fetchAccountBalances } from '$lib/stellar/horizonQueries'
+    import { fetchAccount, submit, fetchAccountBalances, findStrictSendPaths, findStrictReceivePaths } from '$lib/stellar/horizonQueries'
     import { getContext } from 'svelte'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import InfoAlert from '$lib/components/InfoAlert.svelte'
@@ -19,13 +21,14 @@
     let destination = ''
     $: otherDestination = destination === 'other'
     let otherPublicKey = ''
-    let sendAmount = ''
     let sendAsset = 'native'
+    let sendAmount = ''
+    let receiveAsset = ''
     let receiveAmount = ''
-    let receiveAsset = 'native'
     let memo = ''
     let createAccount = null
     let pathPayment = true
+    let availablePaths = []
     let strictReceive = false
     let paymentXDR = ''
     let paymentNetwork = ''
@@ -51,9 +54,29 @@
         }
     }
 
-    let findPaths = async () => {
+    const findPaths = async () => {
+        let paths = strictReceive
+        ? await findStrictReceivePaths({
+            sourcePublicKey: data.publicKey,
+            destinationAsset: receiveAsset,
+            destinationAmount: receiveAmount,
+          })
+        : await findStrictSendPaths({
+            sourceAsset: sendAsset,
+            sourceAmount: sendAmount,
+            destinationPublicKey: otherDestination ? otherPublicKey : destination,
+          })
+        availablePaths = paths
+        console.log('here are the known availablePaths', availablePaths)
+    }
+
+    const selectPath = () => {
         if (strictReceive) {
-            // let paths = await findStrictRe
+            let chosenPath = availablePaths.filter((path) => path.source_asset_type === sendAsset || sendAsset.startsWith(path.source_asset_code))
+            console.log('the chosen path is:', chosenPath)
+            sendAmount = chosenPath[0].source_amount
+        } else {
+            receiveAmount = availablePaths.filter((path) => path.destination_asset_type === receiveAsset || receiveAsset.startsWith(path.destination_asset_code))[0].destination_amount
         }
     }
 
@@ -75,6 +98,26 @@
                   amount: sendAmount,
                   memo: memo,
               })
+            : pathPayment && strictReceive
+            ? await createPathPaymentStrictReceiveTransaction({
+                source: data.publicKey,
+                sourceAsset: sendAsset,
+                sourceAmount: sendAmount,
+                destination: otherDestination ? otherPublicKey : destination,
+                destinationAsset: receiveAsset,
+                destinationAmount: receiveAmount,
+                memo: memo,
+            })
+            : pathPayment && !strictReceive
+            ? await createPathPaymentStrictSendTransaction({
+                source: data.publicKey,
+                sourceAsset: sendAsset,
+                sourceAmount: sendAmount,
+                destination: otherDestination ? otherPublicKey : destination,
+                destinationAsset: receiveAsset,
+                destinationAmount: receiveAmount,
+                memo: memo,
+            })
             : await createPaymentTransaction({
                   source: data.publicKey,
                   destination: otherDestination ? otherPublicKey : destination,
@@ -153,12 +196,12 @@
     <!-- PathPayment -->
     {#if pathPayment}
         <div class="flex w-full">
-            <div class="grid flex-grow">
+            <div class="grid w-5/12">
                 <h3>Sending</h3>
                 <div class="form-control w-full">
                     <label for="sendAmount" class="label">
                         <span class="label-text"
-                            >Sending Amount and Asset {strictReceive ? '(estimated)' : ''}</span
+                            >You send... {strictReceive ? '(estimated)' : ''}</span
                         >
                     </label>
                     <div class="join">
@@ -172,32 +215,44 @@
                                     placeholder="0.01"
                                     type="text"
                                     bind:value={sendAmount}
+                                    on:change={findPaths}
                                 />
                             </div>
                         </div>
-                        <select class="select-bordered select join-item" bind:value={sendAsset}>
-                            <option value="" disabled>Select asset to send</option>
-                            <option value="native">XLM</option>
-                            {#each data.balances as balance}
-                                {#if balance.asset_type !== 'native'}
-                                    {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
-                                    <option value={assetString}>{balance.asset_code}</option>
-                                {/if}
-                            {/each}
+                        <select class="select-bordered select join-item" bind:value={sendAsset} on:change={selectPath}>
+                            <option value="" disabled>Select asset</option>
+                            {#if strictReceive && availablePaths}
+                                {#each availablePaths as path}
+                                    {#if path.source_asset_type === 'native'}
+                                        <option value="native">XLM</option>
+                                    {:else}
+                                        {@const assetString = `${path.source_asset_code}:${path.source_asset_issuer}`}
+                                        <option value={assetString}>{path.source_asset_code}</option>
+                                    {/if}
+                                {/each}
+                            {:else if !strictReceive}
+                                <option value="native">XLM</option>
+                                {#each data.balances as balance}
+                                    {#if balance.asset_type !== 'native'}
+                                        {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
+                                        <option value={assetString}>{balance.asset_code}</option>
+                                    {/if}
+                                {/each}
+                            {/if}
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="divider divider-horizontal mx-5 w-20">
+            <div class="divider divider-horizontal mx-5 w-1/6">
                 Strict {strictReceive ? 'Receive' : 'Send'}
                 <input type="checkbox" class="toggle" bind:checked={strictReceive} />
             </div>
-            <div class="grid flex-grow">
+            <div class="grid w-5/12">
                 <h3>Receiving</h3>
                 <div class="form-control w-full">
                     <label for="receiveAmount" class="label">
                         <span class="label-text"
-                            >Receiving Amount and Asset {!strictReceive ? '(estimated)' : ''}</span
+                            >They receive... {!strictReceive ? '(estimated)' : ''}</span
                         >
                     </label>
                     <div class="join">
@@ -210,23 +265,35 @@
                                     class="input-bordered input join-item w-full"
                                     placeholder="0.01"
                                     type="text"
+                                    on:change={findPaths}
                                     bind:value={receiveAmount}
                                 />
                             </div>
                         </div>
-                        <select class="select-bordered select join-item" bind:value={receiveAsset}>
-                            <option value="" disabled>Select one</option>
-                            <option value="native">XLM</option>
-                            {#if otherPublicKey || destination}
-                                {#await fetchAccountBalances(otherPublicKey || destination) then balances}
-                                    {#each balances as balance}
-                                        {#if balance.asset_type !== 'native'}
-                                            {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
-                                            <option value={assetString}>{balance.asset_code}</option
-                                            >
-                                        {/if}
-                                    {/each}
-                                {/await}
+                        <select class="select-bordered select join-item" bind:value={receiveAsset} on:change={selectPath}>
+                            <option value="" disabled>Select asset</option>
+                            {#if !strictReceive && availablePaths}
+                                {#each availablePaths as path}
+                                    {#if path.destination_asset_type === 'native'}
+                                        <option value="native">XLM</option>
+                                    {:else}
+                                        {@const assetString = `${path.destination_asset_code}:${path.destination_asset_issuer}`}
+                                        <option value={assetString}>{path.destination_asset_code}</option>
+                                    {/if}
+                                {/each}
+                            {:else if strictReceive}
+                                <option value="native">XLM</option>
+                                {#if otherPublicKey || destination}
+                                    {#await fetchAccountBalances(otherPublicKey || destination) then balances}
+                                        {#each balances as balance}
+                                            {#if balance.asset_type !== 'native'}
+                                                {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
+                                                <option value={assetString}>{balance.asset_code}</option
+                                                >
+                                            {/if}
+                                        {/each}
+                                    {/await}
+                                {/if}
                             {/if}
                         </select>
                     </div>
