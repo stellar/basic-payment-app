@@ -7,11 +7,11 @@ import { error } from '@sveltejs/kit'
  * transactions that can then be signed and submitted to the Stellar network
  * (testnet for our use). Currently implemented functions:
  *
- * - {@link createCreateAccountTransaction}
- * - {@link createPaymentTransaction}
- * - {@link createChangeTrustTransaction}
- * - {@link createPathPaymentStrictSendTransaction}
- * - {@link createPathPaymentStrictReceiveTransaction}
+ * {@link createCreateAccountTransaction}
+ * {@link createPaymentTransaction}
+ * {@link createChangeTrustTransaction}
+ * {@link createPathPaymentStrictSendTransaction}
+ * {@link createPathPaymentStrictReceiveTransaction}
  */
 
 // We are setting a very high maximum fee, which increases our transaction's
@@ -33,6 +33,8 @@ const standardTimebounds = 300 // 5 minutes for the user to review/sign/submit
 
 /**
  * Constructs and returns a Stellar transaction that contains a `createAccount` operation and an optional memo.
+ * @async
+ * @function createCreateAccountTransaction
  * @param {Object} opts Options object
  * @param {string} opts.source Public Stellar address to use as the source account of the transaction
  * @param {string} opts.destination Public Stellar address to be created on the network
@@ -82,6 +84,8 @@ export async function createCreateAccountTransaction({ source, destination, amou
 
 /**
  * Constructs and returns a Stellar transaction that contains a `payment` operaion and an optional memo.
+ * @async
+ * @function createPaymentTransaction
  * @param {Object} opts Options object
  * @param {string} opts.source Public Stellar address to use as the source account of the transaction
  * @param {string} opts.destination Public Stellar address to receive the payment
@@ -138,6 +142,8 @@ export async function createPaymentTransaction({ source, destination, asset, amo
 
 /**
  * Constructs and returns a Stellar transaction that will create or modify a trustline on an account.
+ * @async
+ * @function createChangeTrustTransaction
  * @param {Object} opts Options object
  * @param {string} opts.source Public Stellar address to use as the source account of the transaction
  * @param {string} opts.asset Asset to add/modify/remove trustline on the `source` account for (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
@@ -182,6 +188,8 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
 
 /**
  * Constructs and returns a Stellar transaction that will contain a path payment strict send operation to send/receive different assets.
+ * @async
+ * @function createPathPaymentStrictSendTransaction
  * @param {Object} opts Options object
  * @param {string} opts.source Public Stellar address to use as the source account of the transaction
  * @param {string} opts.sourceAsset Stellar asset to be debited from the source account (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
@@ -253,6 +261,8 @@ export async function createPathPaymentStrictSendTransaction({
 
 /**
  * Constructs and returns a Stellar transaction that will contain a path payment strict receive operation to send/receive different assets.
+ * @async
+ * @function createPathPaymentStrictReceiveTransaction
  * @param {Object} opts Options object
  * @param {string} opts.source Public Stellar address that will be used for the source of the transaction
  * @param {string} opts.sourceAsset Stellar asset to be debited from the source account
