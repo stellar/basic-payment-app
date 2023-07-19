@@ -2,20 +2,31 @@ import { Utils } from 'stellar-sdk'
 import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
 
-/** @module $lib/stellar/sep10 */
+/**
+ * @module $lib/stellar/sep10
+ * @description A collection of functions that make it easier to work with
+ * SEP-10 authentication servers. This method of authentication is ubiquitous
+ * within the Stellar ecosystem, and is used by most SEP-6 and SEP-24 transfer
+ * servers.
+ */
 
 /**
  * Requests, validates, and returns a SEP-10 challenge transaction from an anchor server.
+ * @async
+ * @function getChallengeTransaction
  * @param {Object} opts Options object
  * @param {string} opts.publicKey Public Stellar address the challenge transaction will be generated for
- * @param {string} [opts.domain=testanchor.stellar.org] Domain to request a challenge transaction from
+ * @param {string} opts.homeDomain Domain to request a challenge transaction from
+ * @throws Will throw an error if one of the required entries is missing from the domain's StellarToml file
  */
-export async function getChallengeTransaction({ publicKey, domain }) {
-    if (!domain) {
-        domain = 'testanchor.stellar.org'
-    }
+export async function getChallengeTransaction({ publicKey, homeDomain }) {
+    let { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(homeDomain)
 
-    let { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(domain)
+    if (!WEB_AUTH_ENDPOINT || !TRANSFER_SERVER || !SIGNING_KEY) {
+        throw error(500, {
+            message: 'could not get challenge transaction (server missing toml entry or entries)',
+        })
+    }
 
     let res = await fetch(
         `${WEB_AUTH_ENDPOINT || TRANSFER_SERVER}?${new URLSearchParams({
@@ -31,13 +42,14 @@ export async function getChallengeTransaction({ publicKey, domain }) {
         serverSigningKey: SIGNING_KEY,
         network: json.network_passphrase,
         clientPublicKey: publicKey,
-        homeDomain: domain,
+        homeDomain: homeDomain,
     })
     return json
 }
 
 /**
  * Validates the correct structure and information in a SEP-10 challenge transaction.
+ * @function validateChallengeTransaction
  * @param {Object} opts Options object
  * @param {string} opts.transactionXDR Challenge transaction encoded in base64 XDR format
  * @param {string} opts.serverSigningKey Public Stellar address the anchor should use to sign the challenge transaction
@@ -73,12 +85,14 @@ function validateChallengeTransaction({
             throw error(400, { message: 'clientAccountID does not match challenge transaction' })
         }
     } catch (err) {
-        throw error(400, err)
+        throw error(400, { message: JSON.stringify(err) })
     }
 }
 
 /**
  * Submits a SEP-10 challenge transaction to an authentication server and returns the SEP-10 token.
+ * @async
+ * @function submitChallengeTransaction
  * @param {Object} opts Options object
  * @param {string} opts.transactionXDR Signed SEP-10 challenge transaction to be submitted to the authentication server
  * @param {string} opts.homeDomain Domain that handles SEP-10 authentication for this anchor
@@ -87,6 +101,9 @@ function validateChallengeTransaction({
  */
 export async function submitChallengeTransaction({ transactionXDR, homeDomain }) {
     let webAuthEndpoint = await getWebAuthEndpoint(homeDomain)
+
+    if (!webAuthEndpoint)
+        throw error(500, { message: 'could not authenticate with server (missing toml entry)' })
     let res = await fetch(webAuthEndpoint, {
         method: 'POST',
         mode: 'cors',

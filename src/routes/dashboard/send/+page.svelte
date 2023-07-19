@@ -32,8 +32,10 @@
     let receiveAsset = ''
     let receiveAmount = ''
     let memo = ''
+    /** @type {boolean|null} */
     let createAccount = null
     let pathPayment = true
+    /** @type {import('stellar-sdk').ServerApi.PaymentPathRecord[]} */
     let availablePaths = []
     let strictReceive = false
     let paymentXDR = ''

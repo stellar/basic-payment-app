@@ -68,7 +68,7 @@
     const auth = async (homeDomain) => {
         let { transaction, network_passphrase } = await getChallengeTransaction({
             publicKey: data.publicKey,
-            domain: homeDomain,
+            homeDomain: homeDomain,
         })
 
         challengeXDR = transaction

@@ -1,9 +1,17 @@
 import { getKycServer } from '$lib/stellar/sep1'
 
-/** @module $lib/stellar/sep12 */
+/**
+ * @module $lib/stellar/sep12
+ * @description A collection of functions to make it easier to work with SEP-12
+ * KYC servers. When required, our application can communicate this information
+ * directly to the KYC server on behalf of our users, without requiring any
+ * intervention from the user.
+ */
 
 /**
  * Sends a `GET` request to query KYC status for a customer, returns current status of KYC submission
+ * @async
+ * @function getSep12Fields
  * @param {Object} opts Options object
  * @param {string} opts.authToken JSON web token used to authenticate the user with the KYC server (obtained through SEP-10)
  * @param {string} opts.homeDomain Domain to query users's KYC status from
@@ -27,6 +35,8 @@ export async function getSep12Fields({ authToken, homeDomain }) {
 
 /**
  * Sends a `PUT` request to the KYC server, submitting the supplied fields for the customer's record.
+ * @async
+ * @function putSep12Fields
  * @param {Object} opts Options object
  * @param {string} opts.authToken JSON web token used to authenticate the user with the KYC server (obtained through SEP-10)
  * @param {Object} opts.fields Object containing key/value pairs of supported SEP-9 fields to submit to the KYC server
@@ -53,6 +63,8 @@ export async function putSep12Fields({ authToken, fields, homeDomain }) {
 
 /**
  * Sends a `DELETE` request to the KYC server to remove customer information from the server's records.
+ * @async
+ * @function deleteSep12Customer
  * @param {Object} opts Options object
  * @param {string} opts.authToken JSON web token used to authenticate the user with the KYC server (obtained through SEP-10)
  * @param {string} opts.publicKey Public Stellar address associated with the customer information to be deleted
