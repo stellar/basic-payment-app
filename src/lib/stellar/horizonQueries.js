@@ -137,7 +137,10 @@ export async function fetchAssetsWithHomeDomains(balances) {
  * @throws Will throw an error if there are no available payment paths.
  */
 export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinationPublicKey }) {
-    let asset = sourceAsset === 'native' ? Asset.native() : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
+    let asset =
+        sourceAsset === 'native'
+            ? Asset.native()
+            : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
     let response = await server
         .strictSendPaths(asset, sourceAmount.toString(), destinationPublicKey)
         .call()
@@ -162,7 +165,10 @@ export async function findStrictReceivePaths({
     destinationAsset,
     destinationAmount,
 }) {
-    let asset = destinationAsset === 'native' ? Asset.native() : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
+    let asset =
+        destinationAsset === 'native'
+            ? Asset.native()
+            : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
     let response = await server
         .strictReceivePaths(sourcePublicKey, asset, destinationAmount.toString())
         .call()

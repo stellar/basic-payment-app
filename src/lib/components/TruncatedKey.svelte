@@ -1,8 +1,15 @@
 <script>
+    /**
+     * The `TruncatedKey.svelte` component accepts a Stellar key (either public
+     * key or secret key) and returns a truncated version of it, designed to
+     * flexibly fit its parent container. It also includes a copy button to let
+     * the user easily copy/paste the value of `keyText`.
+     */
+
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
 
-    /** @param {string} keyText - Stellar `StrKey` to display in a truncated manner with a copy button */
+    /** @param {string} keyText Stellar `StrKey` to display in a truncated manner with a copy button */
     export let keyText = ''
 </script>
 

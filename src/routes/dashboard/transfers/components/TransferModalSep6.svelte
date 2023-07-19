@@ -29,8 +29,8 @@
 
     let sep12Fields = []
     let transferJson = {}
-    export let paymentXDR = ''
-    export let paymentNetwork = ''
+    // export let paymentXDR = ''
+    // export let paymentNetwork = ''
     export let submitPayment = async (opts) => {}
     let steps = ['Transfer Details', 'KYC Information', 'Submit Transfer', 'Confirmation']
     let currentActive = 1

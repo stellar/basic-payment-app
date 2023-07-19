@@ -103,8 +103,6 @@
         open(TransferModalSep6, {
             homeDomain: homeDomain,
             assetIssuer: assetIssuer,
-            paymentXDR: paymentXDR,
-            paymentNetwork: paymentNetwork,
             transferData: {
                 endpoint: endpoint,
             },

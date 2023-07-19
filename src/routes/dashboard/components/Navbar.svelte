@@ -21,7 +21,7 @@
                 </div>
             </button>
             <ul
-                class="menu-compact dropdown-content menu rounded-box mt-3 w-52 bg-base-100 p-2 shadow z-10"
+                class="menu-compact dropdown-content menu rounded-box z-10 mt-3 w-52 bg-base-100 p-2 shadow"
             >
                 <li>
                     <a href="/dashboard/settings/kyc" class="justify-between">

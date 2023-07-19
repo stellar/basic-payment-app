@@ -148,12 +148,26 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
  * @param {string} [opts.memo] Memo to add to the transaction
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createPathPaymentStrictSendTransaction({ source, sourceAsset, sourceAmount, destination, destinationAsset, destinationAmount, memo }) {
+export async function createPathPaymentStrictSendTransaction({
+    source,
+    sourceAsset,
+    sourceAmount,
+    destination,
+    destinationAsset,
+    destinationAmount,
+    memo,
+}) {
     let server = new Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
 
-    let sendAsset = sourceAsset === 'native' ? Asset.native() : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
-    let destAsset = destinationAsset === 'native' ? Asset.native() : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
+    let sendAsset =
+        sourceAsset === 'native'
+            ? Asset.native()
+            : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
+    let destAsset =
+        destinationAsset === 'native'
+            ? Asset.native()
+            : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
     /** @todo Figure out a good number to use for slippage. And why! */
     // we will calculate an acceptable 2% slippage here for... reasons?
     let destMin = ((98 * parseFloat(destinationAmount)) / 100).toFixed(7)
@@ -167,13 +181,15 @@ export async function createPathPaymentStrictSendTransaction({ source, sourceAss
         transaction.addMemo(Memo.text(memo))
     }
 
-    transaction.addOperation(Operation.pathPaymentStrictSend({
-        sendAsset: sendAsset,
-        sendAmount: sourceAmount.toString(),
-        destination: destination,
-        destAsset: destAsset,
-        destMin: destMin
-    }))
+    transaction.addOperation(
+        Operation.pathPaymentStrictSend({
+            sendAsset: sendAsset,
+            sendAmount: sourceAmount.toString(),
+            destination: destination,
+            destAsset: destAsset,
+            destMin: destMin,
+        })
+    )
 
     let builtTransaction = transaction.setTimeout(300).build()
     return {
@@ -194,15 +210,29 @@ export async function createPathPaymentStrictSendTransaction({ source, sourceAss
  * @param {string} opts.memo Memo to add to the transaction
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createPathPaymentStrictReceiveTransaction({ source, sourceAsset, sourceAmount, destination, destinationAsset, destinationAmount, memo }) {
+export async function createPathPaymentStrictReceiveTransaction({
+    source,
+    sourceAsset,
+    sourceAmount,
+    destination,
+    destinationAsset,
+    destinationAmount,
+    memo,
+}) {
     let server = new Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
 
-    let sendAsset = sourceAsset === 'native' ? Asset.native() : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
+    let sendAsset =
+        sourceAsset === 'native'
+            ? Asset.native()
+            : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
     /** @todo Figure out a good number to use for slippage. And why! */
     // we will calculate an acceptable 2% slippage here for... reasons?
     let sendMax = ((100 * parseFloat(sourceAmount)) / 98).toFixed(7)
-    let destAsset = destinationAsset === 'native' ? Asset.native() : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
+    let destAsset =
+        destinationAsset === 'native'
+            ? Asset.native()
+            : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
 
     let transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -213,13 +243,15 @@ export async function createPathPaymentStrictReceiveTransaction({ source, source
         transaction.addMemo(Memo.text(memo))
     }
 
-    transaction.addOperation(Operation.pathPaymentStrictReceive({
-        sendAsset: sendAsset,
-        sendMax: sendMax,
-        destination: destination,
-        destAsset: destAsset,
-        destAmount: destinationAmount,
-    }))
+    transaction.addOperation(
+        Operation.pathPaymentStrictReceive({
+            sendAsset: sendAsset,
+            sendMax: sendMax,
+            destination: destination,
+            destAsset: destAsset,
+            destAmount: destinationAmount,
+        })
+    )
 
     let builtTransaction = transaction.setTimeout(300).build()
     return {
