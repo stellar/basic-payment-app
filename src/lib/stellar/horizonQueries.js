@@ -11,7 +11,9 @@ const server = new Server(horizonUrl)
  * allows us to abstract and simplify some interactions so we don't have to have
  * _everything_ contained within our `*.svelte` files.
  */
+
 /**
+ * We'll import some type definitions that already exists within the `stellar-sdk` packagel, so our functions will know what to expect.
  * @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord
  * @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData
  * @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord
@@ -21,14 +23,13 @@ const server = new Server(horizonUrl)
  * @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord
  */
 
-
 /**
  * Fetches and returns details about an account on the Stellar network.
  * @async
  * @function fetchAccount
  * @param {string} publicKey Public Stellar address to query information about
  * @returns {Promise<AccountRecord>} Object containing whether or not the account is funded, and (if it is) account details
- * @throws {error} Will throw an error if the account is not funded on the Stellar network.
+ * @throws {error} Will throw an error if the account is not funded on the Stellar network, or if an invalid public key was provided.
  */
 export async function fetchAccount(publicKey) {
     if (StrKey.isValidEd25519PublicKey(publicKey)) {
