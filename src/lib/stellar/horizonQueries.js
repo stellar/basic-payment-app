@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit'
-import { Server, TransactionBuilder, Networks, StrKey, Asset, Horizon, Transaction, ServerApi } from 'stellar-sdk'
+import { Server, TransactionBuilder, Networks, StrKey, Asset } from 'stellar-sdk'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org'
 const server = new Server(horizonUrl)
@@ -14,21 +14,20 @@ const server = new Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `stellar-sdk` packagel, so our functions will know what to expect.
-// /** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
-// /** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
-// /** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
-// /** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
-// /** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
-// /** @typedef {import('stellar-sdk').Transaction} Transaction */
-// /** @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
-// /** @typedef {ServerApi.AccountRecord} AccountRecord */
+/** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
+/** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
+/** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
+/** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
+/** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
+/** @typedef {import('stellar-sdk').Transaction} Transaction */
+/** @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
 
 /**
  * Fetches and returns details about an account on the Stellar network.
  * @async
  * @function fetchAccount
  * @param {string} publicKey Public Stellar address to query information about
- * @returns {Promise<ServerApi.AccountRecord>} Object containing whether or not the account is funded, and (if it is) account details
+ * @returns {Promise<AccountRecord>} Object containing whether or not the account is funded, and (if it is) account details
  * @throws {error} Will throw an error if the account is not funded on the Stellar network, or if an invalid public key was provided.
  */
 export async function fetchAccount(publicKey) {
@@ -55,7 +54,7 @@ export async function fetchAccount(publicKey) {
  * @async
  * @function fetchAccountBalances
  * @param {string} publicKey Public Stellar address holding balances to query
- * @returns {Promise<Horizon.BalanceLine[]>} Array containing balance information for each asset the account holds
+ * @returns {Promise<BalanceLine[]>} Array containing balance information for each asset the account holds
  */
 export async function fetchAccountBalances(publicKey) {
     const { balances } = await fetchAccount(publicKey)
@@ -68,7 +67,7 @@ export async function fetchAccountBalances(publicKey) {
  * @function fetchRecentPayments
  * @param {string} publicKey Public Stellar address to query recent payment operations to/from
  * @param {number} limit Number of operations to request from the server
- * @returns {Promise<ServerApi.PaymentOperationRecord[]>} Array containing details for each recent payment
+ * @returns {Promise<PaymentOperationRecord[]>} Array containing details for each recent payment
  */
 export async function fetchRecentPayments(publicKey, limit = 10) {
     const { records } = await server
@@ -127,7 +126,7 @@ export async function submit(transaction) {
 
 /**
  * @typedef {Object|undefined} HomeDomainBalanceLine
- * @extends {Horizon.BalanceLineAsset}
+ * @extends {BalanceLineAsset}
  * @property {string} [home_domain] Domain name the issuer of this asset has set for their account on the Stellar network.
  */
 
@@ -135,7 +134,7 @@ export async function submit(transaction) {
  * Fetches `home_domain` from asset issuer accounts on the Stellar network and returns an array of balances.
  * @async
  * @function fetchAssetsWithHomeDomains
- * @param {Horizon.BalanceLine[]} balances Array of balances to query issuer accounts of
+ * @param {BalanceLine[]} balances Array of balances to query issuer accounts of
  * @returns {Promise<HomeDomainBalanceLine[]>} Array of balance details for assets that do have a `home_domain` setting
  */
 export async function fetchAssetsWithHomeDomains(balances) {
@@ -168,7 +167,7 @@ export async function fetchAssetsWithHomeDomains(balances) {
  * @param {string} opts.sourceAsset Stellar asset which will be sent from the source account
  * @param {string|number} opts.sourceAmount Amount of the Stellar asset that should be debited from the srouce account
  * @param {string} opts.destinationPublicKey Public Stellar address that will receive the destination asset
- * @returns {Promise<ServerApi.PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
+ * @returns {Promise<PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
  * @throws Will throw an error if there are no available payment paths.
  */
 export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinationPublicKey }) {
@@ -194,7 +193,7 @@ export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinati
  * @param {string} opts.sourcePublicKey Public Stellar address that will be the source of the payment operation
  * @param {string} opts.destinationAsset Stellar asset which should be received in the destination account
  * @param {string|number} opts.destinationAmount Amount of the Stellar asset that should be credited to the destination account
- * @returns {Promise<ServerApi.PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
+ * @returns {Promise<PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
  * @throws Will throw an error if there are no available payment paths.
  */
 export async function findStrictReceivePaths({

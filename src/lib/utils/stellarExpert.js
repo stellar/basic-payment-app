@@ -2,7 +2,7 @@ const network = 'testnet'
 const baseUrl = `https://api.stellar.expert/explorer/${network}`
 
 /**
- * An asset object that has been returned by our query to Stellar.Expert [More information at SE's openapi spec](https://stellar.expert/openapi.html#tag/Asset-Info-API/operation/getAllAssets)
+ * An asset object that has been returned by our query to Stellar.Expert
  * @typedef {Object} RankedAsset
  * @property {string} asset Asset identifier
  * @property {number} traded_amount Total traded amount (in stroops)
@@ -16,12 +16,14 @@ const baseUrl = `https://api.stellar.expert/explorer/${network}`
  * @property {Object} tomlInfo Asset information from stellar.toml file
  * @property {Object} rating Composite asset rating
  * @property {number} paging_token Paging token
- *
+ * @see {@link https://stellar.expert/openapi.html#tag/Asset-Info-API/operation/getAllAssets|StellarExpert}
  */
 
 /**
  * Fetches and returns the most highly rated assets, according to the Stellar.Expert calculations.
- * @returns {Promise<RankedAsset[]>} - An array of objects containing details for each asset
+ * @async
+ * @function fetchAssets
+ * @returns {Promise<RankedAsset[]>} Array of objects containing details for each asset
  */
 export async function fetchAssets() {
     let res = await fetch(
@@ -36,6 +38,7 @@ export async function fetchAssets() {
     )
 
     let json = await res.json()
-    console.log('$lib/utils/stellarExpert fetchAssets', json._embedded.records)
-    return json._embedded.records
+    let records = json._embedded.records
+    console.log('here are the records', records)
+    return records
 }
