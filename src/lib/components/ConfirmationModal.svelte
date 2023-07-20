@@ -17,15 +17,81 @@
      * @summary A component that will allow the user to confirm, with their pincode, that they approve an action taking place.
      */
 
+    // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
-    import ErrorAlert from './ErrorAlert.svelte'
-    import { confirmCorrectPincode, walletStore } from '$lib/stores/walletStore'
     import { errorMessage } from '$lib/stores/alertsStore'
-    import { getContext } from 'svelte'
+    import ErrorAlert from './ErrorAlert.svelte'
+
+    // We will use the `confirmCorrectPincode` function to ensure the user knows
+    // the encryption password to the keypair before we attempt to sign anything
+    import { confirmCorrectPincode } from '$lib/stores/walletStore'
+
+    // We need a couple things from the stellar-sdk to reconstruct the
+    // Transaction object from the XDR string, when the time comes
     import { Networks, TransactionBuilder } from 'stellar-sdk'
+
+    // A Svelte "context" is used to control when to `open` and `close` a given
+    // modal from within other components
+    import { getContext } from 'svelte'
     const { close } = getContext('simple-modal')
 
+    // `onConfirm` is a dummy function that will be overridden from the
+    // component that launches the modal
+    export let onConfirm = async () => {}
+    // `_onConfirm` is actually run when the user clicks the modal's "confirm"
+    // button, and calls (in-turn) the supplied `onConfirm` function
+    const _onConfirm = async () => {
+        // We set an `isWaiting` variable to track whether or not the confirm
+        // function is still running
+        isWaiting = true
+
+        try {
+            // We make sure the user has supplied the correct pincode
+            await confirmCorrectPincode({
+                pincode: pincode,
+                firstPincode: firstPincode,
+                signup: firstPincode ? true : false,
+            })
+
+            // We call the `onConfirm` function that was given to the modal by
+            // the outside component. This method allows each page that needs to
+            // display a modal to independantly customize the behavior that
+            // should take place when the pincode is confirmed. (i.e., submit
+            // the transaction to the network, login to the app, etc.)
+            // @ts-ignore
+            await onConfirm(pincode)
+
+            // Now we can close the modal window
+            close()
+        } catch (err) {
+            // If there was an error, we set our `errorMessage` alert
+            errorMessage.set(err.body.message)
+        }
+        isWaiting = false
+    }
+
+    // Just like above, `onReject` is a dummy function that will be overridden
+    // from the component that launches the modal
+    export let onReject = () => {}
+    // Just like above, `_onReject` is actually run when the user clicks the
+    // modal's "reject" button, and calls (if provided) the supplied `onReject`
+    // function
+    const _onReject = () => {
+        // We call the `onReject` function that was given to the modal by the
+        // outside component. This allows each page that needs to display a
+        // modal to independently customize the behavior that should take place
+        // when the pincode is rejected
+        onReject()
+        close()
+    }
+
+    // You can think of this `export let variableName = 'something'` syntax as
+    // Svelte's way of exposing props of a component. Each of the variables here
+    // are available to set (and bind to) by outside components when they are
+    // launching this modal. We are using this here to provide some default
+    // variables for our modal which can be modified to suit the launching
+    // component's needs.
     export let title = 'Transaction Preview'
     export let body =
         'Please confirm the transaction below in order to sign and submit it to the network.'
@@ -34,36 +100,23 @@
     export let hasPincodeForm = true
     export let transactionXDR = ''
     export let transactionNetwork = ''
+    // The `firstPincode` is only used during the signup process
+    export let firstPincode = ''
+
+    // All variable assignment declarations are automatically reactive. If
+    // `isWaiting = true` is executed elsewhere in the code, any dependent
+    // components would be updated accordingly.
+    let isWaiting = false
+    let pincode = ''
+
+    // The `$: variableName` syntax marks the output of some **expression** (as
+    // opposed to an assignment) as _reactive_. In this case, every time
+    // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
+    // recomputed and any dependent components would be updated accordingly.
+    /** @type {import('stellar-sdk').Transaction}*/
     $: transaction = transactionXDR
         ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
         : null
-    export let firstPincode = ''
-
-    export let onConfirm = async (pincode) => {}
-    const _onConfirm = async () => {
-        isWaiting = true
-        try {
-            await confirmCorrectPincode({
-                pincode: pincode,
-                firstPincode: firstPincode,
-                signup: firstPincode ? true : false,
-            })
-            await onConfirm(pincode)
-            close()
-        } catch (err) {
-            errorMessage.set(err.body.message)
-        }
-        isWaiting = false
-    }
-
-    export let onReject = () => {}
-    const _onReject = () => {
-        onReject()
-        close()
-    }
-
-    let isWaiting = false
-    let pincode = ''
 </script>
 
 <div class="prose p-3">
@@ -124,7 +177,10 @@
         </div>
     {/if}
 
+    <!-- ErrorAlert will be displayed whenever the errorMessage is truthy -->
     <ErrorAlert />
+
+    <!-- Display the pincode form: the input element, and the "confirm" and "reject" buttons -->
     {#if hasPincodeForm}
         <form>
             <div class="form-control">

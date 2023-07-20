@@ -36,7 +36,7 @@ function createContactsStore() {
          * Removes the specified contact entry from the list.
          * @param {string} id Unique identifier of the contact to be removed from the list
          */
-        remove: (id) => update(list => list.filter((contact) => contact['id'] !== id)),
+        remove: (id) => update((list) => list.filter((contact) => contact['id'] !== id)),
 
         /**
          * Adds a new contact entry to the list with the provided details.
@@ -45,7 +45,7 @@ function createContactsStore() {
          * @throws Will throw an error if the new contact entry contains an invalid public key in the `address` field
          */
         add: (contact) =>
-            update(list => {
+            update((list) => {
                 if (StrKey.isValidEd25519PublicKey(contact.address)) {
                     return [...list, { id: uuidv4(), ...contact }]
                 } else {
