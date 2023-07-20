@@ -1,7 +1,10 @@
 <script>
-    /** @type {import('./$types').PageData} */
-    export let data
-    console.log('routes/dashboard/settings/kyc/+page.svelte data', data)
+    /**
+     * @description The `/dashboard/settings/kyc` allows the user to view and
+     * modify the locally saved KYC information they have submitted through
+     * various SEP-6 anchors. Changes made here will be submitted to the KYC
+     * server the next time a SEP-6 transfer is initiated.
+     */
 
     import { kycStore } from '$lib/stores/kycStore'
     console.log('kycStore', $kycStore)
@@ -9,8 +12,9 @@
 
 <h1>KYC Information</h1>
 <p>
-    Here is all the KYC Information we have saved, as you've initiated transfers with various anchor
-    servers. Changing it here will allow us to update the anchors during your next transfer.
+    The `/dashboard/settings/kyc` allows the user to view and modify the locally saved KYC
+    information they have submitted through various SEP-6 anchors. Changes made here will be
+    submitted to the KYC server the next time a SEP-6 transfer is initiated.
 </p>
 <p><small>(Changes are automatically saved.)</small></p>
 {#each Object.keys($kycStore) as key}

@@ -41,6 +41,6 @@
 
 <style lang="postcss">
     .tooltip:before {
-        @apply max-w-min
+        @apply max-w-min;
     }
 </style>

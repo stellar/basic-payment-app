@@ -2,6 +2,7 @@ import { persisted } from 'svelte-local-storage-store'
 
 // These fields are derived from the Standard KYC Fields outlined in SEP-9
 // https://stellar.org/protocol/sep-9
+/** @type {import('svelte/store').Writable<Object.<string, string>>} */
 export const kycStore = persisted('bpa:kycStore', {
     last_name: '',
     first_name: '',

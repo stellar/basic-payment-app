@@ -36,10 +36,13 @@ export async function fetchAccount(publicKey) {
             let account = await server.accounts().accountId(publicKey).call()
             return account
         } catch (err) {
+            // @ts-ignore
             if (err.response?.status === 404) {
                 throw error(404, 'account not funded on network')
             } else {
+                // @ts-ignore
                 throw error(err.response?.status ?? 400, {
+                    // @ts-ignore
                     message: `${err.response?.title} - ${err.response?.detail}`,
                 })
             }
@@ -119,6 +122,7 @@ export async function submit(transaction) {
         await server.submitTransaction(transaction)
     } catch (err) {
         throw error(400, {
+            // @ts-ignore
             message: `${err.response?.title} - ${err.response?.data.extras.result_codes}`,
         })
     }

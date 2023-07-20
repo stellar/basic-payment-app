@@ -1,62 +1,97 @@
 <script>
+    /**
+     * @description The `/dashboard/assets` page will allow the user to manage
+     * the Stellar assets their account carries trustlines to. On this page,
+     * they can select from several pre-suggested or highly ranked assets, or
+     * they could specify their own asset to trust using an asset code and
+     * issuer public key. They can also remove trustlines that already exist on
+     * their account.
+     */
+
+    // `export let data` allows us to pull in any parent load data for use here.
     /** @type {import('./$types').PageData} */
     export let data
-    console.log('routes/dashboard/assets/+page.svelte data', data)
+    let balances = data.balances ?? []
 
-    import { fetchAssets } from '$lib/utils/stellarExpert'
-    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
-    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    // We import things from external packages that will be needed
     import { Trash2Icon } from 'svelte-feather-icons'
 
-    import { createChangeTrustTransaction } from '$lib/stellar/transactions'
-    import { getContext } from 'svelte'
+    // We import any Svelte components we will need
+    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+
+    // We import any stores we will need to read and/or write
     import { walletStore } from '$lib/stores/walletStore'
+
+    // We import some of our `$lib` functions
+    import { createChangeTrustTransaction } from '$lib/stellar/transactions'
     import { submit } from '$lib/stellar/horizonQueries'
+    import { fetchAssets } from '$lib/utils/stellarExpert'
+
+    // The `open` Svelte context is used to open the confirmation modal
+    import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
     let addAsset = ''
     let customAssetCode = ''
     let customAssetIssuer = ''
-    let asset = ''
-    $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
     let changeTrustXDR = ''
     let changeTrustNetwork = ''
+    $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
 
-    /** @param {string} pincode Pincode that was confirmed by the modal window */
+    /**
+     * Takes an action after the pincode has been confirmed by the user.
+     * @async
+     * @function onConfirm
+     * @param {string} pincode Pincode that was confirmed by the modal window
+     */
     const onConfirm = async (pincode) => {
+        // Use the walletStore to sign the transaction
         let signedTransaction = await walletStore.sign({
             transactionXDR: changeTrustXDR,
             network: changeTrustNetwork,
             pincode: pincode,
         })
+        // Submit the transaction to the Stellar network
         await submit(signedTransaction)
     }
 
-    const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = null) => {
-        let txOpts = {}
-        txOpts.source = data.publicKey
-        txOpts.asset = removeAsset ?? asset
-
-        if (!addingAsset) {
-            txOpts.limit = '0'
-        }
-
+    /**
+     * Builds and presents to the user for confirmation a Stellar transaction that will add/modify/remove a trustline on their account.
+     * @param {boolean} addingAsset True we are adding an asset with the default limit, or false if removing an asset
+     * @param {string|undefined} removeAsset Asset trustline to be removed (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
+     */
+    const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = undefined) => {
+        // Generate the transaction, expecting back the XDR string
         let { transaction, network_passphrase } = await createChangeTrustTransaction({
-            ...txOpts,
+            // @ts-ignore
+            source: data.publicKey,
+            asset: removeAsset ?? asset,
+            limit: addingAsset ? undefined : '0',
         })
 
+        // Set the component variables to hold the the transaction details
         changeTrustXDR = transaction
         changeTrustNetwork = network_passphrase
 
+        // Open the confirmation modal for the user to confirm or reject the
+        // transaction. We provide our customized `onConfirm` function, but we
+        // have no need to customize and pass an `onReject` function.
         open(ConfirmationModal, {
-            transactionXDR: transaction,
-            transactionNetwork: network_passphrase,
+            transactionXDR: changeTrustXDR,
+            transactionNetwork: changeTrustNetwork,
             onConfirm: onConfirm,
         })
     }
 </script>
 
 <h1>Assets</h1>
+<p>
+    The <code>/dashboard/assets</code> page will allow the user to manage the Stellar assets their account
+    carries trustlines to. On this page, they can select from several pre-suggested or highly ranked
+    assets, or they could specify their own asset to trust using an asset code and issuer public key.
+    They can also remove trustlines that already exist on their account.
+</p>
 
 <h2>Add Trusted Assets</h2>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
@@ -102,12 +137,12 @@
         />
     </div>
 {/if}
-<button class="btn-primary btn-block btn my-2" on:click={previewChangeTrustTransaction}
+<button class="btn-primary btn-block btn my-2" on:click={() => previewChangeTrustTransaction()}
     >Add Asset</button
 >
 
 <h2>Existing Balances</h2>
-<p>View, edit, or remove asset trustlines on your Stellar account.</p>
+<p>View or remove asset trustlines on your Stellar account.</p>
 
 <div class="flex items-center">
     <table class="table table-auto">
@@ -120,7 +155,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each data.balances as balance}
+            {#each balances as balance}
                 <tr>
                     <th>
                         {#if 'asset_code' in balance}
@@ -133,18 +168,15 @@
                     <td>
                         {#if 'asset_issuer' in balance}
                             <TruncatedKey keyText={balance.asset_issuer} />
-                        {:else}
-                            n/a
                         {/if}
                     </td>
                     <td>
-                        {#if balance.asset_type !== 'native'}
+                        {#if 'asset_code' in balance}
+                            {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                             <button
                                 class="btn-error btn-square btn-sm btn"
-                                on:click={previewChangeTrustTransaction(
-                                    false,
-                                    `${balance.asset_code}:${balance.asset_issuer}`
-                                )}><Trash2Icon size="16" /></button
+                                on:click={() => previewChangeTrustTransaction(false, assetString)}
+                                ><Trash2Icon size="16" /></button
                             >
                         {/if}
                     </td>

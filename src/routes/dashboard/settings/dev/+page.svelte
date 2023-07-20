@@ -1,15 +1,29 @@
 <script>
-    /** @type {import('./$types').PageData} */
-    export let data
-    console.log('dashboard/dev/+page.svelte data', data)
+    /**
+     * @description The `/dashboard/settings/dev` page will allow developer to
+     * quickly get their "profile" into a useable state for experimenting with
+     * BasicPay and with the testnet. Utilities are available to access their
+     * Stellar public/secret keys, populate the contacts list (optionally
+     * funding the accounts and adding various trustlines to them), empty the
+     * contacts list, receive more testnet funding from friendbot, and
+     * completely erase all the `localStorage` we have for BasicPay and start
+     * fresh.
+     */
 
-    import { addContacts } from '$lib/utils/devHelpers'
-    import { contacts } from '$lib/stores/contactsStore'
-    import { getContext } from 'svelte'
-    const { open } = getContext('simple-modal')
+    // We import any Svelte components we will need
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+
+    // We import any stores we will need to read and/or write
     import { walletStore } from '$lib/stores/walletStore'
+
+    // We import some of our `$lib` functions
+    import { addContacts, mergeFriendbotAccount } from '$lib/utils/devHelpers'
+    import { contacts } from '$lib/stores/contactsStore'
+
+    // The `open` Svelte context is used to open the confirmation modal
+    import { getContext } from 'svelte'
+    const { open } = getContext('simple-modal')
 
     let addContactsOpts = {
         numContacts: 1,
@@ -17,13 +31,20 @@
         addTrustlines: false,
     }
 
-    function makeTheModal() {
+    function displayModal() {
         open(ConfirmationModal)
     }
 </script>
 
 <h1>Dev Helpers</h1>
-<p>Some useful tools to help flesh out some features of BasicPay as you get used to it.</p>
+<p>
+    The `/dashboard/settings/dev` page will allow developer to quickly get their "profile" into a
+    useable state for experimenting with BasicPay and with the testnet. Utilities are available to
+    access their Stellar public/secret keys, populate the contacts list (optionally funding the
+    accounts and adding various trustlines to them), empty the contacts list, receive more testnet
+    funding from friendbot, and completely erase all the `localStorage` we have for BasicPay and
+    start fresh.
+</p>
 
 <h2>Keypair Information</h2>
 <p>
@@ -35,10 +56,12 @@
     <dd>
         <TruncatedKey keyText={$walletStore.publicKey} />
     </dd>
-    <dt><strong>Secret Key</strong></dt>
-    <dd>
-        <TruncatedKey keyText={$walletStore.devInfo.secretKey} />
-    </dd>
+    {#if $walletStore.devInfo}
+        <dt><strong>Secret Key</strong></dt>
+        <dd>
+            <TruncatedKey keyText={$walletStore.devInfo.secretKey} />
+        </dd>
+    {/if}
 </dl>
 
 <h2>Make Friends</h2>
@@ -47,20 +70,26 @@
     <div>
         <div>
             <input
+                id="numContacts"
+                name="numContacts"
                 class="input-bordered input join-item"
                 type="number"
-                placeholder="numContacts"
+                placeholder="Number of contacts to add"
                 bind:value={addContactsOpts.numContacts}
             />
         </div>
     </div>
     <input
+        id="fundContacts"
+        name="fundContacts"
         class="btn-outline join-item btn"
         type="checkbox"
         aria-label="Fund New Contacts"
         bind:checked={addContactsOpts.fundContacts}
     />
     <input
+        id="addContactTrustlines"
+        name="addContactTrustlines"
         class="btn-outline join-item btn"
         type="checkbox"
         aria-label="Add Trustlines"
@@ -79,23 +108,13 @@
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
-<button class="btn-success btn">I need a friend!</button>
+<button class="btn-success btn" on:click={() => mergeFriendbotAccount($walletStore.publicKey)}
+    >I need a friend!</button
+>
 
 <h2>Launch Modal Rocket</h2>
 <p>Test the modal thing to see what comes up... I guess?</p>
-<button class="btn-primary btn" on:click={makeTheModal}>svelte-simple-modal</button>
-<!-- Open the modal using ID.showModal() method -->
-<button class="btn-accent btn" onclick="my_modal_5.showModal()">daisyui modal</button>
-<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-    <form method="dialog" class="modal-box">
-        <h3 class="text-lg font-bold">Hello!</h3>
-        <p class="py-4">Press ESC key or click the button below to close</p>
-        <div class="modal-action">
-            <!-- if there is a button in form, it will close the modal -->
-            <button class="btn">Close</button>
-        </div>
-    </form>
-</dialog>
+<button class="btn-primary btn" on:click={displayModal}>svelte-simple-modal</button>
 
 <h2>Throw it On the Ground!</h2>
 <p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>

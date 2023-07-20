@@ -67,6 +67,7 @@
             close()
         } catch (err) {
             // If there was an error, we set our `errorMessage` alert
+            // @ts-ignore
             errorMessage.set(err.body.message)
         }
         isWaiting = false
@@ -115,6 +116,7 @@
     // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
     // recomputed and any dependent components would be updated accordingly.
     /** @type {import('stellar-sdk').Transaction}*/
+    // @ts-ignore
     $: transaction = transactionXDR
         ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
         : null
@@ -136,9 +138,9 @@
                 Memo ({transaction.memo.type}):
                 <code
                     >{transaction.memo.type === 'text'
-                        ? transaction.memo.value.toString('utf-8')
+                        ? transaction.memo?.value?.toString('utf-8')
                         : transaction.memo.type === 'hash'
-                        ? transaction.memo.value.toString('base64')
+                        ? transaction.memo?.value?.toString('base64')
                         : transaction.memo.value}</code
                 >
             </p>

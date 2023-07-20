@@ -1,19 +1,36 @@
 <script>
-    // /** @type {import('./$types').PageData} */
-    // export let data;
-    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
-    import { contacts } from '$lib/stores/contactsStore'
+    /**
+     * @description The `/dashboard/contacts` page will allow the user to
+     * collect and manage a list of contact entries that stores the contact's
+     * name and Stellar address. The contact can also be flagged/unflagged as a
+     * "favorite" contact to be displayed on the main `/dashboard` page.
+     */
+
+    // We import things from external packages that will be needed
     import { Trash2Icon, UserPlusIcon } from 'svelte-feather-icons'
 
+    // We import any Svelte components we will need
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+
+    // We import any stores we will need to read and/or write
+    import { contacts } from '$lib/stores/contactsStore'
+
+    // We declare a _reactive_ variable that will hold information for a
+    // user-created contact entry, which can be added to the contacts store.
     $: newContact = {
         name: '',
         address: '',
         favorite: false,
+        id: '',
     }
 </script>
 
 <h1>Contacts</h1>
-<p>We'll manage our contacts here</p>
+<p>
+    The `/dashboard/contacts` page will allow the user to collect and manage a list of contact
+    entries that stores the contact's name and Stellar address. The contact can also be
+    flagged/unflagged as a "favorite" contact to be displayed on the main `/dashboard` page.
+</p>
 
 <h3>All contacts</h3>
 
@@ -30,9 +47,11 @@
         <tr>
             <th class="text-center">
                 <input
+                    bind:checked={newContact.favorite}
+                    id="favorite"
+                    name="favorite"
                     type="checkbox"
                     class="checkbox-accent checkbox checkbox-sm"
-                    bind:checked={newContact.favorite}
                 />
             </th>
             <td>

@@ -4,8 +4,17 @@ import { persisted } from 'svelte-local-storage-store'
 import { KeyManager, KeyManagerPlugins, KeyType } from '@stellar/wallet-sdk'
 import { Transaction, TransactionBuilder } from 'stellar-sdk'
 
+/**
+ * @typedef {Object} WalletStore
+ * @property {string} keyId ID used to uniquely identify which encrypted keypair to use from the browser's localStorage
+ * @property {string} publicKey Public Stellar address derived from the encrypted keypair
+ * @property {Object} [devInfo] Helpful information for developer environments (Should not be used in production)
+ * @property {string} [devInfo.secretKey] Secret Stellar key derived from the encrypted keypair
+ */
+
 function createWalletStore() {
-    const { subscribe, set, update } = persisted('bpa:walletStore', {})
+    /** @type {import('svelte/store').Writable<WalletStore>} */
+    const { subscribe, set, update } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
 
     return {
         subscribe,
@@ -36,14 +45,16 @@ function createWalletStore() {
                 set({
                     keyId: keyMetadata.id,
                     publicKey: publicKey,
-                    // don't include this in a real-life production application.
-                    // it's just here to make the secret key accessible in case we need to do some manual transactions or something.
+                    // Don't include this in a real-life production application.
+                    // It's just here to make the secret key accessible in case
+                    // we need to do some manual transactions or something.
                     devInfo: {
                         secretKey: secretKey,
                     },
                 })
             } catch (err) {
-                console.error('Error saving key', err.toString())
+                console.error('Error saving key', err)
+                // @ts-ignore
                 throw error(400, { message: err.toString() })
             }
         },
@@ -61,6 +72,7 @@ function createWalletStore() {
             try {
                 const keyManager = setupKeyManager()
                 let signedTransaction = await keyManager.signTransaction({
+                    // @ts-ignore
                     transaction: TransactionBuilder.fromXDR(transactionXDR, network),
                     id: get(walletStore).keyId,
                     password: pincode,
@@ -68,7 +80,8 @@ function createWalletStore() {
                 return signedTransaction
             } catch (err) {
                 console.error('Error signing transaction', err)
-                throw error(400, err)
+                // @ts-ignore
+                throw error(400, { message: err.toString() })
             }
         },
     }
@@ -88,7 +101,7 @@ export const confirmCorrectPincode = async ({ pincode, firstPincode = '', signup
     if (!signup) {
         try {
             const keyManager = setupKeyManager()
-            let keyId = get(walletStore).keyId
+            let { keyId } = get(walletStore)
             await keyManager.loadKey(keyId, pincode)
         } catch (err) {
             throw error(400, { message: 'invalid pincode' })
@@ -101,7 +114,6 @@ export const confirmCorrectPincode = async ({ pincode, firstPincode = '', signup
 }
 
 /**
- *
  * @returns {KeyManager} A configured `keyManager` for use as a wallet
  */
 const setupKeyManager = () => {

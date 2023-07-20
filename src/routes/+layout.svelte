@@ -1,13 +1,15 @@
 <script>
     import '../app.postcss'
 
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import Modal from 'svelte-simple-modal'
     import { writable } from 'svelte/store'
+
+    import { errorMessage } from '$lib/stores/alertsStore'
     import ModalCloseButton from '$lib/components/ModalCloseButton.svelte'
+
+    import Modal from 'svelte-simple-modal'
     const modal = writable(null)
 
-    /** @param {Event} err */
+    // @ts-ignore
     const handleError = (err) => {
         if (err.message !== 'ResizeObserver loop limit exceeded') {
             console.log('here is the handleError err', err)

@@ -1,7 +1,13 @@
 import { persisted } from 'svelte-local-storage-store'
 import { Buffer } from 'buffer'
 
+/**
+ * @typedef {Object.<string, string>} WebAuthStore
+ * @property {string} homeDomain Home domain the authentication token was issued by.
+ */
+
 function createWebAuthStore() {
+    /** @type {import('svelte/store').Writable<WebAuthStore>} */
     const { subscribe, set, update } = persisted('bpa:webAuthStore', {})
 
     return {

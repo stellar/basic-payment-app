@@ -21,7 +21,7 @@
     export const handleStep = (stepIncrement) => {
         stepMarkers = document.querySelectorAll('.step')
         console.log('here are the `stepMarkers`', stepMarkers)
-        console.log('and here is the `typeof(stepMarkers[0])`', typeof(stepMarkers[0]))
+        console.log('and here is the `typeof(stepMarkers[0])`', typeof stepMarkers[0])
         if (stepIncrement == 1) {
             currentActive++
 

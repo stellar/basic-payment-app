@@ -51,6 +51,7 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
             name: user.firstName,
             address: kp.publicKey(),
             favorite: user.id % 2 === 0,
+            id: '',
         })
 
         // If the user has selected to fund the new contact accounts, send a
@@ -100,5 +101,30 @@ async function addContactTrustlines(keypair, assets) {
     // Build, sign, and submit the transaction to the network
     let builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(keypair)
+    await submit(builtTransaction)
+}
+
+/**
+ * Fund a random keypair using Friendbot, and merge that new account into the provided public key's account.
+ * @async
+ * @function mergeFriendbotAccount
+ * @param {string} publicKey Public Stellar address that should have the freshly funded account merged into it
+ */
+export async function mergeFriendbotAccount(publicKey) {
+    let kp = Keypair.random()
+    await fundWithFriendbot(kp.publicKey())
+
+    let transaction = await startTransaction(kp.publicKey())
+    transaction
+        .addOperation(
+            Operation.accountMerge({
+                destination: publicKey,
+            })
+        )
+        .setTimeout(30)
+        .build()
+
+    let builtTransaction = transaction.setTimeout(30).build()
+    builtTransaction.sign(kp)
     await submit(builtTransaction)
 }

@@ -20,10 +20,11 @@ import { get } from 'svelte/store'
  * @property {boolean} favorite Whether or not the contact is marked as a "favorite"
  * @property {string} address Public Stellar address associated with this contact
  * @property {string} name Human-readable name to identify this contact with
- * @property {string} [id] Unique identifier for this contact entry
+ * @property {string} id Unique identifier for this contact entry
  */
 
 function createContactsStore() {
+    /** @type {import('svelte/store').Writable<ContactEntry[]>} */
     const { subscribe, set, update } = persisted('bpa:contactList', [])
 
     return {
@@ -38,7 +39,7 @@ function createContactsStore() {
          * Removes the specified contact entry from the list.
          * @param {string} id Unique identifier of the contact to be removed from the list
          */
-        remove: (id) => update((list) => list.filter((contact) => contact['id'] !== id)),
+        remove: (id) => update((list) => list.filter((contact) => contact.id !== id)),
 
         /**
          * Adds a new contact entry to the list with the provided details.
@@ -49,7 +50,7 @@ function createContactsStore() {
         add: (contact) =>
             update((list) => {
                 if (StrKey.isValidEd25519PublicKey(contact.address)) {
-                    return [...list, { id: uuidv4(), ...contact }]
+                    return [...list, { ...contact, id: uuidv4() }]
                 } else {
                     throw error(400, { message: 'invalid public key' })
                 }
@@ -61,9 +62,9 @@ function createContactsStore() {
          */
         favorite: (id) =>
             update((list) => {
-                const i = list.findIndex((contact) => contact['id'] === id)
+                const i = list.findIndex((contact) => contact.id === id)
                 if (i >= 0) {
-                    list[i]['favorite'] = !list[i]['favorite']
+                    list[i].favorite = !list[i].favorite
                 }
                 return list
             }),
@@ -74,7 +75,6 @@ function createContactsStore() {
          * @returns {string|false} Returns the `name` field of the found contact entry, false if there is none
          */
         lookup: (address) => {
-            /** @type {ContactEntry[]} */
             let list = get(contacts)
             let i = list.findIndex((contact) => contact.address === address)
             if (i >= 0) {
@@ -82,7 +82,7 @@ function createContactsStore() {
             } else {
                 return false
             }
-        }
+        },
     }
 }
 
