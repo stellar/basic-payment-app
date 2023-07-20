@@ -83,7 +83,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each allTransfers as transfer, i (transfer.id)}
+            {#each allTransfers as transfer (transfer.id)}
                 <tr>
                     <th>{transfer.amount_in}</th>
                     <td>{transfer.asset_code}</td>

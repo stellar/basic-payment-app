@@ -1,8 +1,4 @@
 <script>
-    /** @type {import('./$types').PageData} */
-    export let data
-    console.log('routes/signup/+page.svelte data', data)
-
     import { Keypair } from 'stellar-sdk'
     import { browser } from '$app/environment'
     import { goto } from '$app/navigation'
@@ -12,7 +8,6 @@
     import { walletStore } from '$lib/stores/walletStore'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
     const { open } = getContext('simple-modal')
-    let pincodeConfirmed
 
     let keypair = Keypair.random()
     let publicKey = ''

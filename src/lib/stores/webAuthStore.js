@@ -8,7 +8,7 @@ import { Buffer } from 'buffer'
 
 function createWebAuthStore() {
     /** @type {import('svelte/store').Writable<WebAuthStore>} */
-    const { subscribe, set, update } = persisted('bpa:webAuthStore', {})
+    const { subscribe, update } = persisted('bpa:webAuthStore', {})
 
     return {
         subscribe,

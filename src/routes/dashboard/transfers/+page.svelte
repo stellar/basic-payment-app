@@ -166,7 +166,8 @@
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
     const launchTransferWindowSep24 = async ({ homeDomain, assetCode, assetIssuer, endpoint }) => {
-        let { id, type, url } = await initiateTransfer24({
+        // @ts-ignore
+        let { url } = await initiateTransfer24({
             authToken: $webAuthStore[homeDomain],
             endpoint: endpoint,
             homeDomain: homeDomain,

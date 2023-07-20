@@ -1,12 +1,6 @@
 <script>
-    import { page } from '$app/stores'
-    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import { initiateTransfer6, getTransferStatus6 } from '$lib/stellar/sep6'
-    import { createPaymentTransaction } from '$lib/stellar/transactions'
-    import { walletStore } from '$lib/stores/walletStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
-    import { getContext } from 'svelte'
-    const { open, close } = getContext('simple-modal')
     import { transfers } from '$lib/stores/transfersStore'
     console.log('here are the transfers', $transfers)
 

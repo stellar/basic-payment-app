@@ -18,7 +18,7 @@
 {#if $infoMessage}
     <div class="alert alert-info dark:prose-invert">
         <InfoIcon />
-        <span>{@html $infoMessage}</span>
+        <span>{$infoMessage}</span>
         {#if dismissable}
             <button class="btn-neutral btn-sm btn" on:click={() => infoMessage.set('')}
                 >Dismiss</button

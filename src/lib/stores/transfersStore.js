@@ -18,7 +18,7 @@ import { persisted } from 'svelte-local-storage-store'
 
 function createTransfersStore() {
     /** @type {import('svelte/store').Writable<TransfersStore>} */
-    const { subscribe, set, update } = persisted('bpa:transfersStore', {})
+    const { subscribe, update } = persisted('bpa:transfersStore', {})
 
     return {
         subscribe,

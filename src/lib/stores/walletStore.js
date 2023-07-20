@@ -2,7 +2,9 @@ import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
 import { KeyManager, KeyManagerPlugins, KeyType } from '@stellar/wallet-sdk'
-import { Transaction, TransactionBuilder } from 'stellar-sdk'
+import { TransactionBuilder } from 'stellar-sdk'
+
+/** @typedef {import('stellar-sdk').Transaction} Transaction */
 
 /**
  * @typedef {Object} WalletStore
@@ -14,7 +16,7 @@ import { Transaction, TransactionBuilder } from 'stellar-sdk'
 
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
-    const { subscribe, set, update } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
+    const { subscribe, set } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
 
     return {
         subscribe,

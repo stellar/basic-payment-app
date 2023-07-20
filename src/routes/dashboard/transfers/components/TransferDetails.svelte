@@ -18,7 +18,7 @@
         bind:value={transferData.endpoint}
     >
         <option value="" disabled selected>Select one</option>
-        {#each Object.entries(sep6Info) as [endpoint, details]}
+        {#each Object.keys(sep6Info) as endpoint}
             {#if endpoint === 'deposit' || endpoint === 'withdraw'}
                 <option value={endpoint}>{endpoint}</option>
             {/if}
@@ -40,7 +40,7 @@
             bind:value={formData.asset_code}
         >
             <option value="" disabled selected>Select one</option>
-            {#each Object.entries(sep6Info[transferData.endpoint]) as [asset, details]}
+            {#each Object.keys(sep6Info[transferData.endpoint]) as asset}
                 <option value={asset}>{asset}</option>
             {/each}
         </select>

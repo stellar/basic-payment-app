@@ -1,17 +1,9 @@
 <script>
-    import { page } from '$app/stores'
-    import { Buffer } from 'buffer'
-    import { createPaymentTransaction } from '$lib/stellar/transactions'
     import StepsBar from '$lib/components/StepsBar.svelte'
     import TransferDetails from './TransferDetails.svelte'
     import KycInformation from './KYCInformation.svelte'
     import SubmitTransfer from './SubmitTransfer.svelte'
     import Confirmation from './Confirmation.svelte'
-    import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
-    import { walletStore } from '$lib/stores/walletStore'
-    import { getContext } from 'svelte'
-    import { submit } from '$lib/stellar/horizonQueries'
-    const { open, close } = getContext('simple-modal')
 
     export let title = 'Initiate SEP-6 Transfer'
     export let body = 'Please follow the steps to begin a transfer with your chosen anchor.'
@@ -27,16 +19,16 @@
     }
     export let formData = {}
 
+    /** @type {string[]} */
     let sep12Fields = []
     let transferJson = {}
-    // export let paymentXDR = ''
-    // export let paymentNetwork = ''
-    export let submitPayment = async (opts) => {}
+    export let submitPayment = async () => {}
     let steps = ['Transfer Details', 'KYC Information', 'Submit Transfer', 'Confirmation']
     let currentActive = 1
     let stepsBar
     $: activeStep = steps[currentActive - 1]
 
+    /** @param {number} stepIncrement */
     const handleStep = (stepIncrement) => {
         stepsBar.handleStep(stepIncrement)
     }
