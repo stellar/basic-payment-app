@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { persisted } from 'svelte-local-storage-store'
 import { StrKey } from 'stellar-sdk'
 import { error } from '@sveltejs/kit'
+import { get } from 'svelte/store'
 
 /**
  * @module $lib/stores/contactsStore
@@ -13,12 +14,13 @@ import { error } from '@sveltejs/kit'
 /**
  * @description When we are creating a contact entry, these three fields are
  * required: `favorite`, `address`, and `name`. When this data is passed to the
- * `contactsStore.add()` function, it will validate the address as being valid,
- * and assign it a unique ID.
+ * `contactsStore.add()` function, it will validate the address as Stellar
+ * public key, and assign it a unique ID (if one is not supplied).
  * @typedef {Object} ContactEntry
  * @property {boolean} favorite Whether or not the contact is marked as a "favorite"
  * @property {string} address Public Stellar address associated with this contact
  * @property {string} name Human-readable name to identify this contact with
+ * @property {string} [id] Unique identifier for this contact entry
  */
 
 function createContactsStore() {
@@ -65,6 +67,22 @@ function createContactsStore() {
                 }
                 return list
             }),
+
+        /**
+         * Searches the contact list for an entry with the specified address.
+         * @param {string} address Public Stellar address to lookup in the contact list
+         * @returns {string|false} Returns the `name` field of the found contact entry, false if there is none
+         */
+        lookup: (address) => {
+            /** @type {ContactEntry[]} */
+            let list = get(contacts)
+            let i = list.findIndex((contact) => contact.address === address)
+            if (i >= 0) {
+                return list[i].name
+            } else {
+                return false
+            }
+        }
     }
 }
 

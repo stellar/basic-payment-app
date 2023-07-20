@@ -5,12 +5,13 @@ import { fundWithFriendbot, startTransaction, submit } from '$lib/stellar/horizo
 import { fetchAssets } from '$lib/utils/stellarExpert'
 
 /** @typedef {import('$lib/utils/stellarExpert').RankedAsset} RankedAsset */
+
 /**
  * A filtered user object requested and retrieved from dummyJSON
  * @typedef {Object} DummyJsonUser
  * @property {string} firstName First name of the user
  * @property {number} id ID number of this user
- * @see {@link https://dummyjson.com|dummyJSON}
+ * @see {@link https://dummyjson.com}
  */
 
 /**
@@ -70,6 +71,7 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
  * For the Stellar account represented by the provided keypair, submit a transaction to add some helpful asset trustlines.
  * @async
  * @function addContactTrustlines
+ * @todo We should combine this into the createContacts function that allows the user to fund the accounts so they don't have to be draining friendbot all the time.
  * @param {Keypair} keypair Stellar keypair representing the contact's account on the Stellar network.
  * @param {RankedAsset[]} assets Array of top assets, as ranked by Stellar.Expert
  */

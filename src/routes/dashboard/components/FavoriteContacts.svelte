@@ -43,7 +43,7 @@
                         </div>
                     </td>
                     <td>
-                        <TruncatedKey keyText={contact.address} />
+                        <TruncatedKey keyText={contact.address} lookupName={false} />
                     </td>
                     <th>
                         <button class="btn-ghost btn-xs btn">Stellar.Expert</button>

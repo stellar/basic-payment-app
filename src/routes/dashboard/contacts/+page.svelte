@@ -97,7 +97,7 @@
                     </div>
                 </td>
                 <td>
-                    <TruncatedKey keyText={contact.address} />
+                    <TruncatedKey keyText={contact.address} lookupName={false} />
                 </td>
                 <td class="text-center">
                     <button
