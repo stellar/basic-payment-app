@@ -45,7 +45,7 @@
     } from '$lib/stellar/transactions'
 
     // The `open` Svelte context is used to open the confirmation modal
-    import { getContext, onMount } from 'svelte'
+    import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
     let destination = ''
@@ -292,9 +292,7 @@
             <h3>Sending</h3>
             <div class="form-control w-full">
                 <label for="sendAmount" class="label">
-                    <span class="label-text"
-                        >You send... {strictReceive ? '(estimated)' : ''}</span
-                    >
+                    <span class="label-text">You send... {strictReceive ? '(estimated)' : ''}</span>
                 </label>
                 <div class="join">
                     <div class="grow">
@@ -323,8 +321,7 @@
                                     <option value="native">XLM</option>
                                 {:else}
                                     {@const assetString = `${path.source_asset_code}:${path.source_asset_issuer}`}
-                                    <option value={assetString}>{path.source_asset_code}</option
-                                    >
+                                    <option value={assetString}>{path.source_asset_code}</option>
                                 {/if}
                             {/each}
                         {:else if !strictReceive}
@@ -391,8 +388,7 @@
                                     {#each balances as balance}
                                         {#if 'asset_code' in balance}
                                             {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
-                                            <option value={assetString}
-                                                >{balance.asset_code}</option
+                                            <option value={assetString}>{balance.asset_code}</option
                                             >
                                         {/if}
                                     {/each}
