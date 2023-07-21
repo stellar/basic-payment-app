@@ -14,22 +14,15 @@ import { get } from 'svelte/store'
 // user from the client-side.
 import { goto } from '$app/navigation'
 
-// We import our `walletStore` to ensure the user has actually registered.
+// We import our `walletStore` to see if the user has actually registered.
 import { walletStore } from '$lib/stores/walletStore'
 
 /** @type {import('./$types').PageLoad} */
 export function load() {
     const wallet = get(walletStore)
-    // If neither a valid public key, nor a keyId pointing to an encrypted
-    // keypair, are present in the wallet store, we redirect the user to the
-    // signup page.
-    if (!wallet.publicKey || !wallet.keyId) {
-        goto('/signup')
-    } else {
-        // Return to the `+page.svelte` file
-        return {
-            keyId: wallet.keyId,
-            publicKey: wallet.publicKey,
-        }
+    // If both a public key and a keyId pointing to an encrypted keypair are
+    // present in the wallet store, we redirect the user to the login page.
+    if (wallet.publicKey && wallet.keyId) {
+        goto('/login')
     }
 }
