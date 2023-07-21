@@ -335,7 +335,7 @@
             </h3>
             {@const assetDescription = stellarToml.CURRENCIES?.filter(
                 ({ code }) => code === asset.asset_code
-            )[0]}
+            )[0].desc}
             {#if assetDescription}
                 <p>{assetDescription}</p>
             {/if}
