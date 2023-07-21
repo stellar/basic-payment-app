@@ -11,13 +11,9 @@ The project is built using SvelteKit.
 
 talk about where a dev might find a useful place to start exploring the codebase
 
-## Building
+## Building Instructions
 
 `yarn dev` and so forth
-
-## Tips for Exploring the Codebase
-
-Open the browser's dev console and watch as things happen
 
 ## Companion Tutorial
 
