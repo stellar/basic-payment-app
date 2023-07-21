@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { browser } from '$app/environment'
 import { Buffer } from 'buffer'
 

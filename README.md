@@ -5,8 +5,25 @@
 An example payments application demonstrating integrations of various features
 and SEPs in a user-facing product.
 
-The project is built using SvelteKit. The default readme that was generated is
-preserved below:
+The project is built using SvelteKit.
+
+## Where to Start?
+
+talk about where a dev might find a useful place to start exploring the codebase
+
+## Building
+
+`yarn dev` and so forth
+
+## Companion Tutorial
+
+link to the tutorial in the documentation
+
+## Companion App
+
+This isn't just a codebase, it's a fully functioning testnet wallet! Check it out here: <https://basicpay.pages.dev>
+
+The default readme that was generated is preserved below:
 
 ## create-svelte
 

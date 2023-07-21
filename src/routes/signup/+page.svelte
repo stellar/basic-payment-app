@@ -1,39 +1,64 @@
 <script>
+    /**
+     * @description The `/signup` page presents the user with a randomly
+     * generated keypair, and prompts them to input a pincode. The user can
+     * choose to generate a different keypair if they want. They are then asked
+     * to confirm the pincode in our modal popup. This pincode is used to
+     * encrypt the keypair before it is stored in the browser's `localStorage`.
+     * In this example application, everything lives entirely client-side. So,
+     * we don't have to take extra precautions to ensure the secret key doesn't
+     * hit any "backend." In a real-world implementation, you would want to be
+     * absolutely certain the secret key **does not** leave the browser under
+     * any circumstance.
+     */
+
+    // We import things from external packages that will be needed
     import { Keypair } from 'stellar-sdk'
-    import { browser } from '$app/environment'
-    import { goto } from '$app/navigation'
+
+    // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
-    import { getContext } from 'svelte'
+
+    // We import any stores we will need to read and/or write
+    import { goto } from '$app/navigation'
     import { walletStore } from '$lib/stores/walletStore'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
+
+    // The `open` Svelte context is used to open the confirmation modal
+    import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
     let keypair = Keypair.random()
-    let publicKey = ''
-    let secretKey = ''
+    $: publicKey = keypair.publicKey()
+    $: secretKey = keypair.secret()
     let showSecret = true
     let pincode = ''
 
-    $: if (browser) {
-        publicKey = keypair.publicKey()
-        secretKey = keypair.secret()
-    }
-
-    const onConfirm = async () => {
+    /**
+     * Takes an action after the pincode has been confirmed by the user.
+     * @async
+     * @function onConfirm
+     * @param {string} pincode Pincode that was confirmed by the modal window
+     */
+    const onConfirm = async (pincode) => {
+        // Register the encryped keypair in the user's browser
         await walletStore.register({
             publicKey: publicKey,
             secretKey: secretKey,
             pincode: pincode,
         })
+        // Fund the account with a request to Friendbot
         await fundWithFriendbot(publicKey)
+        // If the registration was successful, redirect to the dashboard
         if ($walletStore.publicKey) {
             goto('/dashboard')
         }
     }
 
-    const onReject = () => {}
-
+    /**
+     * Registers the user's wallet after they have confirmed the pincode in the modal window.
+     * @function signup
+     */
     const signup = () => {
         open(ConfirmationModal, {
             firstPincode: pincode,
@@ -41,7 +66,6 @@
             body: 'Please re-type your 6-digit pincode to encrypt the secret key.',
             rejectButton: 'Cancel',
             onConfirm: onConfirm,
-            onReject: onReject,
         })
     }
 </script>
@@ -81,6 +105,8 @@
                             <label class="label cursor-pointer pb-0">
                                 <span class="label-text">Show secret key?</span>
                                 <input
+                                    id="showSecret"
+                                    name="showSecret"
                                     type="checkbox"
                                     class="toggle-accent toggle"
                                     bind:checked={showSecret}
@@ -102,8 +128,9 @@
                                 <span class="label-text">Pincode</span>
                             </label>
                             <input
-                                type="password"
                                 id="pincode"
+                                name="pincode"
+                                type="password"
                                 class="input-bordered input"
                                 minlength="6"
                                 maxlength="6"

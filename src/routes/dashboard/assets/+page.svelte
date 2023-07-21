@@ -70,7 +70,7 @@
             limit: addingAsset ? undefined : '0',
         })
 
-        // Set the component variables to hold the the transaction details
+        // Set the component variables to hold the transaction details
         changeTrustXDR = transaction
         changeTrustNetwork = network_passphrase
 
