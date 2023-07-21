@@ -129,10 +129,11 @@ export async function submit(transaction) {
 }
 
 /**
- * @typedef {Object|undefined} HomeDomainBalanceLine
- * @extends {BalanceLineAsset}
+ * @typedef {Object} HomeDomainObject
  * @property {string} home_domain Domain name the issuer of this asset has set for their account on the Stellar network.
  */
+
+/** @typedef {BalanceLineAsset & HomeDomainObject} HomeDomainBalanceLine */
 
 /**
  * Fetches `home_domain` from asset issuer accounts on the Stellar network and returns an array of balances.
@@ -159,6 +160,7 @@ export async function fetchAssetsWithHomeDomains(balances) {
     )
 
     // Filter out any null array entries before returning
+    // @ts-ignore
     return homeDomains.filter((balance) => balance)
 }
 

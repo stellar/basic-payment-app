@@ -25,11 +25,11 @@ export function load() {
     // signup page.
     if (!wallet.publicKey || !wallet.keyId) {
         goto('/signup')
-    } else {
-        // Return to the `+page.svelte` file
-        return {
-            keyId: wallet.keyId,
-            publicKey: wallet.publicKey,
-        }
+    }
+
+    // Return to the `+page.svelte` file
+    return {
+        keyId: wallet.keyId,
+        publicKey: wallet.publicKey,
     }
 }
