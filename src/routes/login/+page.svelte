@@ -10,20 +10,28 @@
      * sign anything for submission to the network.
      */
 
-    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
-    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
-
-    import { goto } from '$app/navigation'
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import { confirmCorrectPincode } from '$lib/stores/walletStore'
-
     // The `export let data` declaration allows us to receive and use the page
     // load data from our `+page.js` file.
     /** @type {import('./$types').PageData} */
     export let data
 
-    // Our `login` function ensures the the user has entered a valid pincode for
-    // the encrypted keypair, and then redirects them to the dashboard page.
+    // We import any Svelte components we will need
+    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
+    import TruncatedKey from '$lib/components/TruncatedKey.svelte'
+
+    // We import any stores we will need to read and/or write
+    import { goto } from '$app/navigation'
+    import { errorMessage } from '$lib/stores/alertsStore'
+    import { confirmCorrectPincode } from '$lib/stores/walletStore'
+
+    // Define some component variables that will be used throughout the page
+    let pincode = ''
+
+    /**
+     * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
+     * @async
+     * @function login
+     */
     const login = async () => {
         try {
             await confirmCorrectPincode({ pincode: pincode })
@@ -34,8 +42,6 @@
             errorMessage.set(err.body.message)
         }
     }
-
-    let pincode = ''
 </script>
 
 <div class="hero min-h-screen bg-base-200">

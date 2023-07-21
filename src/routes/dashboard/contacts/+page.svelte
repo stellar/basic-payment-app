@@ -15,8 +15,8 @@
     // We import any stores we will need to read and/or write
     import { contacts } from '$lib/stores/contactsStore'
 
-    // We declare a _reactive_ variable that will hold information for a
-    // user-created contact entry, which can be added to the contacts store.
+    // We declare a _reactive_ component variable that will hold information for
+    // a user-created contact entry, which can be added to the contacts store.
     $: newContact = {
         name: '',
         address: '',

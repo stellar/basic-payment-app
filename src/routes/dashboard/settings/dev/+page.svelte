@@ -25,12 +25,17 @@
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
+    // Define some component variables that will be used throughout the page
     let addContactsOpts = {
         numContacts: 1,
         fundContacts: false,
         addTrustlines: false,
     }
 
+    /**
+     * Display a modal. Use this to play around with settings, props, and such.
+     * @function displayModal
+     */
     function displayModal() {
         open(ConfirmationModal)
     }
@@ -38,12 +43,11 @@
 
 <h1>Dev Helpers</h1>
 <p>
-    The `/dashboard/settings/dev` page will allow developer to quickly get their "profile" into a
-    useable state for experimenting with BasicPay and with the testnet. Utilities are available to
-    access their Stellar public/secret keys, populate the contacts list (optionally funding the
-    accounts and adding various trustlines to them), empty the contacts list, receive more testnet
-    funding from friendbot, and completely erase all the `localStorage` we have for BasicPay and
-    start fresh.
+    The <code>/dashboard/settings/dev</code> page will allow developer to quickly get their "profile"
+    into a useable state for experimenting with BasicPay and with the testnet. Utilities are available
+    to access their Stellar public/secret keys, populate the contacts list (optionally funding the accounts
+    and adding various trustlines to them), empty the contacts list, receive more testnet funding from
+    friendbot, and completely erase all the `localStorage` we have for BasicPay and start fresh.
 </p>
 
 <h2>Keypair Information</h2>

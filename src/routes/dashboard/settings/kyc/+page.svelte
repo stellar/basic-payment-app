@@ -6,15 +6,15 @@
      * server the next time a SEP-6 transfer is initiated.
      */
 
+    // We import any stores we will need to read and/or write
     import { kycStore } from '$lib/stores/kycStore'
-    console.log('kycStore', $kycStore)
 </script>
 
 <h1>KYC Information</h1>
 <p>
-    The `/dashboard/settings/kyc` allows the user to view and modify the locally saved KYC
-    information they have submitted through various SEP-6 anchors. Changes made here will be
-    submitted to the KYC server the next time a SEP-6 transfer is initiated.
+    The <code>/dashboard/settings/kyc</code> allows the user to view and modify the locally saved KYC
+    information they have submitted through various SEP-6 anchors. Changes made here will be submitted
+    to the KYC server the next time a SEP-6 transfer is initiated.
 </p>
 <p><small>(Changes are automatically saved.)</small></p>
 {#each Object.keys($kycStore) as key}

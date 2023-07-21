@@ -25,8 +25,8 @@
     import InfoAlert from '$lib/components/InfoAlert.svelte'
 
     // We import any stores we will need to read and/or write
-    import { contacts } from '$lib/stores/contactsStore'
     import { infoMessage } from '$lib/stores/alertsStore'
+    import { contacts } from '$lib/stores/contactsStore'
     import { walletStore } from '$lib/stores/walletStore'
 
     // We import some of our `$lib` functions
@@ -48,6 +48,7 @@
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
+    // Define some component variables that will be used throughout the page
     let destination = ''
     $: otherDestination = destination === 'other'
     let otherPublicKey = ''

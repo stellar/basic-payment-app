@@ -24,14 +24,15 @@
     import { walletStore } from '$lib/stores/walletStore'
 
     // We import some of our `$lib` functions
-    import { createChangeTrustTransaction } from '$lib/stellar/transactions'
     import { submit } from '$lib/stellar/horizonQueries'
+    import { createChangeTrustTransaction } from '$lib/stellar/transactions'
     import { fetchAssets } from '$lib/utils/stellarExpert'
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
+    // Define some component variables that will be used throughout the page
     let addAsset = ''
     let customAssetCode = ''
     let customAssetIssuer = ''

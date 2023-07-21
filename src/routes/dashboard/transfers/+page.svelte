@@ -288,6 +288,13 @@
 
 <h1>Transfers</h1>
 <p>
+    The <code>/dashboard/transfers</code> page will allow the user to view assets they hold trustlines
+    for, which have infrastructure available to utilize for asset transfers. A few series of server queries
+    find out which assets the user can transfer, which protocols are available for those transfers (SEP-6
+    and SEP-24 currently), check the authentication status of the user with the relevant anchor, and
+    present them with buttons that will allow them to initiate a transfer with the anchor.
+</p>
+<p>
     Use the Stellar network's rails to existing financial infrastructure to move assets between the
     ledger and traditional banking accounts.
 </p>

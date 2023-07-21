@@ -28,6 +28,7 @@
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
 
+    // Define some component variables that will be used throughout the page
     let keypair = Keypair.random()
     $: publicKey = keypair.publicKey()
     $: secretKey = keypair.secret()
