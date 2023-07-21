@@ -15,6 +15,10 @@ talk about where a dev might find a useful place to start exploring the codebase
 
 `yarn dev` and so forth
 
+## Tips for Exploring the Codebase
+
+Open the browser's dev console and watch as things happen
+
 ## Companion Tutorial
 
 link to the tutorial in the documentation

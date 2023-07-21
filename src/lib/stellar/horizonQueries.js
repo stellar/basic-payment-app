@@ -13,7 +13,7 @@ const server = new Server(horizonUrl)
  */
 
 // We'll import some type definitions that already exists within the
-// `stellar-sdk` packagel, so our functions will know what to expect.
+// `stellar-sdk` package, so our functions will know what to expect.
 /** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
 /** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
 /** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
@@ -131,7 +131,7 @@ export async function submit(transaction) {
 /**
  * @typedef {Object|undefined} HomeDomainBalanceLine
  * @extends {BalanceLineAsset}
- * @property {string} [home_domain] Domain name the issuer of this asset has set for their account on the Stellar network.
+ * @property {string} home_domain Domain name the issuer of this asset has set for their account on the Stellar network.
  */
 
 /**
@@ -149,7 +149,6 @@ export async function fetchAssetsWithHomeDomains(balances) {
                 // Fetch the account from the network, and add its info to the array, along with the home_domain
                 let account = await fetchAccount(asset.asset_issuer)
                 if ('home_domain' in account) {
-                    /** @type {HomeDomainBalanceLine} */
                     return {
                         ...asset,
                         home_domain: account.home_domain,

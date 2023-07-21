@@ -13,12 +13,17 @@
     // The `dismissable` prop will be used to determin if the alert can be
     // closed by the user
     export let dismissable = true
+
+    // Sometimes, the use of `@html` inside a Svelte tag could open users up to
+    // XSS attacks. We are only ever popuplating this `infoAlert` with our own
+    // text, so we can ignore the eslint error in this instance.
+    /* eslint 'svelte/no-at-html-tags': "off" */
 </script>
 
 {#if $infoMessage}
     <div class="alert alert-info dark:prose-invert">
         <InfoIcon />
-        <span>{$infoMessage}</span>
+        <span>{@html $infoMessage}</span>
         {#if dismissable}
             <button class="btn-neutral btn-sm btn" on:click={() => infoMessage.set('')}
                 >Dismiss</button

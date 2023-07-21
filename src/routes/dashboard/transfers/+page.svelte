@@ -111,7 +111,6 @@
     const auth = async (homeDomain) => {
         // Request the challenge transaction, expecting back the XDR string
         let { transaction, network_passphrase } = await getChallengeTransaction({
-            // @ts-ignore
             publicKey: data.publicKey,
             homeDomain: homeDomain,
         })
@@ -194,7 +193,6 @@
      */
     let submitPayment = async ({ withdrawDetails, assetCode, assetIssuer, amount }) => {
         let { transaction, network_passphrase } = await createPaymentTransaction({
-            // @ts-ignore
             source: data.publicKey,
             destination: withdrawDetails.account_id,
             asset: `${assetCode}:${assetIssuer}`,
@@ -263,7 +261,6 @@
                 // Generate a transaction with the necessary details to complete
                 // the transfer
                 let { transaction, network_passphrase } = await createPaymentTransaction({
-                    // @ts-ignore
                     source: data.publicKey,
                     destination: event.data.transaction.withdraw_anchor_account,
                     asset: `${assetCode}:${assetIssuer}`,

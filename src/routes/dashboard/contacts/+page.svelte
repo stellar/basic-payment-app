@@ -27,9 +27,9 @@
 
 <h1>Contacts</h1>
 <p>
-    The `/dashboard/contacts` page will allow the user to collect and manage a list of contact
-    entries that stores the contact's name and Stellar address. The contact can also be
-    flagged/unflagged as a "favorite" contact to be displayed on the main `/dashboard` page.
+    The <code>/dashboard/contacts</code> page will allow the user to collect and manage a list of contact
+    entries that stores the contact's name and Stellar address. The contact can also be flagged/unflagged
+    as a "favorite" contact to be displayed on the main `/dashboard` page.
 </p>
 
 <h3>All contacts</h3>
@@ -82,9 +82,11 @@
             </td>
             <td class="text-center">
                 <button
+                    on:click={() => contacts.add(newContact)}
+                    id="addContactButton"
+                    name="addContactButton"
                     type="submit"
                     class="btn-success btn-sm btn-square btn"
-                    on:click={() => contacts.add(newContact)}
                 >
                     <UserPlusIcon size="16" />
                 </button>
@@ -94,10 +96,12 @@
             <tr>
                 <th class="text-center">
                     <input
-                        type="checkbox"
-                        class="checkbox-accent checkbox checkbox-sm"
-                        checked={contact.favorite}
                         on:click={() => contacts.favorite(contact.id)}
+                        id={`favoriteCheckbox${contact.id}`}
+                        name={`favoriteCheckbox${contact.id}`}
+                        type="checkbox"
+                        checked={contact.favorite}
+                        class="checkbox-accent checkbox checkbox-sm"
                     />
                 </th>
                 <td>
@@ -120,8 +124,10 @@
                 </td>
                 <td class="text-center">
                     <button
-                        class="btn-error btn-sm btn-square btn"
                         on:click={() => contacts.remove(contact.id)}
+                        id={`removeContact${contact.id}`}
+                        name={`removeContact${contact.id}`}
+                        class="btn-error btn-sm btn-square btn"
                     >
                         <Trash2Icon size="16" />
                     </button>

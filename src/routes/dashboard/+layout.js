@@ -21,13 +21,13 @@ export async function load() {
     const { publicKey } = get(walletStore)
     if (!publicKey) {
         goto('/signup')
-    } else {
-        // We return the `balances` and `payments` using await to avoid
-        // waterfalls and additional loading time
-        return {
-            publicKey: publicKey,
-            balances: await fetchAccountBalances(publicKey),
-            payments: await fetchRecentPayments(publicKey),
-        }
+    }
+
+    // We return the `balances` and `payments` using await to avoid
+    // waterfalls and additional loading time
+    return {
+        publicKey: publicKey,
+        balances: await fetchAccountBalances(publicKey),
+        payments: await fetchRecentPayments(publicKey),
     }
 }

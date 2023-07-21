@@ -64,7 +64,6 @@
     const previewChangeTrustTransaction = async (addingAsset = true, removeAsset = undefined) => {
         // Generate the transaction, expecting back the XDR string
         let { transaction, network_passphrase } = await createChangeTrustTransaction({
-            // @ts-ignore
             source: data.publicKey,
             asset: removeAsset ?? asset,
             limit: addingAsset ? undefined : '0',

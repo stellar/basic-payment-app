@@ -31,7 +31,7 @@
     let keypair = Keypair.random()
     $: publicKey = keypair.publicKey()
     $: secretKey = keypair.secret()
-    let showSecret = true
+    let showSecret = false
     let pincode = ''
 
     /**
