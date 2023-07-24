@@ -121,8 +121,6 @@ export async function mergeFriendbotAccount(publicKey) {
                 destination: publicKey,
             })
         )
-        .setTimeout(30)
-        .build()
 
     let builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(kp)
