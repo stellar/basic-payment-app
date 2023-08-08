@@ -22,7 +22,7 @@
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
-    import { confirmCorrectPincode } from '$lib/stores/walletStore'
+    import { walletStore } from '$lib/stores/walletStore'
 
     // Define some component variables that will be used throughout the page
     let pincode = ''
@@ -34,7 +34,7 @@
      */
     const login = async () => {
         try {
-            await confirmCorrectPincode({ pincode: pincode })
+            await walletStore.confirmPincode({ pincode: pincode })
             goto('/dashboard')
         } catch (err) {
             // Notify the user about the error that has taken place.

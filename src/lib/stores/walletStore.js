@@ -42,7 +42,6 @@ function createWalletStore() {
                     password: pincode,
                     encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
                 })
-                console.log('i have some keyMetadata', keyMetadata)
 
                 set({
                     keyId: keyMetadata.id,
@@ -58,6 +57,30 @@ function createWalletStore() {
                 console.error('Error saving key', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
+            }
+        },
+
+        /**
+         * Compares a submitted pincode to make sure it is valid for the stored, encrypted keypair.
+         * @param {Object} opts Options object
+         * @param {string} opts.pincode Pincode being confirmed against existing stored wallet
+         * @param {string} [opts.firstPincode] On signup, the pincode that is being matched against
+         * @param {boolean} [opts.signup=false] Whether or not the confirmation is for the initial signup
+         * @throws Will throw an error if the signup pincodes don't match, or if the provided pincode doesn't decrypt the keypair.
+         */
+        confirmPincode: async ({ pincode, firstPincode = '', signup = false }) => {
+            if (!signup) {
+                try {
+                    const keyManager = setupKeyManager()
+                    let { keyId } = get(walletStore)
+                    await keyManager.loadKey(keyId, pincode)
+                } catch (err) {
+                    throw error(400, { message: 'invalid pincode' })
+                }
+            } else {
+                if (pincode !== firstPincode) {
+                    throw error(400, { message: 'pincode mismatch' })
+                }
             }
         },
 
@@ -90,30 +113,6 @@ function createWalletStore() {
 }
 
 export const walletStore = createWalletStore()
-
-/**
- * Compares a submitted pincode to make sure it is valid for the stored, encrypted keypair.
- * @param {Object} opts Options object
- * @param {string} opts.pincode Pincode being confirmed against existing stored wallet
- * @param {string} [opts.firstPincode] On signup, the pincode that is being matched against
- * @param {boolean} [opts.signup=false] Whether or not the confirmation is for the initial signup
- * @throws Will throw an error if the signup pincodes don't match, or if the provided pincode doesn't decrypt the keypair.
- */
-export const confirmCorrectPincode = async ({ pincode, firstPincode = '', signup = false }) => {
-    if (!signup) {
-        try {
-            const keyManager = setupKeyManager()
-            let { keyId } = get(walletStore)
-            await keyManager.loadKey(keyId, pincode)
-        } catch (err) {
-            throw error(400, { message: 'invalid pincode' })
-        }
-    } else {
-        if (pincode !== firstPincode) {
-            throw error(400, { message: 'pincode mismatch' })
-        }
-    }
-}
 
 /**
  * @returns {KeyManager} A configured `keyManager` for use as a wallet

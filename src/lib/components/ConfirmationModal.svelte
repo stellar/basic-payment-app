@@ -4,6 +4,7 @@
      * reusable "popup dialog" that will prompt the user to enter their chosen
      * 6-digit pincode to confirm their intent for a particular action to take
      * place. This confirmation flow takes place on the following occassions:
+     *
      * 1. On signup, when the user has entered their desire pincode (and
      *    **before** the keypair is encrypted with the pincode), we ask them to
      *    confirm the same pincode to make sure they know what they entered the
@@ -14,6 +15,7 @@
      * 3. When authenticating with an anchor server, the SEP-10 challenge
      *    transaction is shown to the user in this modal for them to approve and
      *    sign, before it is sent back to the authentication server.
+     *
      * @summary A component that will allow the user to confirm, with their
      * pincode, that they approve an action taking place.
      */
@@ -24,9 +26,9 @@
     import { errorMessage } from '$lib/stores/alertsStore'
     import ErrorAlert from './ErrorAlert.svelte'
 
-    // We will use the `confirmCorrectPincode` function to ensure the user knows
-    // the encryption password to the keypair before we attempt to sign anything
-    import { confirmCorrectPincode } from '$lib/stores/walletStore'
+    // We will use the `walletStore.confirmPincode` to ensure the user knows the
+    // encryption password to the keypair before we attempt to sign anything
+    import { walletStore } from '$lib/stores/walletStore'
 
     // We need a couple things from the stellar-sdk to reconstruct the
     // Transaction object from the XDR string, when the time comes
@@ -49,7 +51,7 @@
 
         try {
             // We make sure the user has supplied the correct pincode
-            await confirmCorrectPincode({
+            await walletStore.confirmPincode({
                 pincode: pincode,
                 firstPincode: firstPincode,
                 signup: firstPincode ? true : false,
