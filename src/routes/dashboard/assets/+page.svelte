@@ -11,7 +11,7 @@
     // `export let data` allows us to pull in any parent load data for use here.
     /** @type {import('./$types').PageData} */
     export let data
-    let balances = data.balances ?? []
+    $: balances = data.balances ?? []
 
     // We import things from external packages that will be needed
     import { Trash2Icon } from 'svelte-feather-icons'
@@ -22,6 +22,7 @@
 
     // We import any stores we will need to read and/or write
     import { walletStore } from '$lib/stores/walletStore'
+    import { invalidateAll } from '$app/navigation'
 
     // We import some of our `$lib` functions
     import { submit } from '$lib/stellar/horizonQueries'
@@ -55,6 +56,10 @@
         })
         // Submit the transaction to the Stellar network
         await submit(signedTransaction)
+        // `invalidateAll` will tell SvelteKit that it should re-run any `load`
+        // functions. Since we have a new (or newly deleted) trustline, this
+        // results in re-querying the network to get updated account balances.
+        invalidateAll()
     }
 
     /**
