@@ -115,12 +115,11 @@ export async function mergeFriendbotAccount(publicKey) {
     await fundWithFriendbot(kp.publicKey())
 
     let transaction = await startTransaction(kp.publicKey())
-    transaction
-        .addOperation(
-            Operation.accountMerge({
-                destination: publicKey,
-            })
-        )
+    transaction.addOperation(
+        Operation.accountMerge({
+            destination: publicKey,
+        })
+    )
 
     let builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(kp)

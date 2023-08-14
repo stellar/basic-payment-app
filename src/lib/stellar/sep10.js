@@ -1,6 +1,5 @@
 import { Utils } from 'stellar-sdk'
 import { error } from '@sveltejs/kit'
-import { get } from 'svelte/store'
 import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 
 /**
