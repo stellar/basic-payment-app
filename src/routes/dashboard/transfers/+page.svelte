@@ -27,9 +27,10 @@
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
 
     // We import any stores we will need to read and/or write
+    import { invalidateAll } from '$app/navigation'
     import { transfers } from '$lib/stores/transfersStore'
     import { walletStore } from '$lib/stores/walletStore'
-    import { isTokenExpired, webAuthStore } from '$lib/stores/webAuthStore'
+    import { webAuthStore } from '$lib/stores/webAuthStore'
 
     // We import some of our `$lib` functions
     import { submit } from '$lib/stellar/horizonQueries'
@@ -73,7 +74,7 @@
     const getAuthStatus = (homeDomain) => {
         if ($webAuthStore[homeDomain]) {
             let token = $webAuthStore[homeDomain]
-            if (isTokenExpired(token)) {
+            if (webAuthStore.isTokenExpired(token)) {
                 return 'auth_expired'
             } else {
                 return 'auth_valid'
@@ -95,13 +96,15 @@
             network: challengeNetwork,
             pincode: pincode,
         })
-        // Submit the token to the SEP-10 server, and get the JWT token back
+        // Submit the signed tx to the SEP-10 server, and get the JWT token back
         let token = await submitChallengeTransaction({
             transactionXDR: signedTransaction.toXDR(),
             homeDomain: challengeHomeDomain,
         })
         // Add the token to our store
         webAuthStore.setAuth(challengeHomeDomain, token)
+        // Reload any relevant `load()` functions (i.e., refresh the page)
+        invalidateAll()
     }
 
     /**
@@ -141,7 +144,7 @@
      * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
      * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
      * @param {string} opts.assetIssuer Public Stellar address that issues the asset being transferred
-     * @param {Object} opts.sep6Info Info published by the anchor detailing what assets/transfer methods are available
+     * @param {Object} opts.sep6Info Info published by the anchor detailing what assets and/or transfer methods are available
      * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
     const launchTransferModalSep6 = ({
@@ -172,7 +175,7 @@
      * After a withdraw transaction has been presented to the user, and they've confirmed with the correct pincode, sign and submit the transaction to the Stellar network.
      * @async
      * @function onPaymentConfirm
-     * @param {string} pincode The 6-digit pincode the user has confirmed that will unencrypt the Stellar secret key for signing
+     * @param {string} pincode The 6-digit pincode the user has confirmed that will decrypt the Stellar secret key for signing
      */
     const onPaymentConfirm = async (pincode) => {
         // Use the walletStore to sign the transaction
@@ -245,7 +248,7 @@
         let interactiveUrl = `${url}&callback=postMessage`
         let popup = window.open(interactiveUrl, 'bpaTransfer24Window', 'popup')
 
-        // We listen for the callback `message` from the popoup window
+        // We listen for the callback `message` from the popup window
         window.addEventListener('message', async (event) => {
             console.log('here is the event i heard from the popup window', event)
             popup?.close()

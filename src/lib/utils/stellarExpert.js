@@ -7,7 +7,7 @@ const baseUrl = `https://api.stellar.expert/explorer/${network}`
  * @property {string} asset Asset identifier
  * @property {number} traded_amount Total traded amount (in stroops)
  * @property {number} payments_amount Total payments amount (in stroops)
- * @property {number} created Timestampe of the first recorder operation with asset
+ * @property {number} created Timestamp of the first recorder operation with asset
  * @property {number} supply Total issued asset supply
  * @property {Object} trustlines Trustlines established to an asset
  * @property {number} trades Total number of trades

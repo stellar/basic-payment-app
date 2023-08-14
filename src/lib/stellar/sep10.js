@@ -1,6 +1,7 @@
 import { Utils } from 'stellar-sdk'
-import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
+import { get } from 'svelte/store'
+import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 
 /**
  * @module $lib/stellar/sep10
@@ -22,12 +23,16 @@ import { error } from '@sveltejs/kit'
 export async function getChallengeTransaction({ publicKey, homeDomain }) {
     let { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(homeDomain)
 
-    if (!WEB_AUTH_ENDPOINT || !TRANSFER_SERVER || !SIGNING_KEY) {
+    // In order for the SEP-10 flow to work, we must have at least a server
+    // signing key, and a web auth endpoint (which can be the transfer server as
+    // a fallback)
+    if (!(WEB_AUTH_ENDPOINT || TRANSFER_SERVER) || !SIGNING_KEY) {
         throw error(500, {
             message: 'could not get challenge transaction (server missing toml entry or entries)',
         })
     }
 
+    // Request a challenge transaction for the users's account
     let res = await fetch(
         `${WEB_AUTH_ENDPOINT || TRANSFER_SERVER}?${new URLSearchParams({
             // Possible parameters are `account`, `memo`, `home_domain`, and
@@ -37,6 +42,7 @@ export async function getChallengeTransaction({ publicKey, homeDomain }) {
     )
     let json = await res.json()
 
+    // Validate the challenge transaction meets all the requirements for SEP-10
     validateChallengeTransaction({
         transactionXDR: json.transaction,
         serverSigningKey: SIGNING_KEY,
@@ -72,6 +78,8 @@ function validateChallengeTransaction({
     }
 
     try {
+        // Use the `readChallengeTx` function from Stellar SDK to read and
+        // verify most of the challenge transaction information
         let results = Utils.readChallengeTx(
             transactionXDR,
             serverSigningKey,
@@ -79,6 +87,7 @@ function validateChallengeTransaction({
             homeDomain,
             clientDomain
         )
+        // Also make sure the transaction was created for the correct user
         if (results.clientAccountID === clientPublicKey) {
             return
         } else {

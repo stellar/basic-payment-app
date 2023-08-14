@@ -1,3 +1,4 @@
+import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
 import { Buffer } from 'buffer'
 
@@ -25,18 +26,23 @@ function createWebAuthStore() {
                     [homeDomain]: token,
                 }
             }),
+
+        /**
+         * Determine whether or not a JSON web token has an expiration date in the future or in the past.
+         * @param {string} homeDomain Home domain to check a JWT authentication token for
+         * @returns {boolean|undefined} True if the token is expired, false if it is still valid
+         */
+        isTokenExpired: (homeDomain) => {
+            let token = get(webAuthStore)[homeDomain]
+            if (token) {
+                let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+                let timestamp = Math.floor(Date.now() / 1000)
+                return timestamp > payload.exp
+            } else {
+                return undefined
+            }
+        },
     }
 }
 
 export const webAuthStore = createWebAuthStore()
-
-/**
- * Determine whether or not a JSON web token has an expiration date in the future or in the past.
- * @param {string} token JSON web token to be parsed and checked for an expiration time in the future
- * @returns {boolean} True if the token is expired, false if it is still valid
- */
-export function isTokenExpired(token) {
-    let tokenPayload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
-    let timestamp = Math.floor(Date.now() / 1000)
-    return timestamp > tokenPayload.exp
-}

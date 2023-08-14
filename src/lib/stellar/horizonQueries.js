@@ -69,7 +69,7 @@ export async function fetchAccountBalances(publicKey) {
  * @async
  * @function fetchRecentPayments
  * @param {string} publicKey Public Stellar address to query recent payment operations to/from
- * @param {number} limit Number of operations to request from the server
+ * @param {number} [limit] Number of operations to request from the server
  * @returns {Promise<PaymentOperationRecord[]>} Array containing details for each recent payment
  */
 export async function fetchRecentPayments(publicKey, limit = 10) {
@@ -165,7 +165,7 @@ export async function fetchAssetsWithHomeDomains(balances) {
 }
 
 /**
- * Fetches available paths on the Stellar network betweeen the destination account, and the asset sent by the source account.
+ * Fetches available paths on the Stellar network between the destination account, and the asset sent by the source account.
  * @async
  * @function findStrictSendPaths
  * @param {Object} opts Options object
