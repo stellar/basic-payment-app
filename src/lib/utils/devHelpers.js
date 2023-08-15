@@ -4,6 +4,13 @@ import { Asset, Keypair, Operation } from 'stellar-sdk'
 import { fundWithFriendbot, startTransaction, submit } from '$lib/stellar/horizonQueries'
 import { fetchAssets } from '$lib/utils/stellarExpert'
 
+/**
+ * @module $lib/utils/devHelpers
+ * @description A collection of helpful functions to get an account up and
+ * running for use with BasicPay: Functions to help fill out a contact list, add
+ * lumens to an account, and nuking the whole account, etc.
+ */
+
 /** @typedef {import('$lib/utils/stellarExpert').RankedAsset} RankedAsset */
 
 /**
@@ -44,7 +51,7 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
     }
 
     // For each of the contacts, generate a random keypair and add them to our
-    // contacts store
+    // contacts store, making every other one a favorite.
     users.map(async (user) => {
         let kp = Keypair.random()
         contacts.add({
@@ -102,6 +109,14 @@ async function addContactTrustlines(keypair, assets) {
     let builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(keypair)
     await submit(builtTransaction)
+}
+
+/**
+ * Empty the entire contacts list, leaving only an empty array in the browser's
+ * localStorage.
+ */
+export function emptyContacts() {
+    contacts.empty()
 }
 
 /**

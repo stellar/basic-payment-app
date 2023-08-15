@@ -73,8 +73,7 @@
      */
     const getAuthStatus = (homeDomain) => {
         if ($webAuthStore[homeDomain]) {
-            let token = $webAuthStore[homeDomain]
-            if (webAuthStore.isTokenExpired(token)) {
+            if (webAuthStore.isTokenExpired(homeDomain)) {
                 return 'auth_expired'
             } else {
                 return 'auth_valid'

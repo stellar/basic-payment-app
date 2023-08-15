@@ -6,6 +6,7 @@
     import { webAuthStore } from '$lib/stores/webAuthStore'
 
     export let homeDomain = ''
+    /** @type {string[]} */
     export let sep12Fields = []
 
     const startSep12 = async () => {

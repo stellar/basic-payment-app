@@ -2,7 +2,7 @@
     import StepsBar from '$lib/components/StepsBar.svelte'
     import TransferDetails from './TransferDetails.svelte'
     import KycInformation from './KYCInformation.svelte'
-    import SubmitTransfer from './SubmitTransfer.svelte'
+    import KycStatus from './KYCStatus.svelte'
     import Confirmation from './Confirmation.svelte'
 
     export let title = 'Initiate SEP-6 Transfer'
@@ -17,14 +17,19 @@
         transfer_id: '',
         transfer_submitted: false,
     }
-    export let formData = {}
+    export let formData = {
+        asset_code: '',
+        amount: '',
+    }
 
     /** @type {string[]} */
     let sep12Fields = []
     let transferJson = {}
-    export let submitPayment = async () => {}
-    let steps = ['Transfer Details', 'KYC Information', 'Submit Transfer', 'Confirmation']
+    /** @param {Object} [opts] Options object */
+    export let submitPayment = async (opts) => {}
+    let steps = ['Transfer Details', 'KYC Information', 'KYC Status', 'Submit Transfer']
     let currentActive = 1
+    /** @type {StepsBar} */
     let stepsBar
     $: activeStep = steps[currentActive - 1]
 
@@ -47,13 +52,13 @@
             />
         {:else if activeStep === 'KYC Information'}
             <KycInformation bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} />
-        {:else if activeStep === 'Submit Transfer'}
-            <SubmitTransfer
+        {:else if activeStep === 'KYC Status'}
+            <KycStatus
                 bind:homeDomain={homeDomain}
                 bind:sep12Fields={sep12Fields}
                 bind:transferData={transferData}
             />
-        {:else if activeStep === 'Confirmation'}
+        {:else if activeStep === 'Submit Transfer'}
             <Confirmation
                 bind:transferData={transferData}
                 bind:homeDomain={homeDomain}

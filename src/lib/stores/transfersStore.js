@@ -1,6 +1,15 @@
 import { persisted } from 'svelte-local-storage-store'
 
 /**
+ * @module $lib/stores/transfersStore
+ * @description A Svelte store that keeps track of minimal information about
+ * transfers the user has initiated with various anchors. This isn't technically
+ * required, since any anchor can be queried for a list of a user's transfers.
+ * However, this will be useful to keep track of _which_ anchors should be
+ * queried.
+ */
+
+/**
  * @typedef {Object} TransferEntry
  * @property {string} id Unique identifier for this transfer
  * @property {string} asset_code Asset code involved in the transfer

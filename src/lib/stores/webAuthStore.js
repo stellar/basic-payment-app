@@ -3,6 +3,13 @@ import { persisted } from 'svelte-local-storage-store'
 import { Buffer } from 'buffer'
 
 /**
+ * @module $lib/stores/webAuthStore
+ * @description A Svelte store that stores SEP-10 authentication tokens for any
+ * anchor the user has authenticated with, and keeps them in the browser's
+ * localStorage for use when interacting with asset anchors.
+ */
+
+/**
  * @typedef {Object.<string, string>} WebAuthStore
  * @property {string} homeDomain Home domain the authentication token was issued by.
  */
@@ -35,10 +42,15 @@ function createWebAuthStore() {
         isTokenExpired: (homeDomain) => {
             let token = get(webAuthStore)[homeDomain]
             if (token) {
+                // Compare the token's expiration timestamp with the current
+                // timestamp, returning `true` if expiration is in the past or
+                // `false` if expiration is in the future
                 let payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
                 let timestamp = Math.floor(Date.now() / 1000)
                 return timestamp > payload.exp
             } else {
+                // Return `undefined` if no token exists for the specified home
+                // domain
                 return undefined
             }
         },

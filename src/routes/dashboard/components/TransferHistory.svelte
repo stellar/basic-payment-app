@@ -4,7 +4,7 @@
     import { queryTransfers24 } from '$lib/stellar/sep24'
     import { queryTransfers6 } from '$lib/stellar/sep6'
     import { transfers } from '$lib/stores/transfersStore'
-    import { isTokenExpired, webAuthStore } from '$lib/stores/webAuthStore'
+    import { webAuthStore } from '$lib/stores/webAuthStore'
 
     let expiredToken = false
     const protocolBadgeClasses = {
@@ -44,7 +44,7 @@
         let transfersPromises = []
         if ($transfers) {
             for (let homeDomain in $transfers) {
-                if ($webAuthStore[homeDomain] && !isTokenExpired($webAuthStore[homeDomain])) {
+                if ($webAuthStore[homeDomain] && !webAuthStore.isTokenExpired(homeDomain)) {
                     for (let protocol in $transfers[homeDomain]) {
                         let uniqueAssets = [
                             ...new Set(

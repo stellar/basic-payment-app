@@ -14,14 +14,12 @@
     export let steps = []
     export let currentActive = 1
 
-    /** @type {NodeListOf<HTMLLIElement>} */
+    /** @type {NodeListOf<HTMLUListElement>} */
     let stepMarkers
 
     /** @param {number} stepIncrement */
     export const handleStep = (stepIncrement) => {
         stepMarkers = document.querySelectorAll('.step')
-        console.log('here are the `stepMarkers`', stepMarkers)
-        console.log('and here is the `typeof(stepMarkers[0])`', typeof stepMarkers[0])
         if (stepIncrement == 1) {
             currentActive++
 
@@ -51,7 +49,7 @@
 </script>
 
 <div class="not-prose">
-    <ul class="steps w-full" bind:this={stepMarkers}>
+    <ul class="steps w-full">
         {#each steps as step, i}
             {@const stepClasses = `step ${i === 0 ? 'step-primary' : ''}`}
             <li class={stepClasses}>{step}</li>

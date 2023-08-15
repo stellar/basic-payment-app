@@ -1,7 +1,13 @@
 import { persisted } from 'svelte-local-storage-store'
 
-// These fields are derived from the Standard KYC Fields outlined in SEP-9
-// https://stellar.org/protocol/sep-9
+/**
+ * @module $lib/stores/kycStore
+ * @description A Svelte store that can hold all the standard SEP-9 KYC fields
+ * in the browser's localStorage. This is useful during SEP-6 transfers, so we
+ * don't need to ask the user multiple times for the same information.
+ * @see {@link https://stellar.org/protocol/sep-9}
+ */
+
 /** @type {import('svelte/store').Writable<Object.<string, string>>} */
 export const kycStore = persisted('bpa:kycStore', {
     last_name: '',

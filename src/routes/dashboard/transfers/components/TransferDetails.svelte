@@ -1,8 +1,12 @@
 <script>
     import TransferField from './TransferField.svelte'
 
-    export let formData = {}
-    export let transferData = {}
+    export let formData = {
+        asset_code: ''
+    }
+    export let transferData = {
+        endpoint: ''
+    }
     export let sep6Info = {}
 </script>
 
