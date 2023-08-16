@@ -7,8 +7,7 @@ Here's some documentation for this component. It will show up on hover.
     import TransferField from './TransferField.svelte'
 
     /** @type {Object.<string, string>} */
-    export let formData = {
-    }
+    export let formData = {}
 
     /**
      * @type {import('./TransferModalSep6.svelte')}
