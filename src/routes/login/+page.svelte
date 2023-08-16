@@ -1,15 +1,17 @@
-<script>
-    /**
-     * @description The `/login` page offers the user a chance login and confirm
-     * the pincode they used when registering for the app.
-     *
-     * Note: In this example application, our login process is not **nearly** as
-     * robust as one would expect or desire from a real-world application. While
-     * there are ways one could get around the login page, if they really wanted
-     * to, the pincode is still required before the keypair can be decrypted to
-     * sign anything for submission to the network.
-     */
+<!--
+@component
 
+The `/login` page offers the user a chance login and confirm the pincode they
+used when registering for the app.
+
+_Note:_ In this example application, our login process is not **nearly** as
+robust as one would expect or desire from a real-world application. While there
+are ways one could get around the login page, if they really wanted to, the
+pincode is still required before the keypair can be decrypted to sign anything
+for submission to the network.
+-->
+
+<script>
     // The `export let data` declaration allows us to receive and use the page
     // load data from our `+page.js` file.
     /** @type {import('./$types').PageData} */
@@ -56,7 +58,7 @@
         </div>
         <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
             <div class="card-body">
-                <ErrorAlert dismissable={false} />
+                <ErrorAlert dismissible={false} />
                 <form on:submit|preventDefault={login}>
                     <div class="form-control">
                         <label class="label" for="publicKey">

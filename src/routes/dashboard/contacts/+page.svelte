@@ -1,11 +1,13 @@
-<script>
-    /**
-     * @description The `/dashboard/contacts` page will allow the user to
-     * collect and manage a list of contact entries that stores the contact's
-     * name and Stellar address. The contact can also be flagged/unflagged as a
-     * "favorite" contact to be displayed on the main `/dashboard` page.
-     */
+<!--
+@component
 
+The `/dashboard/contacts` page will allow the user to collect and manage a list
+of contact entries that stores the contact's name and Stellar address. The
+contact can also be flagged/unflagged as a "favorite" contact to be displayed on
+the main `/dashboard` page.
+-->
+
+<script>
     // We import things from external packages that will be needed
     import { Trash2Icon, UserPlusIcon } from 'svelte-feather-icons'
 

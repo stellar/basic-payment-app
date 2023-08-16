@@ -1,18 +1,20 @@
-<script>
-    /**
-     * @description The `/dashboard/transfers` page will allow the user to view
-     * assets they hold trustlines for, which have infrastructure available to
-     * utilize for asset transfers. A few series of server queries find out
-     * which assets the user can transfer, which protocols are available for
-     * those transfers (SEP-6 and SEP-24 currently), check the authentication
-     * status of the user with the relevant anchor, and present them with
-     * buttons that will allow them to initiate a transfer with the anchor.
-     *
-     * Heads-up this page has _a lot_ going on, and it can be easy to get lost
-     * or mixed up. We'll try to comment things in a sensible way, but you may
-     * need to take a couple read-throughs to understand everything.
-     */
+<!--
+@component
 
+The `/dashboard/transfers` page will allow the user to view assets they hold
+trustlines for, which have infrastructure available to utilize for asset
+transfers. A few series of server queries find out which assets the user can
+transfer, which protocols are available for those transfers (SEP-6 and SEP-24
+currently), check the authentication status of the user with the relevant
+anchor, and present them with buttons that will allow them to initiate a
+transfer with the anchor.
+
+Heads-up this page has _a lot_ going on, and it can be easy to get lost or mixed
+up. We'll try to comment things in a sensible way, but you may need to take a
+couple read-throughs to understand everything.
+-->
+
+<script>
     // `export let data` allows us to pull in any parent load data for use here.
     /** @type {import('./$types').PageData} */
     export let data

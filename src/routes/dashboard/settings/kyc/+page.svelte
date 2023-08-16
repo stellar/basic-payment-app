@@ -1,11 +1,13 @@
-<script>
-    /**
-     * @description The `/dashboard/settings/kyc` allows the user to view and
-     * modify the locally saved KYC information they have submitted through
-     * various SEP-6 anchors. Changes made here will be submitted to the KYC
-     * server the next time a SEP-6 transfer is initiated.
-     */
+<!--
+@component
 
+The `/dashboard/settings/kyc` allows the user to view and modify the locally
+saved KYC information they have submitted through various SEP-6 anchors. Changes
+made here will be submitted to the KYC server the next time a SEP-6 transfer is
+initiated.
+-->
+
+<script>
     // We import any stores we will need to read and/or write
     import { kycStore } from '$lib/stores/kycStore'
 </script>

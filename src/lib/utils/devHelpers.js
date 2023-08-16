@@ -114,6 +114,7 @@ async function addContactTrustlines(keypair, assets) {
 /**
  * Empty the entire contacts list, leaving only an empty array in the browser's
  * localStorage.
+ * @function emptyContacts
  */
 export function emptyContacts() {
     contacts.empty()
@@ -139,4 +140,12 @@ export async function mergeFriendbotAccount(publicKey) {
     let builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(kp)
     await submit(builtTransaction)
+}
+
+/**
+ * Clear out BasicPay's localStorage entries, effectively "deleting the user's account."
+ * @function nukeLocalStorage
+ */
+export function nukeLocalStorage() {
+    localStorage.clear()
 }

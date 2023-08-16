@@ -1,12 +1,20 @@
+<!--
+@component
+Here's some documentation for this component. It will show up on hover.
+-->
+
 <script>
     import TransferField from './TransferField.svelte'
 
+    /** @type {Object.<string, string>} */
     export let formData = {
-        asset_code: ''
     }
-    export let transferData = {
-        endpoint: ''
-    }
+
+    /**
+     * @type {import('./TransferModalSep6.svelte')}
+     */
+    export let transferData = {}
+    /** @type {Object.<string, Object>} */
     export let sep6Info = {}
 </script>
 

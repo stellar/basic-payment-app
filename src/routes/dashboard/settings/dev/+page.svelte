@@ -1,15 +1,16 @@
-<script>
-    /**
-     * @description The `/dashboard/settings/dev` page will allow developer to
-     * quickly get their "profile" into a useable state for experimenting with
-     * BasicPay and with the testnet. Utilities are available to access their
-     * Stellar public/secret keys, populate the contacts list (optionally
-     * funding the accounts and adding various trustlines to them), empty the
-     * contacts list, receive more testnet funding from friendbot, and
-     * completely erase all the `localStorage` we have for BasicPay and start
-     * fresh.
-     */
+<!--
+@component
 
+The `/dashboard/settings/dev` page will allow developer to quickly get their
+"profile" into a useable state for experimenting with BasicPay and with the
+testnet. Utilities are available to access their Stellar public/secret keys,
+populate the contacts list (optionally funding the accounts and adding various
+trustlines to them), empty the contacts list, receive more testnet funding from
+friendbot, and completely erase all the `localStorage` we have for BasicPay and
+start fresh.
+-->
+
+<script>
     // We import any Svelte components we will need
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'

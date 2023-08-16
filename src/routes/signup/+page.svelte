@@ -1,15 +1,20 @@
+<!--
+@component
+
+The `/signup` page presents the user with a randomly generated keypair, and
+prompts them to input a pincode. The user can choose to generate a different
+keypair if they want. They are then asked to confirm the pincode in our modal
+popup. This pincode is used to encrypt the keypair before it is stored in the
+browser's `localStorage`. In this example application, everything lives entirely
+client-side. So, we don't have to take extra precautions to ensure the secret
+key doesn't hit any "backend." In a real-world implementation, you would want to
+be absolutely certain the secret key **does not** leave the browser under any
+circumstance.
+-->
+
 <script>
     /**
-     * @description The `/signup` page presents the user with a randomly
-     * generated keypair, and prompts them to input a pincode. The user can
-     * choose to generate a different keypair if they want. They are then asked
-     * to confirm the pincode in our modal popup. This pincode is used to
-     * encrypt the keypair before it is stored in the browser's `localStorage`.
-     * In this example application, everything lives entirely client-side. So,
-     * we don't have to take extra precautions to ensure the secret key doesn't
-     * hit any "backend." In a real-world implementation, you would want to be
-     * absolutely certain the secret key **does not** leave the browser under
-     * any circumstance.
+     * @description
      */
 
     // We import things from external packages that will be needed

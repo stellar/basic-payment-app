@@ -1,11 +1,13 @@
-<script>
-    /**
-     * @description The `ModalCloseButton.svelte` component is a simple,
-     * customized close button that is used in the confirmation modal component.
-     * The _only_ reason we've implemented this is for stylistic consistency of
-     * the UI.
-     */
+<!--
+@component
 
+The `ModalCloseButton.svelte` component is a simple, customized close button
+that is used in the confirmation modal component. The _only_ reason we've
+implemented this is for stylistic consistency of the UI.
+-->
+
+<script>
+    // We import things from external packages that will be needed
     import { XIcon } from 'svelte-feather-icons'
 
     // `onClose` is a dummy function that will be overridden by the

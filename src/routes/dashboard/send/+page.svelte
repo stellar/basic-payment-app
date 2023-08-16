@@ -1,21 +1,23 @@
-<script>
-    /**
-     * @description The `/dashboard/send` page allows the user to send payments
-     * to other Stellar addresses. They can select from a dropdown containing
-     * their contact list names, or they could enter their own "Other..." public
-     * key. The following additional features have been implemented:
-     *
-     * - If the destination address is _not_ a funded account, the user is
-     *   informed they will be using a `createAccount` operation, and must send
-     *   at least 1 XLM.
-     * - The user can select to send/receive different assets, and paths are
-     *   queried from horizon depending on 1) if they want to strict send or
-     *   strict receive, 2) the source/destination assets they have selected, 3)
-     *   the source/destination accounts, and 4) the amound entered for the
-     *   send/receive value.
-     * - An optional memo field is available for text-only memos.
-     */
+<!--
+@component
 
+The `/dashboard/send` page allows the user to send payments to other Stellar
+addresses. They can select from a dropdown containing their contact list names,
+or they could enter their own "Other..." public key. The following additional
+features have been implemented:
+
+- If the destination address is _not_ a funded account, the user is informed
+  they will be using a `createAccount` operation, and must send at least 1 XLM.
+- The user can select to send/receive different assets, and paths are queried
+  from horizon depending on:
+  1. if they want to strict send or strict receive,
+  2. the source/destination assets they have selected,
+  3. the source/destination accounts, and
+  4. the amount entered for the send/receive value.
+- An optional memo field is available for text-only memos.
+-->
+
+<script>
     // `export let data` allows us to pull in any parent load data for use here.
     /** @type {import('./$types').PageData} */
     export let data

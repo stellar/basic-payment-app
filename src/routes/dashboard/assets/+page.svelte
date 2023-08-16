@@ -1,13 +1,14 @@
-<script>
-    /**
-     * @description The `/dashboard/assets` page will allow the user to manage
-     * the Stellar assets their account carries trustlines to. On this page,
-     * they can select from several pre-suggested or highly ranked assets, or
-     * they could specify their own asset to trust using an asset code and
-     * issuer public key. They can also remove trustlines that already exist on
-     * their account.
-     */
+<!--
+@component
 
+The `/dashboard/assets` page will allow the user to manage the Stellar assets
+their account carries trustlines to. On this page, they can select from several
+pre-suggested or highly ranked assets, or they could specify their own asset to
+trust using an asset code and issuer public key. They can also remove trustlines
+that already exist on their account.
+-->
+
+<script>
     // `export let data` allows us to pull in any parent load data for use here.
     /** @type {import('./$types').PageData} */
     export let data
