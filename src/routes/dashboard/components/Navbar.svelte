@@ -1,6 +1,22 @@
+<!--
+@component
+
+The `Navbar` component implements a very simple navigation menu that will be
+used on all of the `/dashboard/*` pages a user might interact with. This
+includes a link back to the dashboard, as well as the user's SEP-33 identicon,
+which is in-turn a menu to see the user's KYC fields and the `/dashboard/dev`
+page.
+
+More information about SEP-33 can be found here:
+<https://stellar.org/protocol/sep-33>
+-->
+
 <script>
-    import { page } from '$app/stores'
+    // We import things from external packages that will be needed
     import { MenuIcon } from 'svelte-feather-icons'
+
+    // We import any stores we will need to read and/or write
+    import { page } from '$app/stores'
 </script>
 
 <header class="navbar bg-base-300">

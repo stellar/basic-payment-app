@@ -1,9 +1,21 @@
+<!--
+@component
+
+The `FavoriteContacts` component implements a very simple table to display the
+subset of a user's contact who have the `favorite` flag set as `true` on their
+contact entry. This is displayed to the user on the `/dashboard` page.
+-->
+
 <script>
-    import { contacts } from '$lib/stores/contactsStore'
+    // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
-    // console.log('routes/dashboard/components/FavoriteContacts.svelte $contacts', $contacts)
+
+    // We import any stores we will need to read and/or write
+    import { contacts } from '$lib/stores/contactsStore'
+
+    // The `favoriteContacts` variable will be _reactive_ and update any time
+    // a contact is either marked or unmarked as a favorite
     $: favoriteContacts = $contacts?.filter((contact) => contact.favorite)
-    // console.log('routes/dashboard/components/FavoriteContacts.svelte favoriteContacts', favoriteContacts)
 </script>
 
 <h3>Favorite Contacts</h3>

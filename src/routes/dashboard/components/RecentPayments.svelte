@@ -1,7 +1,25 @@
+<!--
+@component
+
+The `RecentPayments` component will display to the user relevant information
+about any recent payments that have been made to or from their account.
+
+The data is loaded in the dashboard's `+layout.js` load function, and queries
+the Horizon server as `server.payments().forAccount('G...')`, which will query
+for regular payments, path payments, account merge operations, and claimable
+balances.
+-->
+
 <script>
-    import { page } from '$app/stores'
+    // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
-    console.log('routes/dashboard/components/RecentPayments.svelte page', $page)
+
+    // We import any stores we will need to read and/or write
+    import { page } from '$app/stores'
+
+    // We import the `EffectRecord` type from the stellar-sdk so we can
+    // predictably display who was the recipient of an `account_merge` operation
+    /** @typedef {import('stellar-sdk').ServerApi.EffectRecord} EffectRecord */
 </script>
 
 <h3>Recent Payments</h3>
@@ -24,7 +42,7 @@
                         {parseFloat(payment.starting_balance).toFixed(2)}
                     {:else if payment.type === 'account_merge'}
                         {#await payment.effects() then effects}
-                            {#each effects.records.filter((e) => e.type === 'account_credited') as effect}
+                            {#each effects.records.filter((/** @type {EffectRecord} */ e) => e.type === 'account_credited') as effect}
                                 {parseFloat(effect.amount).toFixed(2)}
                             {/each}
                         {/await}

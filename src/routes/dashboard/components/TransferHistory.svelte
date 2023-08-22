@@ -1,16 +1,32 @@
+<!--
+@component
+
+The `TransferHistory` component will display a listing of details concerning any
+transfers the user has initiated with an anchor.
+-->
+
 <script>
+    // We import any stores we will need to read and/or write
     import { page } from '$app/stores'
-    console.log('routes/dashboard/components/TransferHistory.svelte $page', $page)
-    import { queryTransfers24 } from '$lib/stellar/sep24'
-    import { queryTransfers6 } from '$lib/stellar/sep6'
     import { transfers } from '$lib/stores/transfersStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
+
+    // We import some of our `$lib` functions
+    import { queryTransfers24 } from '$lib/stellar/sep24'
+    import { queryTransfers6 } from '$lib/stellar/sep6'
 
     let expiredToken = false
     const protocolBadgeClasses = {
         sep6: 'badge badge-secondary',
         sep24: 'badge badge-accent',
     }
+
+    /**
+     * @typedef {Object} Sep6Transaction
+     * @property {string} id
+     * @property {('deposit'|'withdrawal')} kind
+     * @property {string} status
+     */
 
     const query = (protocol, assetCode, homeDomain) =>
         new Promise((resolve) => {
@@ -41,6 +57,7 @@
         })
 
     const transfersPromise = async () => {
+        /** @type {Promise<Object>[]}*/
         let transfersPromises = []
         if ($transfers) {
             for (let homeDomain in $transfers) {
@@ -67,6 +84,7 @@
     }
 </script>
 
+{#if $transfers}
 <h3>Transfer History</h3>
 {#await transfersPromise() then allTransfers}
     <table class="table-compact table">
@@ -124,3 +142,4 @@
         </p>
     {/if}
 {/await}
+{/if}
