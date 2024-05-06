@@ -252,33 +252,38 @@ couple read-throughs to understand everything.
         // We listen for the callback `message` from the popup window
         window.addEventListener('message', async (event) => {
             console.log('here is the event i heard from the popup window', event)
-            popup?.close()
+            if (event.data['transaction'] !== undefined) {
+                popup?.close()
+            }
 
             // Store the transfer in the browser's localStorage
             transfers.addTransfer({
                 homeDomain: homeDomain,
                 protocol: 'sep24',
                 assetCode: assetCode,
-                transferID: event.data.transaction.id,
+                transferID: event.data.transaction?.id ?? null,
             })
 
             // If the user has requested a withdraw with the anchor, they will
             // need to submit a Stellar transaction that sends the asset from
             // the user's account to an account controlled by the anchor.
-            if (event.data.transaction.kind === 'withdrawal') {
+            if (event.data.transaction?.kind === 'withdrawal') {
                 // Generate a transaction with the necessary details to complete
                 // the transfer
-                let { transaction, network_passphrase } = await createPaymentTransaction({
+                // let { transaction, network_passphrase } = await
+                createPaymentTransaction({
                     source: data.publicKey,
                     destination: event.data.transaction.withdraw_anchor_account,
                     asset: `${assetCode}:${assetIssuer}`,
                     amount: event.data.transaction.amount_in,
                     memo: Buffer.from(event.data.transaction.withdraw_memo, 'base64'),
+                }).then(({ transaction, network_passphrase}) => {
+
+                    // Set the component variables to hold the transaction details
+                    paymentXDR = transaction
+                    paymentNetwork = network_passphrase
                 })
 
-                // Set the component variables to hold the transaction details
-                paymentXDR = transaction
-                paymentNetwork = network_passphrase
 
                 // Open the confirmation modal for the user to confirm or reject
                 // the Stellar payment transaction. We provide our customized
