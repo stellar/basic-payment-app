@@ -1,4 +1,4 @@
-import { Utils } from 'stellar-sdk'
+import { WebAuth } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
 
@@ -79,7 +79,7 @@ function validateChallengeTransaction({
     try {
         // Use the `readChallengeTx` function from Stellar SDK to read and
         // verify most of the challenge transaction information
-        let results = Utils.readChallengeTx(
+        let results = WebAuth.readChallengeTx(
             transactionXDR,
             serverSigningKey,
             network,

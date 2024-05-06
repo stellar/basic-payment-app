@@ -1,4 +1,4 @@
-import { StellarTomlResolver } from 'stellar-sdk'
+import { StellarToml } from '@stellar/stellar-sdk'
 
 /**
  * @module $lib/stellar/sep1
@@ -6,20 +6,16 @@ import { StellarTomlResolver } from 'stellar-sdk'
  * retrieve information from an account's `home_domain`. This is often used by
  * anchors to communicate details about their own infrastructure.
  */
-/**
- * We'll import the type definition that already exists within the `stellar-sdk` package for StellarToml, so our functions will know what to expect.
- * @typedef {StellarTomlResolver.StellarToml} StellarToml
- */
 
 /**
  * Fetches and returns the stellar.toml file hosted by a provided domain.
  * @async
  * @function fetchStellarToml
  * @param {string} domain Domain to get the `stellar.toml` file for
- * @returns {Promise<StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
+ * @returns {Promise<StellarToml.Api.StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
  */
 export async function fetchStellarToml(domain) {
-    let stellarToml = await StellarTomlResolver.resolve(domain)
+    let stellarToml = await StellarToml.Resolver.resolve(domain)
     return stellarToml
 }
 
