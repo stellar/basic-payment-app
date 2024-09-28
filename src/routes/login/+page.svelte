@@ -27,6 +27,7 @@ for submission to the network.
     import { walletStore } from '$lib/stores/walletStore'
     import { Keypair } from 'stellar-sdk'
     import { allowAllModules, StellarWalletsKit, WalletNetwork, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
+    import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
 
     // Define some component variables that will be used throughout the page
     let keypair = Keypair.random()
@@ -44,7 +45,6 @@ for submission to the network.
 
 
 
-
     const connectWallet = async () => {
         try {
             await kit.openModal({
@@ -52,17 +52,21 @@ for submission to the network.
             kit.setWallet(option.id);
             const { address } = await kit.getAddress()
             if (address) {
-                publicKey = address
-                // Optionally, you can auto-redirect here or let the user confirm with a pincode
-                // await walletStore.registerWithWallet(address)
-                // goto('/dashboard')
+                const isRegistered = await walletStore.isRegistered(address)
+                if (!isRegistered) {
+                    await walletStore.registerWithWallet({ publicKey: address })
+                    await fundWithFriendbot(address)
+                } else {
+                    await walletStore.loginWithWallet(address)
+                }
+                
+                goto('/dashboard')
             }
         }
         });
          
         } catch (error) {
             console.error('Error connecting wallet:', error)
-            // Handle error (e.g., show an error message to the user)
         }
     }
 
