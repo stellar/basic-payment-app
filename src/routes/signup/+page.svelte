@@ -19,6 +19,7 @@ circumstance.
 
     // We import things from external packages that will be needed
     import { Keypair } from 'stellar-sdk'
+    import {StellarWalletsKit, WalletNetwork,allowAllModules,XBULL_ID } from '@creit.tech/stellar-wallets-kit';
 
     // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
@@ -40,6 +41,13 @@ circumstance.
     let showSecret = false
     let pincode = ''
 
+
+      // Initialize Stellar Wallet Kit
+      const kit = new StellarWalletsKit({
+        network: WalletNetwork.TESTNET,
+        selectedWalletId: XBULL_ID,
+        modules: allowAllModules(),
+    })
     /**
      * Takes an action after the pincode has been confirmed by the user.
      * @async
@@ -74,6 +82,28 @@ circumstance.
             onConfirm: onConfirm,
         })
     }
+
+    const connectWallet = async () => {
+        try {
+            await kit.openModal({
+            onWalletSelected: async (option) => {
+            kit.setWallet(option.id);
+            const { address } = await kit.getAddress()
+            if (address) {
+                publicKey = address
+                // Optionally, you can auto-redirect here or let the user confirm with a pincode
+                // await walletStore.registerWithWallet(address)
+                // goto('/dashboard')
+            }
+        }
+        });
+         
+        } catch (error) {
+            console.error('Error connecting wallet:', error)
+        }
+    }
+
+    
 </script>
 
 <div class="hero min-h-screen bg-base-200">
@@ -146,6 +176,11 @@ circumstance.
                         </div>
                         <div class="form-control mt-6">
                             <button type="submit" class="btn-primary btn">Signup</button>
+                        </div>
+                        <div class="form-control mt-2">
+                            <button type="button" class="btn-secondary btn" on:click={connectWallet}>
+                                Sign up with Wallet
+                            </button>
                         </div>
                         <div class="form-control my-1">
                             <div class="label">

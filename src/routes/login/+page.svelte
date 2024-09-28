@@ -25,9 +25,46 @@ for submission to the network.
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
+    import { Keypair } from 'stellar-sdk'
+    import { allowAllModules, StellarWalletsKit, WalletNetwork, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
 
     // Define some component variables that will be used throughout the page
+    let keypair = Keypair.random()
+    $: publicKey = keypair.publicKey()
+    $: secretKey = keypair.secret()
+    let showSecret = false
     let pincode = ''
+
+         // Initialize Stellar Wallet Kit
+         const kit = new StellarWalletsKit({
+        network: WalletNetwork.TESTNET,
+        selectedWalletId: XBULL_ID,
+        modules: allowAllModules(),
+    })
+
+
+
+
+    const connectWallet = async () => {
+        try {
+            await kit.openModal({
+            onWalletSelected: async (option) => {
+            kit.setWallet(option.id);
+            const { address } = await kit.getAddress()
+            if (address) {
+                publicKey = address
+                // Optionally, you can auto-redirect here or let the user confirm with a pincode
+                // await walletStore.registerWithWallet(address)
+                // goto('/dashboard')
+            }
+        }
+        });
+         
+        } catch (error) {
+            console.error('Error connecting wallet:', error)
+            // Handle error (e.g., show an error message to the user)
+        }
+    }
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
@@ -85,6 +122,13 @@ for submission to the network.
                     </div>
                     <div class="form-control mt-6">
                         <button class="btn-primary btn">Login</button>
+                    </div>
+
+
+                    <div class="form-control mt-2">
+                        <button type="button" class="btn-secondary btn" on:click={connectWallet}>
+                            Sign in with Wallet
+                        </button>
                     </div>
                 </form>
             </div>
