@@ -48,9 +48,7 @@ function createWalletStore() {
                 set({
                     keyId: keyMetadata.id,
                     publicKey: publicKey,
-                    // Don't include this in a real-life production application.
-                    // It's just here to make the secret key accessible in case
-                    // we need to do some manual transactions or something.
+                  
                     devInfo: {
                         secretKey: secretKey,
                     },
@@ -101,7 +99,7 @@ function createWalletStore() {
             try {
                 const keyManager = setupKeyManager()
                 const { publicKey } = get(walletStore)
-                const sourceAccount = new Account(publicKey, '0') // Replace '0' with actual sequence number
+                const sourceAccount = new Account(publicKey, '0') // you have to Replace '0' with actual sequence number
 
                 let transaction;
 
