@@ -45,14 +45,14 @@ function createContactsStore() {
          * Adds a new contact entry to the list with the provided details.
          * @function add
          * @param {ContactEntry} contact Details of new contact entry to add to the list
-         * @throws Will throw an error if the new contact entry contains an invalid public key in the `address` field
+         * @throws Will throw an error if the new contact entry contains an invalid public key or contract address in the `address` field
          */
         add: (contact) =>
             update((list) => {
-                if (StrKey.isValidEd25519PublicKey(contact.address)) {
+                if (StrKey.isValidEd25519PublicKey(contact.address) || StrKey.isValidContract(contact.address)) {
                     return [...list, { ...contact, id: uuidv4() }]
                 } else {
-                    throw error(400, { message: 'invalid public key' })
+                    throw error(400, { message: 'invalid public key or contract address' })
                 }
             }),
 
@@ -82,6 +82,15 @@ function createContactsStore() {
             } else {
                 return false
             }
+        },
+
+        /**
+         * Checks if the given address is a contract address
+         * @param {string} address Address to check
+         * @returns {boolean} True if the address is a contract address, false otherwise
+         */
+        isContractAddress: (address) => {
+            return StrKey.isValidContract(address)
         },
     }
 }
