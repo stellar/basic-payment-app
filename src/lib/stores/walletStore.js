@@ -16,10 +16,51 @@ import { TransactionBuilder } from 'stellar-sdk'
 
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
-    const { subscribe, set } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
-
+    const { subscribe, set, } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
+    const store = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
     return {
         subscribe,
+
+         /**
+         * Checks if a wallet is already registered
+         * @param {string} publicKey Public Stellar address
+         * @returns {Promise<boolean>} True if the wallet is registered, false otherwise
+         */
+         isRegistered: async (publicKey) => {
+            const storeValue = get(store)
+            return storeValue.publicKey === publicKey
+        },
+
+
+        /**
+         * Registers a user by their public key (wallet-based registration)
+         * @param {Object} opts Options object
+         * @param {string} opts.publicKey Public Stellar address
+         */
+        registerWithWallet: async ({ publicKey }) => {
+            try {
+                store.set({
+                    keyId: publicKey, // Using publicKey as keyId for simplicity
+                    publicKey: publicKey,
+                })
+            } catch (err) {
+                console.error('Error registering wallet', err)
+                // throw new Error(err.toString())
+            }
+        },
+
+        /**
+         * Logs in a user by their public key (wallet-based login)
+         * @param {string} publicKey Public Stellar address
+         */
+        loginWithWallet: async (publicKey) => {
+            const storeValue = get(store)
+            if (storeValue.publicKey !== publicKey) {
+                throw new Error('Wallet not registered')
+            }
+            // If the publicKey matches, we consider the user logged in
+            // You might want to add additional logic here if needed
+        },
 
         /**
          * Registers a user by storing their encrypted keypair in the browser's localStorage.

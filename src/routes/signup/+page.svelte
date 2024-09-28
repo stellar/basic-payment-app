@@ -90,10 +90,15 @@ circumstance.
             kit.setWallet(option.id);
             const { address } = await kit.getAddress()
             if (address) {
-                publicKey = address
-                // Optionally, you can auto-redirect here or let the user confirm with a pincode
-                // await walletStore.registerWithWallet(address)
-                // goto('/dashboard')
+                const isRegistered = await walletStore.isRegistered(address)
+                if (!isRegistered) {
+                    await walletStore.registerWithWallet({ publicKey: address })
+                    await fundWithFriendbot(address)
+                } else {
+                    await walletStore.loginWithWallet(address)
+                }
+                
+                goto('/dashboard')
             }
         }
         });
