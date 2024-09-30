@@ -24,7 +24,7 @@
         "@tailwindcss/typography": "^0.5.15",
         "@types/stellar-sdk": "^0.11.1",
         "autoprefixer": "^10.4.20",
-        "daisyui": "^3.1.11",
+        "daisyui": "^4.12.10",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^8.10.0",
         "eslint-plugin-svelte": "^2.44.1",

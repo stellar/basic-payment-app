@@ -1,12 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { TransactionBuilder, Networks, StrKey, Asset } from '@stellar/stellar-sdk';
-import { rpc } from '@stellar/stellar-sdk';
+import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk';
 
-
-const { Server } = rpc;
 const horizonUrl = 'https://horizon-testnet.stellar.org';
-const server = new Server(horizonUrl);
-
+const server = new Horizon.Server(horizonUrl)
 
 /**
  * @module $lib/stellar/horizonQueries

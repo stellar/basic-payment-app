@@ -1,4 +1,4 @@
-import StellarTomlResolver from '@stellar/stellar-sdk'
+import { StellarToml } from '@stellar/stellar-sdk'
 
 /**
  * @module $lib/stellar/sep1
@@ -19,7 +19,7 @@ import StellarTomlResolver from '@stellar/stellar-sdk'
  * @returns {Promise<StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
  */
 export async function fetchStellarToml(domain) {
-    let stellarToml = await StellarTomlResolver.resolve(domain)
+    let stellarToml = await StellarToml.Resolver.resolve(domain)
     return stellarToml
 }
 
