@@ -31,7 +31,7 @@ on the following occasions:
 
     // We need a couple things from the stellar-sdk to reconstruct the
     // Transaction object from the XDR string, when the time comes
-    import { Networks, TransactionBuilder } from 'stellar-sdk'
+    import { Networks, TransactionBuilder } from '@stellar/stellar-sdk'
 
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
@@ -116,7 +116,7 @@ on the following occasions:
     // opposed to an assignment) as _reactive_. In this case, every time
     // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
     // recomputed and any dependent components would be updated accordingly.
-    /** @type {import('stellar-sdk').Transaction}*/
+    /** @type {import('@stellar/stellar-sdk').Transaction}*/
     // @ts-ignore
     $: transaction = transactionXDR
         ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)

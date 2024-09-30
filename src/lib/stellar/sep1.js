@@ -1,4 +1,4 @@
-import { StellarTomlResolver } from 'stellar-sdk'
+import StellarTomlResolver from '@stellar/stellar-sdk'
 
 /**
  * @module $lib/stellar/sep1

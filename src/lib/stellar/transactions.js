@@ -1,4 +1,5 @@
-import { TransactionBuilder, Networks, Server, Operation, Asset, Memo } from 'stellar-sdk'
+import { TransactionBuilder, Networks, Operation, Asset, Memo } from '@stellar/stellar-sdk'
+import Server from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 
 /**
