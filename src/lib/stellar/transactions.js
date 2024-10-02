@@ -1,6 +1,6 @@
-import { TransactionBuilder, Networks, Server, Operation, Asset, Memo } from 'stellar-sdk'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, xdr, Address, StrKey } from 'stellar-sdk'
+import Server from 'stellar-sdk'
 import { error } from '@sveltejs/kit'
-
 /**
  * @module $lib/stellar/transactions
  * @description A collection of functions that will generate and return
@@ -12,6 +12,7 @@ import { error } from '@sveltejs/kit'
  * {@link createChangeTrustTransaction}
  * {@link createPathPaymentStrictSendTransaction}
  * {@link createPathPaymentStrictReceiveTransaction}
+ * {@link createContractTransferTransaction}
  */
 
 // We are setting a very high maximum fee, which increases our transaction's
@@ -330,4 +331,59 @@ export async function createPathPaymentStrictReceiveTransaction({
         transaction: builtTransaction.toXDR(),
         network_passphrase: networkPassphrase,
     }
+}
+
+/**
+ * Constructs and returns a Stellar transaction for transferring assets to a contract or account.
+ * @async
+ * @function createContractTransferTransaction
+ * @param {Object} opts Options object
+ * @param {string} opts.source Public Stellar address to use as the source account of the transaction
+ * @param {string} opts.destination Public Stellar address or contract ID to receive the transfer
+ * @param {string} opts.amount Amount of the asset to transfer
+ * @param {string} opts.asset Asset to be transferred (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
+ * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
+ */
+export async function createContractTransferTransaction({ source, destination, amount, asset }) {
+    const server = new Server(horizonUrl);
+    const sourceAccount = await server.loadAccount(source);
+
+    const transaction = new TransactionBuilder(sourceAccount, {
+        networkPassphrase: networkPassphrase,
+        fee: maxFeePerOperation,
+    });
+
+    if (StrKey.isValidContract(destination)) {
+        // Transfer to a contract
+        const [assetCode, assetIssuer] = asset.split(':');
+        const contract = new Contract(destination);
+        const amountBigInt = BigInt(amount);
+        const transferOp = contract.call(
+            "transfer",
+            Address.fromString(source).toScVal(),
+            Address.fromString(destination).toScVal(),
+            xdr.ScVal.scvI128(new xdr.Int128Parts({
+                lo: xdr.Uint64.fromString(amountBigInt.toString(16).padStart(16, '0').slice(-16)),
+                hi: xdr.Int64.fromString(amountBigInt.toString(16).slice(0, -16) || '0')
+            })),
+            xdr.ScVal.scvSymbol(assetCode)
+        );
+        transaction.addOperation(transferOp);
+    } else {
+        // Regular payment to an account
+        let sendAsset = asset === 'native' ? Asset.native() : new Asset(asset.split(':')[0], asset.split(':')[1]);
+        transaction.addOperation(
+            Operation.payment({
+                destination: destination,
+                asset: sendAsset,
+                amount: amount.toString()
+            })
+        );
+    }
+
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build();
+    return {
+        transaction: builtTransaction.toXDR(),
+        network_passphrase: networkPassphrase,
+    };
 }
