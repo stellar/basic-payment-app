@@ -464,7 +464,6 @@ features have been implemented:
 
 <!-- Button -->
 <div class="form-control my-5">
-    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button
-    >
+    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->
