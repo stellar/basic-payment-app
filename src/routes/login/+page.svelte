@@ -25,17 +25,11 @@ for submission to the network.
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
-    import { allowAllModules, StellarWalletsKit, WalletNetwork, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
     import WalletKitProvider from '../dashboard/components/WalletKitProvider.svelte'
     // Define some component variables that will be used throughout the page
     let pincode = ''
 
-         // Initialize Stellar Wallet Kit
-         const kit = new StellarWalletsKit({
-        network: WalletNetwork.TESTNET,
-        selectedWalletId: XBULL_ID,
-        modules: allowAllModules(),
-    })
+   
 
 
 

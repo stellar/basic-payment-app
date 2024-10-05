@@ -19,7 +19,6 @@ circumstance.
 
     // We import things from external packages that will be needed
     import { Keypair } from 'stellar-sdk'
-    import {StellarWalletsKit, WalletNetwork,allowAllModules,XBULL_ID } from '@creit.tech/stellar-wallets-kit';
 
     // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'

@@ -1,10 +1,12 @@
 <!-- src/lib/components/WalletComponent.svelte -->
 <script>
+  // @ts-ignore
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { walletStore } from '$lib/stores/walletStore';
   import { fundWithFriendbot } from '$lib/stellar/horizonQueries';
-  import { StellarWalletsKit, WalletNetwork, allowAllModules, XBULL_ID } from '@creit.tech/stellar-wallets-kit';
+  // @ts-ignore
+  import { StellarWalletsKit, WalletNetwork, allowAllModules, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
 
 
 
@@ -18,13 +20,13 @@
   const connectWallet = async () => {
       try {
           await kit.openModal({
+              // @ts-ignore
               onWalletSelected: async (option) => {
                   kit.setWallet(option.id);
                   const { address } = await kit.getAddress();
                   
                   if (address) {
                       await walletStore.registerWithWallet({ publicKey: address });
-                      await fundWithFriendbot(address);
                       goto('/dashboard');
                   }
               }
