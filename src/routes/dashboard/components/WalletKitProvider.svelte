@@ -1,10 +1,7 @@
 <!-- src/lib/components/WalletComponent.svelte -->
 <script>
-  // @ts-ignore
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { walletStore } from '$lib/stores/walletStore';
-  import { fundWithFriendbot } from '$lib/stellar/horizonQueries';
   // @ts-ignore
   import { StellarWalletsKit, WalletNetwork, allowAllModules, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
 
