@@ -30,10 +30,6 @@ for submission to the network.
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
 
     // Define some component variables that will be used throughout the page
-    let keypair = Keypair.random()
-    $: publicKey = keypair.publicKey()
-    $: secretKey = keypair.secret()
-    let showSecret = false
     let pincode = ''
 
          // Initialize Stellar Wallet Kit
@@ -46,29 +42,26 @@ for submission to the network.
 
 
     const connectWallet = async () => {
-        try {
-            await kit.openModal({
+    try {
+        await kit.openModal({
             onWalletSelected: async (option) => {
-            kit.setWallet(option.id);
-            const { address } = await kit.getAddress()
-            if (address) {
-                const isRegistered = await walletStore.isRegistered(address)
-                if (!isRegistered) {
-                    await walletStore.registerWithWallet({ publicKey: address })
-                    await fundWithFriendbot(address)
-                } else {
-                    await walletStore.loginWithWallet(address)
-                }
+                kit.setWallet(option.id);
+                const { address } = await kit.getAddress();
                 
-                goto('/dashboard')
+                if (address) {
+                    // Directly register the wallet without checking if registered
+                    await walletStore.registerWithWallet({ publicKey: address });
+                    // await fundWithFriendbot(address);
+                    
+                    // Redirect to the dashboard
+                    goto('/dashboard');
+                }
             }
-        }
         });
-         
-        } catch (error) {
-            console.error('Error connecting wallet:', error)
-        }
+    } catch (error) {
+        console.error('Error connecting wallet:', error);
     }
+};
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.

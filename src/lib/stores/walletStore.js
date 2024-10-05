@@ -17,7 +17,6 @@ import { TransactionBuilder } from 'stellar-sdk'
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
     const { subscribe, set, } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
-    const store = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
     return {
         subscribe,
 
@@ -26,10 +25,7 @@ function createWalletStore() {
          * @param {string} publicKey Public Stellar address
          * @returns {Promise<boolean>} True if the wallet is registered, false otherwise
          */
-         isRegistered: async (publicKey) => {
-            const storeValue = get(store)
-            return storeValue.publicKey === publicKey
-        },
+      
 
 
         /**
@@ -39,7 +35,7 @@ function createWalletStore() {
          */
         registerWithWallet: async ({ publicKey }) => {
             try {
-                store.set({
+                set({
                     keyId: publicKey, // Using publicKey as keyId for simplicity
                     publicKey: publicKey,
                 })
@@ -54,12 +50,12 @@ function createWalletStore() {
          * @param {string} publicKey Public Stellar address
          */
         loginWithWallet: async (publicKey) => {
-            const storeValue = get(store)
+            const storeValue = get(walletStore);
             if (storeValue.publicKey !== publicKey) {
-                throw new Error('Wallet not registered')
+                throw error(400, { message: 'Wallet not registered' });
             }
-            // If the publicKey matches, we consider the user logged in
-            // You might want to add additional logic here if needed
+            // If the publicKey matches, the user is considered logged in.
+            // You might want to add additional logic here if needed.
         },
 
         /**
