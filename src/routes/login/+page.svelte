@@ -25,10 +25,8 @@ for submission to the network.
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
-    import { Keypair } from 'stellar-sdk'
     import { allowAllModules, StellarWalletsKit, WalletNetwork, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
-    import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-
+    import WalletKitProvider from '../dashboard/components/WalletKitProvider.svelte'
     // Define some component variables that will be used throughout the page
     let pincode = ''
 
@@ -41,27 +39,7 @@ for submission to the network.
 
 
 
-    const connectWallet = async () => {
-    try {
-        await kit.openModal({
-            onWalletSelected: async (option) => {
-                kit.setWallet(option.id);
-                const { address } = await kit.getAddress();
-                
-                if (address) {
-                    // Directly register the wallet without checking if registered
-                    await walletStore.registerWithWallet({ publicKey: address });
-                    // await fundWithFriendbot(address);
-                    
-                    // Redirect to the dashboard
-                    goto('/dashboard');
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error connecting wallet:', error);
-    }
-};
+
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
@@ -123,9 +101,7 @@ for submission to the network.
 
 
                     <div class="form-control mt-2">
-                        <button type="button" class="btn-secondary btn" on:click={connectWallet}>
-                            Sign in with Wallet
-                        </button>
+                      <WalletKitProvider buttonText='Login with wallet'/>
                     </div>
                 </form>
             </div>

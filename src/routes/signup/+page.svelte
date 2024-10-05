@@ -29,7 +29,7 @@ circumstance.
     import { goto } from '$app/navigation'
     import { walletStore } from '$lib/stores/walletStore'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-
+    import WalletKitProvider from '../dashboard/components/WalletKitProvider.svelte';
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
@@ -42,12 +42,7 @@ circumstance.
     let pincode = ''
 
 
-      // Initialize Stellar Wallet Kit
-      const kit = new StellarWalletsKit({
-        network: WalletNetwork.TESTNET,
-        selectedWalletId: XBULL_ID,
-        modules: allowAllModules(),
-    })
+
     /**
      * Takes an action after the pincode has been confirmed by the user.
      * @async
@@ -83,28 +78,8 @@ circumstance.
         })
     }
 
-    
-    const connectWallet = async () => {
-    try {
-        await kit.openModal({
-            onWalletSelected: async (option) => {
-                kit.setWallet(option.id);
-                const { address } = await kit.getAddress();
-                
-                if (address) {
-                    // Directly register the wallet without checking if registered
-                    await walletStore.registerWithWallet({ publicKey: address });
-                    await fundWithFriendbot(address);
-                    
-                    // Redirect to the dashboard
-                    goto('/dashboard');
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error connecting wallet:', error);
-    }
-};
+
+
 
     
 </script>
@@ -181,9 +156,7 @@ circumstance.
                             <button type="submit" class="btn-primary btn">Signup</button>
                         </div>
                         <div class="form-control mt-2">
-                            <button type="button" class="btn-secondary btn" on:click={connectWallet}>
-                                Sign up with Wallet
-                            </button>
+                           <WalletKitProvider buttonText='Sign up with wallet'/>
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
