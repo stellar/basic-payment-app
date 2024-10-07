@@ -8,7 +8,7 @@ import { StellarToml } from '@stellar/stellar-sdk'
  */
 /**
  * We'll import the type definition that already exists within the `stellar-sdk` package for StellarToml, so our functions will know what to expect.
- * @typedef {StellarTomlResolver.StellarToml} StellarToml
+ * @typedef {StellarToml.Api.StellarToml} StellarToml
  */
 
 /**
