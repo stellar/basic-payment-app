@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { persisted } from 'svelte-local-storage-store'
-import { StrKey } from 'stellar-sdk'
+import { StrKey } from '@stellar/stellar-base'
 import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 
@@ -49,7 +49,7 @@ function createContactsStore() {
          */
         add: (contact) =>
             update((list) => {
-                if (StrKey.isValidEd25519PublicKey(contact.address)) {
+                if (StrKey.isValidEd25519PublicKey(contact.address) || StrKey.isValidContract(contact.address)) {
                     return [...list, { ...contact, id: uuidv4() }]
                 } else {
                     throw error(400, { message: 'invalid public key' })
