@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { Server, TransactionBuilder, Networks, StrKey, Asset } from 'stellar-sdk'
+import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk';
 
-const horizonUrl = 'https://horizon-testnet.stellar.org'
-const server = new Server(horizonUrl)
+const horizonUrl = 'https://horizon-testnet.stellar.org';
+const server = new Horizon.Server(horizonUrl)
 
 /**
  * @module $lib/stellar/horizonQueries
@@ -14,13 +14,13 @@ const server = new Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `stellar-sdk` package, so our functions will know what to expect.
-/** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
-/** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
-/** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
-/** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
-/** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
-/** @typedef {import('stellar-sdk').Transaction} Transaction */
-/** @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.AccountRecord} AccountRecord */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLine} BalanceLine */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
+/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
 
 /**
  * Fetches and returns details about an account on the Stellar network.
