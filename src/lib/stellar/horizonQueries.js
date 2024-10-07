@@ -45,7 +45,7 @@ export async function fetchAccount(publicKey) {
                     return account
                 } catch (err) {
                     throw error(500, {
-                        message: `Unable to fund account ${publicKey}: ${error.message}`,
+                        message: `Unable to fund account ${publicKey}: ${err.message}`,
                     })
                 }
             } else {
