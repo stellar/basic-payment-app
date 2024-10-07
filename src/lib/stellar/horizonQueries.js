@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error } from '@sveltejs/kit'
 import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
