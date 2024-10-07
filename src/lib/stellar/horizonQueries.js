@@ -39,11 +39,11 @@ export async function fetchAccount(publicKey) {
             // @ts-ignore
             if (err.response?.status === 404) {
                 try {
-                    fundWithFriendbot(publicKey)
+                    await fundWithFriendbot(publicKey)
 
                     let account = await server.accounts().accountId(publicKey).call()
                     return account
-                } catch (error) {
+                } catch (err) {
                     throw error(500, {
                         message: `Unable to fund account ${publicKey}: ${error.message}`,
                     })
