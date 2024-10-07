@@ -20,6 +20,7 @@
         "@sveltejs/adapter-auto": "^2.1.1",
         "@sveltejs/adapter-static": "^2.0.3",
         "@sveltejs/kit": "^1.30.4",
+        "@sveltejs/vite-plugin-svelte": "^3.1.2",
         "@tailwindcss/forms": "^0.5.9",
         "@tailwindcss/typography": "^0.5.15",
         "@types/stellar-sdk": "^0.11.1",
