@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit'
-import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk';
+import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
-const horizonUrl = 'https://horizon-testnet.stellar.org';
+const horizonUrl = 'https://horizon-testnet.stellar.org'
 const server = new Horizon.Server(horizonUrl)
 
 /**
@@ -38,7 +38,16 @@ export async function fetchAccount(publicKey) {
         } catch (err) {
             // @ts-ignore
             if (err.response?.status === 404) {
-                throw error(404, 'account not funded on network')
+                try {
+                    fundWithFriendbot(publicKey)
+
+                    let account = await server.accounts().accountId(publicKey).call()
+                    return account
+                } catch (error) {
+                    throw error(500, {
+                        message: `Unable to fund account ${publicKey}: ${error.message}`,
+                    })
+                }
             } else {
                 // @ts-ignore
                 throw error(err.response?.status ?? 400, {
