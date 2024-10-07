@@ -28,6 +28,6 @@ export default defineConfig({
         },
     },
     ssr: {
-        noExternal: ['@albedo-link/intent'],
+        noExternal: ['@stellar/typescript-wallet-sdk-km', '@albedo-link/intent'],
     },
 })
