@@ -103,25 +103,7 @@ function createWalletStore() {
 
                 let transaction;
 
-                if (contacts.isContractAddress(destination)) {
-                    // Handle SAC transfer
-                    const contract = new Contract(destination);
-                    const transferOp = contract.call(
-                        'transfer',
-                        xdr.ScVal.scvAddress(Address.fromString(publicKey).toScAddress()),
-                        xdr.ScVal.scvAddress(Address.fromString(destination).toScAddress()),
-                        xdr.ScVal.scvI128(new xdr.Int128Parts({
-                            lo: xdr.Uint64.fromString(amount),
-                            hi: xdr.Int64.fromString('0')
-                        })),
-                        xdr.ScVal.scvSymbol(asset.getCode())
-                    );
-
-                    transaction = new TransactionBuilder(sourceAccount, { fee: '100', networkPassphrase: network })
-                        .addOperation(transferOp)
-                        .setTimeout(30)
-                        .build();
-                } else {
+              
                     // Handle regular payment
                     transaction = new TransactionBuilder(sourceAccount, { fee: '100', networkPassphrase: network })
                         .addOperation(Operation.payment({
@@ -131,7 +113,7 @@ function createWalletStore() {
                         }))
                         .setTimeout(30)
                         .build();
-                }
+             
 
                 let signedTransaction = await keyManager.signTransaction({
                     transaction: transaction,
