@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { error } from '@sveltejs/kit'
-import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
+import { Server, TransactionBuilder, Networks, StrKey, Asset } from 'stellar-sdk'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org'
-const server = new Horizon.Server(horizonUrl)
+export const server = new Server(horizonUrl)
 
 /**
  * @module $lib/stellar/horizonQueries
@@ -15,13 +15,13 @@ const server = new Horizon.Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `stellar-sdk` package, so our functions will know what to expect.
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.AccountRecord} AccountRecord */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLine} BalanceLine */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
-/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
+/** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
+/** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
+/** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
+/** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
+/** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
+/** @typedef {import('stellar-sdk').Transaction} Transaction */
+/** @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
 
 /**
  * Fetches and returns details about an account on the Stellar network.
@@ -41,7 +41,6 @@ export async function fetchAccount(publicKey) {
             if (err.response?.status === 404) {
                 try {
                     await fundWithFriendbot(publicKey)
-
                     let account = await server.accounts().accountId(publicKey).call()
                     return account
                 } catch (err) {

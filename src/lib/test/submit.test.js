@@ -12,13 +12,13 @@ describe('submit', () => {
     const submitTransactionMock = vi
       .spyOn(server, 'submitTransaction')
       .mockResolvedValue({
-
-          hash: 'fakeTransactionHash',
-          ledger: 123456,
-          successful: false,
-          envelope_xdr: '',
-          result_xdr: '',
-          result_meta_xdr: ''
+        hash: 'fakeTransactionHash',
+        ledger: 123456,
+        successful: false,
+        envelope_xdr: '',
+        result_xdr: '',
+        result_meta_xdr: '',
+        paging_token: ''
       });
 
     // @ts-ignore
