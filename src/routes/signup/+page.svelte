@@ -28,7 +28,7 @@ circumstance.
     import { goto } from '$app/navigation'
     import { walletStore } from '$lib/stores/walletStore'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-    import WalletKitProvider from '../dashboard/components/WalletKitProvider.svelte';
+    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')

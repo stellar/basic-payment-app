@@ -3,6 +3,13 @@ import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
 import { KeyManager, KeyManagerPlugins, KeyType } from '@stellar/wallet-sdk'
 import { TransactionBuilder } from 'stellar-sdk'
+import {
+    StellarWalletsKit,
+    WalletNetwork,
+    allowAllModules,
+    XBULL_ID
+  } from '@creit.tech/stellar-wallets-kit';
+  
 
 /** @typedef {import('stellar-sdk').Transaction} Transaction */
 
@@ -20,12 +27,6 @@ function createWalletStore() {
     return {
         subscribe,
 
-         /**
-         * Checks if a wallet is already registered
-         * @param {string} publicKey Public Stellar address
-         * @returns {Promise<boolean>} True if the wallet is registered, false otherwise
-         */
-      
 
 
         /**
@@ -132,19 +133,42 @@ function createWalletStore() {
          */
         sign: async ({ transactionXDR, network, pincode }) => {
             try {
-                const keyManager = setupKeyManager()
-                let signedTransaction = await keyManager.signTransaction({
+                const keyManager = setupKeyManager();
+                const { keyId, publicKey } = get(walletStore);
+                
+                if (keyId === publicKey) {
+                    const kit = new StellarWalletsKit({
+                        network: WalletNetwork.TESTNET,
+                        selectedWalletId: XBULL_ID,
+                        modules: allowAllModules(),
+                    });
+                    const { address } = await kit.getAddress();
+                    
+                    // Sign the transaction using the wallet address
+                    const { signedTxXdr } = await kit.signTransaction(transactionXDR, {
+                        address,
+                        networkPassphrase: WalletNetwork.PUBLIC, // or use your specific network passphrase
+                    });
+        
                     // @ts-ignore
-                    transaction: TransactionBuilder.fromXDR(transactionXDR, network),
-                    id: get(walletStore).keyId,
-                    password: pincode,
-                })
-                return signedTransaction
-            } catch (err) {
+                    return signedTxXdr; // Return the signed transaction
+                } else {
+                    // Fallback to signing with pincode if no wallet
+                    const signedTransaction = await keyManager.signTransaction({
+                        // @ts-ignore
+                        transaction: TransactionBuilder.fromXDR(transactionXDR, network),
+                        id: keyId,
+                        password: pincode,
+                    });
+                    // @ts-ignore
+                    return signedTransaction;
+                }
+            }catch (err) {
                 console.error('Error signing transaction', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
             }
+
         },
     }
 }

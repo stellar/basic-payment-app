@@ -25,7 +25,7 @@ for submission to the network.
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
-    import WalletKitProvider from '../dashboard/components/WalletKitProvider.svelte'
+    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
     // Define some component variables that will be used throughout the page
     let pincode = ''
 
