@@ -226,6 +226,6 @@ export async function findStrictReceivePaths({
     if (response.records.length > 0) {
         return response.records
     } else {
-        throw error(400, { message: 'no strict receive paths available' })
+        throw new Error('no strict receive paths available')
     }
 }
