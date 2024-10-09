@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { persisted } from 'svelte-local-storage-store'
-import { StrKey } from 'stellar-sdk'
+import { StrKey } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 

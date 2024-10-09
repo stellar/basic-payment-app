@@ -1,4 +1,4 @@
-import { StellarTomlResolver } from 'stellar-sdk'
+import { StellarToml } from '@stellar/stellar-sdk'
 
 /**
  * @module $lib/stellar/sep1
@@ -8,7 +8,7 @@ import { StellarTomlResolver } from 'stellar-sdk'
  */
 /**
  * We'll import the type definition that already exists within the `stellar-sdk` package for StellarToml, so our functions will know what to expect.
- * @typedef {StellarTomlResolver.StellarToml} StellarToml
+ * @typedef {StellarToml.Api.StellarToml} StellarToml
  */
 
 /**
@@ -19,7 +19,7 @@ import { StellarTomlResolver } from 'stellar-sdk'
  * @returns {Promise<StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
  */
 export async function fetchStellarToml(domain) {
-    let stellarToml = await StellarTomlResolver.resolve(domain)
+    let stellarToml = await StellarToml.Resolver.resolve(domain)
     return stellarToml
 }
 

@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
-import { Server, TransactionBuilder, Networks, StrKey, Asset } from 'stellar-sdk'
+import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org'
-const server = new Server(horizonUrl)
+const server = new Horizon.Server(horizonUrl)
 
 /**
  * @module $lib/stellar/horizonQueries
@@ -14,13 +14,13 @@ const server = new Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `stellar-sdk` package, so our functions will know what to expect.
-/** @typedef {import('stellar-sdk').ServerApi.AccountRecord} AccountRecord */
-/** @typedef {import('stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
-/** @typedef {import('stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
-/** @typedef {import('stellar-sdk').Horizon.BalanceLine} BalanceLine */
-/** @typedef {import('stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
-/** @typedef {import('stellar-sdk').Transaction} Transaction */
-/** @typedef {import('stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.AccountRecord} AccountRecord */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLine} BalanceLine */
+/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
+/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
+/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
 
 /**
  * Fetches and returns details about an account on the Stellar network.
@@ -38,7 +38,16 @@ export async function fetchAccount(publicKey) {
         } catch (err) {
             // @ts-ignore
             if (err.response?.status === 404) {
-                throw error(404, 'account not funded on network')
+                try {
+                    await fundWithFriendbot(publicKey)
+
+                    let account = await server.accounts().accountId(publicKey).call()
+                    return account
+                } catch (err) {
+                    throw error(500, {
+                        message: `Unable to fund account ${publicKey}: ${err.message}`,
+                    })
+                }
             } else {
                 // @ts-ignore
                 throw error(err.response?.status ?? 400, {
