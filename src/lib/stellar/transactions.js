@@ -1,5 +1,5 @@
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, rpc } from '@stellar/stellar-sdk'
-import Server from '@stellar/stellar-sdk/lib/server'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract,xdr, Address, StrKey, rpc, } from '@stellar/stellar-sdk'
+import Server from '@stellar/stellar-sdk'
 import { nativeToScVal } from 'soroban-client'
 import { error } from '@sveltejs/kit'
 /**
@@ -24,7 +24,7 @@ const maxFeePerOperation = '100000'
 const horizonUrl = 'https://horizon-testnet.stellar.org'
 const networkPassphrase = Networks.TESTNET
 const standardTimebounds = 300 // 5 minutes for the user to review/sign/submit
-const rpcUrl = 'https://soroban-rpc.testnet.stellar.org'
+const rpcUrl = 'https://soroban-testnet.stellar.org'
 
 /**
  * For consistency, all functions in this module will return the same type of object.
