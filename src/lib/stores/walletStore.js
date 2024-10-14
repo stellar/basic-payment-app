@@ -1,12 +1,10 @@
 import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
-import { KeyManager, KeyManagerPlugins, KeyType } from '@stellar/wallet-sdk'
-import { TransactionBuilder, Operation, Asset, Contract, xdr, Address, StrKey } from 'stellar-sdk'
-import { contacts } from './contactsStore'
-import { Account } from 'stellar-sdk'
+import { KeyManager, LocalStorageKeyStore, ScryptEncrypter, KeyType } from '@stellar/typescript-wallet-sdk-km'
+import { TransactionBuilder } from '@stellar/stellar-sdk'
 
-/** @typedef {import('stellar-sdk').Transaction} Transaction */
+/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
 
 /**
  * @typedef {Object} WalletStore
@@ -42,13 +40,15 @@ function createWalletStore() {
                         privateKey: secretKey,
                     },
                     password: pincode,
-                    encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
+                    encrypterName: ScryptEncrypter.name,
                 })
 
                 set({
                     keyId: keyMetadata.id,
                     publicKey: publicKey,
-                  
+                    // Don't include this in a real-life production application.
+                    // It's just here to make the secret key accessible in case
+                    // we need to do some manual transactions or something.
                     devInfo: {
                         secretKey: secretKey,
                     },
@@ -85,49 +85,28 @@ function createWalletStore() {
         },
 
         /**
-         * Sign and return a Stellar transaction, handling both regular payments and SAC transfers
+         * Sign and return a Stellar transaction
          * @param {Object} opts Options object
-         * @param {string} opts.destination Destination address (account or contract)
-         * @param {string} opts.amount Amount to send
-         * @param {Asset} opts.asset Asset to send
+         * @param {string} opts.transactionXDR A Stellar transaction in base64-encoded XDR format
          * @param {string} opts.network Network passphrase for the network this transaction is intended for
          * @param {string} opts.pincode Pincode to be used as the encryption password for the keypair
-         * @returns {Promise<import('stellar-sdk').Transaction>} A signed Stellar transaction ready to submit to the network
+         * @returns {Promise<Transaction>} A signed Stellar transaction ready to submit to the network
          * @throws Will throw an error if there is a problem signing the transaction.
          */
-        signPayment: async ({ destination, amount, asset, network, pincode }) => {
+        sign: async ({ transactionXDR, network, pincode }) => {
             try {
                 const keyManager = setupKeyManager()
-                const { publicKey } = get(walletStore)
-                const sourceAccount = new Account(publicKey, '0') // you have to Replace '0' with actual sequence number
-
-                let transaction;
-
-              
-                    // Handle regular payment
-                    transaction = new TransactionBuilder(sourceAccount, { fee: '100', networkPassphrase: network })
-                        .addOperation(Operation.payment({
-                            destination: destination,
-                            asset: asset,
-                            amount: amount
-                        }))
-                        .setTimeout(30)
-                        .build();
-             
-
                 let signedTransaction = await keyManager.signTransaction({
-                    transaction: transaction,
+                    // @ts-ignore
+                    transaction: TransactionBuilder.fromXDR(transactionXDR, network),
                     id: get(walletStore).keyId,
                     password: pincode,
                 })
                 return signedTransaction
             } catch (err) {
                 console.error('Error signing transaction', err)
-                if (err instanceof Error) {
-                    throw error(400, { message: err.message || 'Error signing transaction' })
-                } else {
-                    throw error(400, { message: 'Unknown error occurred' })
-                }
+                // @ts-ignore
+                throw error(400, { message: err.toString() })
             }
         },
     }
@@ -139,7 +118,7 @@ export const walletStore = createWalletStore()
  * @returns {KeyManager} A configured `keyManager` for use as a wallet
  */
 const setupKeyManager = () => {
-    const localKeyStore = new KeyManagerPlugins.LocalStorageKeyStore()
+    const localKeyStore = new LocalStorageKeyStore()
     localKeyStore.configure({
         prefix: 'bpa',
         storage: localStorage,
@@ -147,7 +126,7 @@ const setupKeyManager = () => {
     const keyManager = new KeyManager({
         keyStore: localKeyStore,
     })
-    keyManager.registerEncrypter(KeyManagerPlugins.ScryptEncrypter)
+    keyManager.registerEncrypter(ScryptEncrypter)
 
     return keyManager
 }

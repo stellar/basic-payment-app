@@ -1,5 +1,6 @@
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, xdr, Address, StrKey, SorobanRpc } from 'stellar-sdk'
-import Server from 'stellar-sdk'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, rpc } from '@stellar/stellar-sdk'
+import Server from '@stellar/stellar-sdk/lib/server'
+import { nativeToScVal } from 'soroban-client'
 import { error } from '@sveltejs/kit'
 /**
  * @module $lib/stellar/transactions
@@ -355,26 +356,21 @@ export async function createContractTransferTransaction({ source, destination, a
     });
 
     const [assetCode, assetIssuer] = asset.split(':');
-    const contractId = new Asset(assetCode, assetIssuer).contractId(Networks.TESTNET);
+    const contractId = new Asset(assetCode, assetIssuer).contractId(networkPassphrase);
     const contract = new Contract(contractId);
 
-    const amountBigInt = BigInt(amount);
     const transferOp = contract.call(
         "transfer",
-        Address.fromString(source).toScVal(),
-        Address.fromString(destination).toScVal(),
-        xdr.ScVal.scvI128(new xdr.Int128Parts({
-            lo: xdr.Uint64.fromString(amountBigInt.toString(16).padStart(16, '0').slice(-16)),
-            hi: xdr.Int64.fromString(amountBigInt.toString(16).slice(0, -16) || '0')
-        })),
-        xdr.ScVal.scvSymbol(assetCode)
+        nativeToScVal(source, { type: 'address' }),
+        nativeToScVal(destination, { type: 'address' }),
+        nativeToScVal(amount, { type: 'i128' }),
     );
     transaction.addOperation(transferOp);
 
     const builtTransaction = transaction.setTimeout(standardTimebounds).build();
 
     // Simulate the transaction
-    const rpcServer = new SorobanRpc.Server(rpcUrl);
+    const rpcServer = new rpc.Server(rpcUrl);
     const simulatedTx = await rpcServer.prepareTransaction(builtTransaction);
 
     return {
