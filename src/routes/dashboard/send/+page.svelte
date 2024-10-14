@@ -185,7 +185,7 @@ features have been implemented:
                   amount: sendAmount,
                   memo: memo,
               })
-            : StrKey.isValidContract(destinationAddress)
+            : contacts.isContractAddress(destinationAddress)
             ? await createContractTransferTransaction({
                   source: data.publicKey,
                   destination: destinationAddress,
