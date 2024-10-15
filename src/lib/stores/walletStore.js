@@ -95,7 +95,7 @@ function createWalletStore() {
                 console.error('Error saving key', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
-            }
+            } 
         },
 
         /**
@@ -133,7 +133,7 @@ function createWalletStore() {
          */
         sign: async ({ transactionXDR, network, pincode }) => {
             try {
-                const keyManager = setupKeyManager();
+             
                 const { keyId, publicKey } = get(walletStore);
                 
                 if (keyId === publicKey) {
@@ -147,12 +147,14 @@ function createWalletStore() {
                     // Sign the transaction using the wallet address
                     const { signedTxXdr } = await kit.signTransaction(transactionXDR, {
                         address,
-                        networkPassphrase: WalletNetwork.PUBLIC, // or use your specific network passphrase
+                        networkPassphrase: network, // or use your specific network passphrase
                     });
         
                     // @ts-ignore
                     return signedTxXdr; // Return the signed transaction
                 } else {
+
+                    const keyManager = setupKeyManager();
                     // Fallback to signing with pincode if no wallet
                     const signedTransaction = await keyManager.signTransaction({
                         // @ts-ignore
