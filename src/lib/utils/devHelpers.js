@@ -1,6 +1,6 @@
 import { get } from 'svelte/store'
 import { contacts } from '$lib/stores/contactsStore'
-import { Asset, Keypair, Operation } from 'stellar-sdk'
+import { Asset, Keypair, Operation } from '@stellar/stellar-sdk'
 import { fundWithFriendbot, startTransaction, submit } from '$lib/stellar/horizonQueries'
 import { fetchAssets } from '$lib/utils/stellarExpert'
 

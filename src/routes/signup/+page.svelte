@@ -18,7 +18,7 @@ circumstance.
      */
 
     // We import things from external packages that will be needed
-    import { Keypair } from 'stellar-sdk'
+    import { Keypair } from '@stellar/stellar-sdk'
 
     // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'

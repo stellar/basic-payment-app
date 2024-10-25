@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
-import { KeyManager, KeyManagerPlugins, KeyType } from '@stellar/wallet-sdk'
-import { TransactionBuilder } from 'stellar-sdk'
+import { KeyManager, LocalStorageKeyStore, ScryptEncrypter, KeyType } from '@stellar/typescript-wallet-sdk-km'
+import { TransactionBuilder } from '@stellar/stellar-sdk'
 import {
     StellarWalletsKit,
     WalletNetwork,
@@ -11,7 +11,7 @@ import {
   } from '@creit.tech/stellar-wallets-kit';
   
 
-/** @typedef {import('stellar-sdk').Transaction} Transaction */
+/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
 
 /**
  * @typedef {Object} WalletStore
@@ -78,7 +78,7 @@ function createWalletStore() {
                         privateKey: secretKey,
                     },
                     password: pincode,
-                    encrypterName: KeyManagerPlugins.ScryptEncrypter.name,
+                    encrypterName: ScryptEncrypter.name,
                 })
 
                 set({
@@ -181,7 +181,7 @@ export const walletStore = createWalletStore()
  * @returns {KeyManager} A configured `keyManager` for use as a wallet
  */
 const setupKeyManager = () => {
-    const localKeyStore = new KeyManagerPlugins.LocalStorageKeyStore()
+    const localKeyStore = new LocalStorageKeyStore()
     localKeyStore.configure({
         prefix: 'bpa',
         storage: localStorage,
@@ -189,7 +189,7 @@ const setupKeyManager = () => {
     const keyManager = new KeyManager({
         keyStore: localKeyStore,
     })
-    keyManager.registerEncrypter(KeyManagerPlugins.ScryptEncrypter)
+    keyManager.registerEncrypter(ScryptEncrypter)
 
     return keyManager
 }
