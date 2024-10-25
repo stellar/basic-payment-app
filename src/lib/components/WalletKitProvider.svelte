@@ -23,7 +23,7 @@
                   const { address } = await kit.getAddress();
                   
                   if (address) {
-                      await walletStore.registerWithWallet({ publicKey: address });
+                      await walletStore.connectWallet({ publicKey: address });
                       goto('/dashboard');
                   }
               }

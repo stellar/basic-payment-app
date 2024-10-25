@@ -36,6 +36,7 @@ on the following occasions:
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
     import { getContext } from 'svelte'
+    import { get } from 'svelte/store'
     const { close } = getContext('simple-modal')
 
     // `onConfirm` is a dummy function that will be overridden from the
@@ -49,12 +50,18 @@ on the following occasions:
         isWaiting = true
 
         try {
-            // We make sure the user has supplied the correct pincode
-            await walletStore.confirmPincode({
-                pincode: pincode,
-                firstPincode: firstPincode,
-                signup: firstPincode ? true : false,
-            })
+            // Check if this is a wallet user
+            const { keyId, publicKey } = get(walletStore)
+            const isWalletUser = keyId === publicKey
+
+            if (!isWalletUser) {
+                // Only verify pincode for non-wallet users
+                await walletStore.confirmPincode({
+                    pincode: pincode,
+                    firstPincode: firstPincode,
+                    signup: firstPincode ? true : false,
+                })
+            }
 
             // We call the `onConfirm` function that was given to the modal by
             // the outside component. This method allows each page that needs to
@@ -62,14 +69,15 @@ on the following occasions:
             // should take place when the pincode is confirmed. (i.e., submit
             // the transaction to the network, login to the app, etc.)
             // @ts-ignore
-            await onConfirm(pincode)
+            // Pass pincode only for non-wallet users
+            await onConfirm(isWalletUser ? undefined : pincode)
 
             // Now we can close the modal window
             close()
         } catch (err) {
             // If there was an error, we set our `errorMessage` alert
             // @ts-ignore
-            errorMessage.set(err.body.message)
+            errorMessage.set(err.body?.message || err.message || 'Transaction failed')
         }
         isWaiting = false
     }
@@ -112,6 +120,9 @@ on the following occasions:
     let isWaiting = false
     let pincode = ''
 
+    // Get wallet status
+    $: isWalletUser = get(walletStore).keyId === get(walletStore).publicKey
+
     // The `$: variableName` syntax marks the output of some **expression** (as
     // opposed to an assignment) as _reactive_. In this case, every time
     // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
@@ -141,8 +152,8 @@ on the following occasions:
                     >{transaction.memo.type === 'text'
                         ? transaction.memo?.value?.toString('utf-8')
                         : transaction.memo.type === 'hash'
-                        ? transaction.memo?.value?.toString('base64')
-                        : transaction.memo.value}</code
+                          ? transaction.memo?.value?.toString('base64')
+                          : transaction.memo.value}</code
                 >
             </p>
         {/if}
@@ -185,7 +196,7 @@ on the following occasions:
     <ErrorAlert />
 
     <!-- Display the pincode form: the input element, and the "confirm" and "reject" buttons -->
-    {#if hasPincodeForm}
+    {#if hasPincodeForm && !isWalletUser}
         <form>
             <div class="form-control">
                 <label class="label" for="pincode">
@@ -216,5 +227,20 @@ on the following occasions:
                 </button>
             </div>
         </form>
+    {:else if isWalletUser}
+        <!-- Wallet user confirmation UI -->
+        <div class="my-6 flex justify-end gap-3">
+            <button
+                on:click|preventDefault={_onConfirm}
+                class="btn-success btn"
+                disabled={isWaiting}
+            >
+                {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
+                Confirm in Wallet
+            </button>
+            <button on:click|preventDefault={_onReject} class="btn-error btn" disabled={isWaiting}>
+                {rejectButton}
+            </button>
+        </div>
     {/if}
 </div>

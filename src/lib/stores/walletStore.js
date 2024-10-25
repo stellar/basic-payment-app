@@ -29,34 +29,22 @@ function createWalletStore() {
 
 
 
-        /**
-         * Registers a user by their public key (wallet-based registration)
+  /**
+         * Connects a user by their public key (wallet-based registration)
          * @param {Object} opts Options object
          * @param {string} opts.publicKey Public Stellar address
          */
-        registerWithWallet: async ({ publicKey }) => {
+        connectWallet: async ({ publicKey }) => {
             try {
+                // This effectively both "registers" and "logs in" the wallet
                 set({
-                    keyId: publicKey, // Using publicKey as keyId for simplicity
+                    keyId: publicKey,
                     publicKey: publicKey,
                 })
             } catch (err) {
-                console.error('Error registering wallet', err)
-                // throw new Error(err.toString())
+                console.error('Error connecting wallet', err)
+                throw error(400, { message: 'Failed to connect wallet' })
             }
-        },
-
-        /**
-         * Logs in a user by their public key (wallet-based login)
-         * @param {string} publicKey Public Stellar address
-         */
-        loginWithWallet: async (publicKey) => {
-            const storeValue = get(walletStore);
-            if (storeValue.publicKey !== publicKey) {
-                throw error(400, { message: 'Wallet not registered' });
-            }
-            // If the publicKey matches, the user is considered logged in.
-            // You might want to add additional logic here if needed.
         },
 
         /**
@@ -137,11 +125,15 @@ function createWalletStore() {
                 const { keyId, publicKey } = get(walletStore);
                 
                 if (keyId === publicKey) {
-                    const kit = new StellarWalletsKit({
-                        network: WalletNetwork.TESTNET,
-                        selectedWalletId: XBULL_ID,
-                        modules: allowAllModules(),
-                    });
+                    const networkType = network.includes('Test') ? 
+                    WalletNetwork.TESTNET : 
+                    WalletNetwork.PUBLIC;
+    
+                const kit = new StellarWalletsKit({
+                    network: networkType,  // Use enum here
+                    selectedWalletId: XBULL_ID,
+                    modules: allowAllModules(),
+                });
                     const { address } = await kit.getAddress();
                     
                     // Sign the transaction using the wallet address
