@@ -1,5 +1,5 @@
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract,xdr, Address, StrKey, rpc, } from '@stellar/stellar-sdk'
 import Server from '@stellar/stellar-sdk'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, xdr, Address, StrKey, rpc } from '@stellar/stellar-sdk'
 import { nativeToScVal } from 'soroban-client'
 import { error } from '@sveltejs/kit'
 /**
@@ -188,7 +188,6 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
         network_passphrase: networkPassphrase,
     }
 }
-
 /**
  * Constructs and returns a Stellar transaction that will contain a path payment strict send operation to send/receive different assets.
  * @async
@@ -347,8 +346,8 @@ export async function createPathPaymentStrictReceiveTransaction({
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
 export async function createContractTransferTransaction({ source, destination, amount, asset }) {
-    const server = new Server(horizonUrl);
-    const sourceAccount = await server.loadAccount(source);
+    const server = new rpc.Server(rpcUrl)
+const sourceAccount = await server.getAccount(source)
 
     const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -362,16 +361,16 @@ export async function createContractTransferTransaction({ source, destination, a
     const transferOp = contract.call(
         "transfer",
         nativeToScVal(source, { type: 'address' }),
-        nativeToScVal(destination, { type: 'address' }),
-        nativeToScVal(amount, { type: 'i128' }),
-    );
+        nativeToScVal(destination, { type: 'address' }), 
+        nativeToScVal(amount, { type: 'i128' })
+    )
     transaction.addOperation(transferOp);
 
     const builtTransaction = transaction.setTimeout(standardTimebounds).build();
 
     // Simulate the transaction
     const rpcServer = new rpc.Server(rpcUrl);
-    const simulatedTx = await rpcServer.prepareTransaction(builtTransaction);
+    const simulatedTx = await server.prepareTransaction(builtTransaction)
 
     return {
         transaction: simulatedTx.toXDR(),
