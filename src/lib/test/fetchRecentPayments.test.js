@@ -8,19 +8,21 @@ const callMock = vi.fn().mockResolvedValue({
   ],
 });
 
-vi.mock('stellar-sdk', () => {
-  return {
-    Server: vi.fn().mockImplementation(() => ({
-      payments: () => ({
-        forAccount: () => ({
-          limit: () => ({
-            order: () => ({
-              call: callMock,
-            }),
+vi.mock('@stellar/stellar-sdk', () => {
+  const Server = vi.fn().mockImplementation(() => ({
+    payments: () => ({
+      forAccount: () => ({
+        limit: () => ({
+          order: () => ({
+            call: callMock,
           }),
         }),
       }),
-    })),
+    }),
+  }));
+
+  return {
+    Horizon: { Server }, 
     StrKey: {
       isValidEd25519PublicKey: vi.fn().mockReturnValue(true),
     },
@@ -40,6 +42,5 @@ describe('fetchRecentPayments', () => {
     ]);
 
     expect(callMock).toHaveBeenCalled();
-
   });
 });
