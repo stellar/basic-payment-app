@@ -1,85 +1,100 @@
-import { persisted } from 'svelte-local-storage-store'
-import { v4 as uuidv4 } from 'uuid'
-import { Contract, StrKey } from '@stellar/stellar-sdk'
-import { error } from '@sveltejs/kit'
-import { get } from 'svelte/store'
+import { persisted } from 'svelte-local-storage-store';
+import { StrKey } from '@stellar/stellar-sdk';
+import { get } from 'svelte/store';
 
 /**
  * @typedef {Object} SavedContract
- * @property {string} id Unique identifier for this contract
- * @property {string} contractId The Stellar contract ID
- * @property {string} name Human-readable name for this contract
- * @property {string} [description] Optional description of the contract
+ * @property {string} contractId - The Stellar contract ID
+ * @property {string} name - Human-readable name for this contract
+ * @property {string} [description] - Optional description of the contract
+ */
+
+/**
+ * @typedef {Object} ContractStore
+ * @property {SavedContract[]} savedContracts - An array of saved contracts
+ * @property {SavedContract|null} currentContract - The currently active contract or null
  */
 
 function createContractStore() {
-    /** @type {import('svelte/store').Writable<{savedContracts: SavedContract[], currentContract: SavedContract|null}>} */
+    /** 
+     * @type {import('svelte/store').Writable<ContractStore>} 
+     */
     const { subscribe, set, update } = persisted('bpa:contractStore', {
         savedContracts: [],
         currentContract: null
-    })
+    });
 
     return {
         subscribe,
 
         /**
          * Saves a new contract to the store
-         * @param {SavedContract} contract Contract details to save
+         * @param {SavedContract} contract - Contract details to save
          * @throws Will throw an error if the contract ID is invalid
          */
-        saveContract: (contract) => 
+        saveContract: (contract) =>
             update(store => {
                 if (!StrKey.isValidContract(contract.contractId)) {
-                    throw error(400, { message: 'Invalid contract ID' })
+                    throw new Error('Invalid contract ID');
                 }
-                
-                const newContract = {
-                    ...contract,
-                    id: contract.id || uuidv4()
-                }
-                
-                return {
+
+                const newContract = { ...contract };
+                const updatedStore = {
                     ...store,
                     savedContracts: [...store.savedContracts, newContract]
-                }
+                };
+
+                // Log a success message to the console
+                console.log('Contract saved successfully:', newContract);
+
+                return updatedStore;
             }),
 
         /**
          * Removes a contract from the store
-         * @param {string} id Unique identifier of the contract to remove
+         * @param {string} id - Unique identifier of the contract to remove
          */
-        removeContract: (id) => 
+        removeContract: (id) =>
             update(store => ({
                 ...store,
-                savedContracts: store.savedContracts.filter(c => c.id !== id),
-                currentContract: store.currentContract?.id === id ? null : store.currentContract
+                savedContracts: store.savedContracts.filter(c => c.contractId !== id),
+                currentContract: store.currentContract?.contractId === id ? null : store.currentContract
             })),
 
         /**
-         * Sets the current active contract
-         * @param {SavedContract|null} contract Contract to set as current, or null to clear
+         * Sets the current active contract using its ID
+         * @param {string|null} contractId - Contract ID to set as current, or null to clear
+         * @throws Will throw an error if the contract ID is not found in saved contracts
          */
-        setCurrentContract: (contract) => 
-            update(store => ({
-                ...store,
-                currentContract: contract
-            })),
+        setCurrentContract: (contractId) =>
+            update(store => {
+                if (contractId === null) {
+                    return { ...store, currentContract: null };
+                }
+
+                const contract = store.savedContracts.find(c => c.contractId === contractId);
+                if (!contract) {
+                    throw new Error('Contract not found');
+                }
+
+                return { ...store, currentContract: contract };
+            }),
 
         /**
          * Looks up a contract by its Stellar contract ID
-         * @param {string} contractId Stellar contract ID to look up
+         * @param {string} contractId - Stellar contract ID to look up
          * @returns {SavedContract|undefined} The found contract or undefined
          */
         lookup: (contractId) => {
-            const store = get(contractStore)
-            return store.savedContracts.find(contract => contract.contractId === contractId)
+            const store = get(contractStore);
+            return store.savedContracts.find(contract => contract.contractId === contractId);
         },
 
         /**
          * Clears all saved contracts from the store
          */
         empty: () => set({ savedContracts: [], currentContract: null })
-    }
+    };
 }
 
-export const contractStore = createContractStore()
+export const contractStore = createContractStore();
