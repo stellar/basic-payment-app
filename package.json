@@ -49,7 +49,6 @@
     },
     "type": "module",
     "dependencies": {
-        "@creit.tech/stellar-wallets-kit": "^1.2.3",
-        "lit": "2.8.0"
+        "@creit.tech/stellar-wallets-kit": "^1.2.3"
     }
 }

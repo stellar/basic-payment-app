@@ -125,12 +125,10 @@ function createWalletStore() {
                 const { keyId, publicKey } = get(walletStore);
                 
                 if (keyId === publicKey) {
-                    const networkType = network.includes('Test') ? 
-                    WalletNetwork.TESTNET : 
-                    WalletNetwork.PUBLIC;
-    
+                   
                 const kit = new StellarWalletsKit({
-                    network: networkType,  // Use enum here
+                    // @ts-ignore
+                    network: network,
                     selectedWalletId: XBULL_ID,
                     modules: allowAllModules(),
                 });
