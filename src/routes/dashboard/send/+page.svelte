@@ -46,7 +46,6 @@ features have been implemented:
         createPaymentTransaction,
         createContractTransferTransaction,
     } from '$lib/stellar/transactions'
-    import { StrKey } from 'stellar-sdk'
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
@@ -64,7 +63,7 @@ features have been implemented:
     /** @type {boolean|null} */
     let createAccount = null
     let pathPayment = false
-    /** @type {import('stellar-sdk').ServerApi.PaymentPathRecord[]} */
+    /** @type {import('@stellar/stellar-sdk').Horizon.ServerApi.PaymentPathRecord[]} */
     let availablePaths = []
     let strictReceive = false
     let paymentXDR = ''
