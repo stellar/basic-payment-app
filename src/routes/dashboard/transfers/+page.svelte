@@ -252,7 +252,9 @@ couple read-throughs to understand everything.
         // We listen for the callback `message` from the popup window
         window.addEventListener('message', async (event) => {
             console.log('here is the event i heard from the popup window', event)
-            popup?.close()
+            if (event.data.contains("test")) {
+                popup?.close()
+            }
 
             // Store the transfer in the browser's localStorage
             transfers.addTransfer({
