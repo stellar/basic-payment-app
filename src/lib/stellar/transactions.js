@@ -1,6 +1,6 @@
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Horizon } from '@stellar/stellar-sdk'
+import Server from '@stellar/stellar-sdk'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, Horizon, xdr, Address, StrKey, rpc, nativeToScVal } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
-
 /**
  * @module $lib/stellar/transactions
  * @description A collection of functions that will generate and return
@@ -12,6 +12,7 @@ import { error } from '@sveltejs/kit'
  * {@link createChangeTrustTransaction}
  * {@link createPathPaymentStrictSendTransaction}
  * {@link createPathPaymentStrictReceiveTransaction}
+ * {@link createContractTransferTransaction}
  */
 
 // We are setting a very high maximum fee, which increases our transaction's
@@ -22,6 +23,7 @@ const maxFeePerOperation = '100000'
 const horizonUrl = 'https://horizon-testnet.stellar.org'
 const networkPassphrase = Networks.TESTNET
 const standardTimebounds = 300 // 5 minutes for the user to review/sign/submit
+const rpcUrl = 'https://soroban-testnet.stellar.org'
 
 /**
  * For consistency, all functions in this module will return the same type of object.
@@ -185,7 +187,6 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
         network_passphrase: networkPassphrase,
     }
 }
-
 /**
  * Constructs and returns a Stellar transaction that will contain a path payment strict send operation to send/receive different assets.
  * @async
@@ -330,4 +331,48 @@ export async function createPathPaymentStrictReceiveTransaction({
         transaction: builtTransaction.toXDR(),
         network_passphrase: networkPassphrase,
     }
+}
+
+/**
+ * Constructs and returns a Stellar transaction for transferring assets to a contract or account.
+ * @async
+ * @function createContractTransferTransaction
+ * @param {Object} opts Options object
+ * @param {string} opts.source Public Stellar address to use as the source account of the transaction
+ * @param {string} opts.destination Public Stellar address or contract ID to receive the transfer
+ * @param {string} opts.amount Amount of the asset to transfer
+ * @param {string} opts.asset Asset to be transferred (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
+ * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
+ */
+export async function createContractTransferTransaction({ source, destination, amount, asset }) {
+    const server = new rpc.Server(rpcUrl)
+const sourceAccount = await server.getAccount(source)
+
+    const transaction = new TransactionBuilder(sourceAccount, {
+        networkPassphrase: networkPassphrase,
+        fee: maxFeePerOperation,
+    });
+
+    const [assetCode, assetIssuer] = asset.split(':');
+    const contractId = new Asset(assetCode, assetIssuer).contractId(networkPassphrase);
+    const contract = new Contract(contractId);
+
+    const transferOp = contract.call(
+        "transfer",
+        nativeToScVal(source, { type: 'address' }),
+        nativeToScVal(destination, { type: 'address' }),
+        nativeToScVal(amount, { type: 'i128' })
+    )
+    transaction.addOperation(transferOp);
+
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build();
+
+    // Simulate the transaction
+    const rpcServer = new rpc.Server(rpcUrl);
+    const simulatedTx = await server.prepareTransaction(builtTransaction)
+
+    return {
+        transaction: simulatedTx.toXDR(),
+        network_passphrase: networkPassphrase,
+    };
 }
