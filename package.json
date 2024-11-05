@@ -9,7 +9,8 @@
         "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
         "lint": "prettier --plugin-search-dir . --check . && eslint .",
-        "format": "prettier --plugin-search-dir . --write ."
+        "format": "prettier --plugin-search-dir . --write .",
+        "test": "vitest"
     },
     "devDependencies": {
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
