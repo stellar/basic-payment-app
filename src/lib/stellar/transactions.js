@@ -1,6 +1,5 @@
 import Server from '@stellar/stellar-sdk'
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, xdr, Address, StrKey, rpc } from '@stellar/stellar-sdk'
-import { nativeToScVal } from 'soroban-client'
+import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, Horizon, xdr, Address, StrKey, rpc, nativeToScVal } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 /**
  * @module $lib/stellar/transactions
@@ -56,7 +55,7 @@ export async function createCreateAccountTransaction({ source, destination, amou
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Server(horizonUrl)
+    let server = new Horizon.Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
     let transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -101,7 +100,7 @@ export async function createPaymentTransaction({ source, destination, asset, amo
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Server(horizonUrl)
+    let server = new Horizon.Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
     let transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -160,7 +159,7 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
 
     // Next, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder.
-    let server = new Server(horizonUrl)
+    let server = new Horizon.Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
 
     // Chaning everything together from the `transaction` declaration means we
@@ -214,7 +213,7 @@ export async function createPathPaymentStrictSendTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Server(horizonUrl)
+    let server = new Horizon.Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
     let transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -287,7 +286,7 @@ export async function createPathPaymentStrictReceiveTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Server(horizonUrl)
+    let server = new Horizon.Server(horizonUrl)
     let sourceAccount = await server.loadAccount(source)
     let transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
@@ -361,7 +360,7 @@ const sourceAccount = await server.getAccount(source)
     const transferOp = contract.call(
         "transfer",
         nativeToScVal(source, { type: 'address' }),
-        nativeToScVal(destination, { type: 'address' }), 
+        nativeToScVal(destination, { type: 'address' }),
         nativeToScVal(amount, { type: 'i128' })
     )
     transaction.addOperation(transferOp);
