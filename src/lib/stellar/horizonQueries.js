@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { error } from '@sveltejs/kit'
-import { Server, TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
+import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org';
 export const server = new Horizon.Server(horizonUrl);

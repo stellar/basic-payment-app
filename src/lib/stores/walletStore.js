@@ -5,11 +5,10 @@ import { KeyManager, LocalStorageKeyStore, ScryptEncrypter, KeyType } from '@ste
 import { TransactionBuilder } from '@stellar/stellar-sdk'
 import {
     StellarWalletsKit,
-    WalletNetwork,
     allowAllModules,
     XBULL_ID
   } from '@creit.tech/stellar-wallets-kit';
-  
+
 
 /** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
 
@@ -83,7 +82,7 @@ function createWalletStore() {
                 console.error('Error saving key', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
-            } 
+            }
         },
 
         /**
@@ -121,11 +120,11 @@ function createWalletStore() {
          */
         sign: async ({ transactionXDR, network, pincode }) => {
             try {
-             
+
                 const { keyId, publicKey } = get(walletStore);
-                
+
                 if (keyId === publicKey) {
-                   
+
                 const kit = new StellarWalletsKit({
                     // @ts-ignore
                     network: network,
@@ -133,13 +132,13 @@ function createWalletStore() {
                     modules: allowAllModules(),
                 });
                     const { address } = await kit.getAddress();
-                    
+
                     // Sign the transaction using the wallet address
                     const { signedTxXdr } = await kit.signTransaction(transactionXDR, {
                         address,
                         networkPassphrase: network, // or use your specific network passphrase
                     });
-        
+
                     // @ts-ignore
                     return signedTxXdr; // Return the signed transaction
                 } else {
