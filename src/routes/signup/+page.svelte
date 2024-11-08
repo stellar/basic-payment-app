@@ -28,7 +28,7 @@ circumstance.
     import { goto } from '$app/navigation'
     import { walletStore } from '$lib/stores/walletStore'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-
+    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
@@ -39,6 +39,8 @@ circumstance.
     $: secretKey = keypair.secret()
     let showSecret = false
     let pincode = ''
+
+
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -74,6 +76,11 @@ circumstance.
             onConfirm: onConfirm,
         })
     }
+
+
+
+
+    
 </script>
 
 <div class="hero min-h-screen bg-base-200">
@@ -146,6 +153,9 @@ circumstance.
                         </div>
                         <div class="form-control mt-6">
                             <button type="submit" class="btn-primary btn">Signup</button>
+                        </div>
+                        <div class="form-control mt-2">
+                           <WalletKitProvider buttonText='Sign up with wallet'/>
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
