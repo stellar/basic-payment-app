@@ -1049,27 +1049,12 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
-"@types/node@*":
-  version "22.9.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.9.0.tgz#b7f16e5c3384788542c72dc3d561a7ceae2c0365"
-  integrity sha512-vuyHg81vvWA1Z1ELfvLko2c8f34gyA0zaic0+Rllc5lbCnbSyuvb2Oxpm6TAUAC/2xZN3QGqxBNggD1nNR2AfQ==
+"@types/stellar-sdk@^0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@types/stellar-sdk/-/stellar-sdk-0.15.1.tgz#615506df0a432e8ccacc78f67e4de77d52927962"
+  integrity sha512-PE3Sj1alFUR32NjoR6C7DEusVaqokcQ8DOnq+c5/DoBDDzJrGXjui/3HLYgsQZIy7uabBJczGapuweWAGWPbmQ==
   dependencies:
-    undici-types "~6.19.8"
-
-"@types/stellar-base@*":
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/@types/stellar-base/-/stellar-base-0.13.4.tgz#e96dcb102a8cc9a37a6ccff239dac36dee9f0f97"
-  integrity sha512-U+jdDa5Q3eyr3UJbxm+8awkXsw/tiZdl6OTfM/thiPQbKbw59AFVXjMx+nZUsRbdGlswWBFLI66G8c5GZjYUqA==
-  dependencies:
-    stellar-base "*"
-
-"@types/stellar-sdk@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@types/stellar-sdk/-/stellar-sdk-0.11.1.tgz#3487ac99cbc457146ca2bc4c7c707f0c0213a09c"
-  integrity sha512-VHTTf2rs6ZpbWJmTCSLkw+CF7RwlN5DO+/kN3Ieze6RPWe3SA82O2DdsWXw5sM2hFbJ7pcjSyoR76ufNp0Bcvg==
-  dependencies:
-    "@types/node" "*"
-    "@types/stellar-base" "*"
+    stellar-sdk "*"
 
 "@types/trusted-types@^2.0.2":
   version "2.0.7"
@@ -3416,19 +3401,18 @@ std-env@^3.7.0:
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.7.0.tgz#c9f7386ced6ecf13360b6c6c55b8aaa4ef7481d2"
   integrity sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==
 
-stellar-base@*:
-  version "12.1.1"
-  resolved "https://registry.yarnpkg.com/stellar-base/-/stellar-base-12.1.1.tgz#62ca4b75903598c0540ead6424730614aadf2643"
-  integrity sha512-5hNrvrfWFxRJ6vWicBy/NzF4zFVGeBkE8Jvvr6j6zTDTQa9OpXFCaeNbnMWrIFOq/8dXyhwh3AoFk70nq3+Waw==
+stellar-sdk@*:
+  version "12.3.0"
+  resolved "https://registry.yarnpkg.com/stellar-sdk/-/stellar-sdk-12.3.0.tgz#a6a9145e92375ead326554cec55004ad5b03bcba"
+  integrity sha512-3z7umyuBAHN+vm3zLTKqj7P/bErBFnjrwoanBsNyBHaoek9krUgufNupQSMK67B1p0E2NKD1Z6gYPuZiPfJ2qQ==
   dependencies:
-    "@stellar/js-xdr" "^3.1.2"
-    base32.js "^0.1.0"
+    "@stellar/stellar-base" "^12.1.1"
+    axios "^1.7.7"
     bignumber.js "^9.1.2"
-    buffer "^6.0.3"
-    sha.js "^2.3.6"
-    tweetnacl "^1.0.3"
-  optionalDependencies:
-    sodium-native "^4.1.1"
+    eventsource "^2.0.2"
+    randombytes "^2.1.0"
+    toml "^3.0.0"
+    urijs "^1.19.1"
 
 stream-shift@^1.0.2:
   version "1.0.3"
@@ -3765,11 +3749,6 @@ uncrypto@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/uncrypto/-/uncrypto-0.1.3.tgz#e1288d609226f2d02d8d69ee861fa20d8348ef2b"
   integrity sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==
-
-undici-types@~6.19.8:
-  version "6.19.8"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
 
 unenv@^1.10.0:
   version "1.10.0"
