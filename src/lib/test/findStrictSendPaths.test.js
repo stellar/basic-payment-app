@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { findStrictSendPaths, server } from '../stellar/horizonQueries'; 
-import { Asset } from 'stellar-sdk'; 
+import { findStrictSendPaths, server } from '../stellar/horizonQueries';
+import { Asset } from '@stellar/stellar-sdk';
 
 const mockServer = {
     strictSendPaths: vi.fn().mockReturnThis(),
@@ -26,7 +26,7 @@ describe('findStrictSendPaths', () => {
 
         const sourceAsset = 'native';
         const sourceAmount = 100;
-        const destinationPublicKey = 'GD6OW23WYT...'; 
+        const destinationPublicKey = 'GD6OW23WYT...';
 
         const result = await findStrictSendPaths({
             sourceAsset,
