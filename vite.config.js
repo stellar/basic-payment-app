@@ -16,10 +16,17 @@ export default defineConfig({
             ],
         },
     },
+    ssr: {
+        noExternal: [
+            '@creit.tech/stellar-wallets-kit',
+            '@stellar/freighter-api',
+            '@lobstrco/signer-extension-api'
+        ],
+    },
     test: {
         include: ['src/**/*.{test,spec}.{js,ts}'],
         environment: 'jsdom',
         globals: true,
         setupFiles: './src/setupTest.js',
-    }
+    },
 })
