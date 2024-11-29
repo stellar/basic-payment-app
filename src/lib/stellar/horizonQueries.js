@@ -1,8 +1,10 @@
+// @ts-nocheck
 import { error } from '@sveltejs/kit'
 import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
-const horizonUrl = 'https://horizon-testnet.stellar.org'
-const server = new Horizon.Server(horizonUrl)
+const horizonUrl = 'https://horizon-testnet.stellar.org';
+export const server = new Horizon.Server(horizonUrl);
+
 
 /**
  * @module $lib/stellar/horizonQueries
@@ -40,7 +42,6 @@ export async function fetchAccount(publicKey) {
             if (err.response?.status === 404) {
                 try {
                     await fundWithFriendbot(publicKey)
-
                     let account = await server.accounts().accountId(publicKey).call()
                     return account
                 } catch (err) {

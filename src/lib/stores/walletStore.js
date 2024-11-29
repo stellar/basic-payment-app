@@ -3,6 +3,12 @@ import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
 import { KeyManager, LocalStorageKeyStore, ScryptEncrypter, KeyType } from '@stellar/typescript-wallet-sdk-km'
 import { TransactionBuilder } from '@stellar/stellar-sdk'
+import {
+    StellarWalletsKit,
+    allowAllModules,
+    XBULL_ID
+  } from '@creit.tech/stellar-wallets-kit';
+
 
 /** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
 
@@ -16,10 +22,29 @@ import { TransactionBuilder } from '@stellar/stellar-sdk'
 
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
-    const { subscribe, set } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
-
+    const { subscribe, set, } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
     return {
         subscribe,
+
+
+
+  /**
+         * Connects a user by their public key (wallet-based registration)
+         * @param {Object} opts Options object
+         * @param {string} opts.publicKey Public Stellar address
+         */
+        connectWallet: async ({ publicKey }) => {
+            try {
+                // This effectively both "registers" and "logs in" the wallet
+                set({
+                    keyId: publicKey,
+                    publicKey: publicKey,
+                })
+            } catch (err) {
+                console.error('Error connecting wallet', err)
+                throw error(400, { message: 'Failed to connect wallet' })
+            }
+        },
 
         /**
          * Registers a user by storing their encrypted keypair in the browser's localStorage.
@@ -95,19 +120,46 @@ function createWalletStore() {
          */
         sign: async ({ transactionXDR, network, pincode }) => {
             try {
-                const keyManager = setupKeyManager()
-                let signedTransaction = await keyManager.signTransaction({
+
+                const { keyId, publicKey } = get(walletStore);
+
+                if (keyId === publicKey) {
+
+                const kit = new StellarWalletsKit({
                     // @ts-ignore
-                    transaction: TransactionBuilder.fromXDR(transactionXDR, network),
-                    id: get(walletStore).keyId,
-                    password: pincode,
-                })
-                return signedTransaction
-            } catch (err) {
+                    network: network,
+                    selectedWalletId: XBULL_ID,
+                    modules: allowAllModules(),
+                });
+                    const { address } = await kit.getAddress();
+
+                    // Sign the transaction using the wallet address
+                    const { signedTxXdr } = await kit.signTransaction(transactionXDR, {
+                        address,
+                        networkPassphrase: network, // or use your specific network passphrase
+                    });
+
+                    // @ts-ignore
+                    return signedTxXdr; // Return the signed transaction
+                } else {
+
+                    const keyManager = setupKeyManager();
+                    // Fallback to signing with pincode if no wallet
+                    const signedTransaction = await keyManager.signTransaction({
+                        // @ts-ignore
+                        transaction: TransactionBuilder.fromXDR(transactionXDR, network),
+                        id: keyId,
+                        password: pincode,
+                    });
+                    // @ts-ignore
+                    return signedTransaction;
+                }
+            }catch (err) {
                 console.error('Error signing transaction', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
             }
+
         },
     }
 }

@@ -44,6 +44,7 @@ features have been implemented:
         createPathPaymentStrictReceiveTransaction,
         createPathPaymentStrictSendTransaction,
         createPaymentTransaction,
+        createContractTransferTransaction,
     } from '$lib/stellar/transactions'
 
     // The `open` Svelte context is used to open the confirmation modal
@@ -62,7 +63,7 @@ features have been implemented:
     /** @type {boolean|null} */
     let createAccount = null
     let pathPayment = false
-    /** @type {import('stellar-sdk').ServerApi.PaymentPathRecord[]} */
+    /** @type {import('@stellar/stellar-sdk').Horizon.ServerApi.PaymentPathRecord[]} */
     let availablePaths = []
     let strictReceive = false
     let paymentXDR = ''
@@ -175,19 +176,27 @@ features have been implemented:
      * @function previewPaymentTransaction
      */
     const previewPaymentTransaction = async () => {
+        const destinationAddress = otherDestination ? otherPublicKey : destination;
         let { transaction, network_passphrase } = createAccount
             ? await createCreateAccountTransaction({
                   source: data.publicKey,
-                  destination: otherDestination ? otherPublicKey : destination,
+                  destination: destinationAddress,
                   amount: sendAmount,
                   memo: memo,
+              })
+            : contacts.isContractAddress(destinationAddress)
+            ? await createContractTransferTransaction({
+                  source: data.publicKey,
+                  destination: destinationAddress,
+                  asset: sendAsset,
+                  amount: sendAmount,
               })
             : pathPayment && strictReceive
             ? await createPathPaymentStrictReceiveTransaction({
                   source: data.publicKey,
                   sourceAsset: sendAsset,
                   sourceAmount: sendAmount,
-                  destination: otherDestination ? otherPublicKey : destination,
+                  destination: destinationAddress,
                   destinationAsset: receiveAsset,
                   destinationAmount: receiveAmount,
                   memo: memo,
@@ -197,22 +206,22 @@ features have been implemented:
                   source: data.publicKey,
                   sourceAsset: sendAsset,
                   sourceAmount: sendAmount,
-                  destination: otherDestination ? otherPublicKey : destination,
+                  destination: destinationAddress,
                   destinationAsset: receiveAsset,
                   destinationAmount: receiveAmount,
                   memo: memo,
               })
             : await createPaymentTransaction({
                   source: data.publicKey,
-                  destination: otherDestination ? otherPublicKey : destination,
+                  destination: destinationAddress,
                   asset: sendAsset,
                   amount: sendAmount,
                   memo: memo,
-              })
+              });
 
         // Set the component variables to hold the transaction details
-        paymentXDR = transaction
-        paymentNetwork = network_passphrase
+        paymentXDR = transaction;
+        paymentNetwork = network_passphrase;
 
         // Open the confirmation modal for the user to confirm or reject the
         // transaction. We provide our customized `onConfirm` function, but we
@@ -221,7 +230,7 @@ features have been implemented:
             transactionXDR: paymentXDR,
             transactionNetwork: paymentNetwork,
             onConfirm: onConfirm,
-        })
+        });
     }
 </script>
 
@@ -464,7 +473,6 @@ features have been implemented:
 
 <!-- Button -->
 <div class="form-control my-5">
-    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button
-    >
+    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->

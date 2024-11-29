@@ -25,9 +25,15 @@ for submission to the network.
     import { goto } from '$app/navigation'
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
-
+    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
     // Define some component variables that will be used throughout the page
     let pincode = ''
+
+   
+
+
+
+
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
@@ -85,6 +91,11 @@ for submission to the network.
                     </div>
                     <div class="form-control mt-6">
                         <button class="btn-primary btn">Login</button>
+                    </div>
+
+
+                    <div class="form-control mt-2">
+                      <WalletKitProvider buttonText='Login with wallet'/>
                     </div>
                 </form>
             </div>
