@@ -9,7 +9,7 @@
 import { get } from 'svelte/store'
 import { goto } from '$app/navigation'
 
-import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
+import { fetchAccountBalancesRPC, fetchRecentPayments } from '$lib/stellar/horizonQueries'
 import { walletStore } from '$lib/stores/walletStore'
 
 /** @type {import ('./$types').LayoutLoad} */
@@ -27,7 +27,7 @@ export async function load() {
     // waterfalls and additional loading time
     return {
         publicKey: publicKey,
-        balances: await fetchAccountBalances(publicKey),
+        balances: await fetchAccountBalancesRPC(publicKey),
         payments: await fetchRecentPayments(publicKey),
     }
 }
