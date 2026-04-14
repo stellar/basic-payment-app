@@ -14,5 +14,6 @@
         }
     ],
     "semi": false,
-    "svelteAllowShorthand": false
+    "svelteAllowShorthand": false,
+    "tailwindStylesheet": "./src/routes/layout.css"
 }

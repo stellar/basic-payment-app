@@ -1,20 +1,17 @@
 <script>
-    import '../app.postcss'
-
+    import './layout.css'
     import { writable } from 'svelte/store'
-
     import { errorMessage } from '$lib/stores/alertsStore'
     import ModalCloseButton from '$lib/components/ModalCloseButton.svelte'
-
     import Modal from 'svelte-simple-modal'
 
     /**
      * @typedef {Object} Props
      * @property {import('svelte').Snippet} [children]
      */
-
     /** @type {Props} */
     let { children } = $props()
+
     const modal = writable(null)
 
     // @ts-ignore
@@ -28,6 +25,6 @@
 
 <svelte:window onerror={handleError} />
 
-<Modal show={$modal} classContent="rounded bg-base-100" closeButton={true}>
-    {@render children?.()}
-</Modal>
+<Modal show={$modal} classContent="rounded bg-base-100" closeButton={true}
+    >{@render children?.()}</Modal
+>

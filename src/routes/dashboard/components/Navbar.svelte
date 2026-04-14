@@ -31,7 +31,7 @@ More information about SEP-33 can be found here:
             <button tabindex="0" class="avatar btn btn-circle btn-ghost">
                 <div class="w-10 rounded-full">
                     <img
-                        src={`https://id.lobstr.co/${$page.data.publicKey}.png`}
+                        src={`https://id.lobstr.co/${page.data.publicKey}.png`}
                         alt="stellar-account-identicon"
                     />
                 </div>
