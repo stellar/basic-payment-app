@@ -19,7 +19,6 @@ features have been implemented:
 
 <script>
     // `export let data` allows us to pull in any parent load data for use here.
-    
 
     // We import any Svelte components we will need
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
@@ -48,13 +47,13 @@ features have been implemented:
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
-  /**
-   * @typedef {Object} Props
-   * @property {import('./$types').PageData} data
-   */
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
 
-  /** @type {Props} */
-  let { data } = $props();
+    /** @type {Props} */
+    let { data } = $props()
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
@@ -98,7 +97,7 @@ features have been implemented:
                     createAccount = true
                     sendAsset = 'native'
                     infoMessage.set(
-                        'Account Not Funded: You are sending a payment to an account that does not yet exist on the Stellar ledger. Your payment will take the form of a <code>creatAccount</code> operation, and the amount you send must be at least 1 XLM.'
+                        'Account Not Funded: You are sending a payment to an account that does not yet exist on the Stellar ledger. Your payment will take the form of a <code>creatAccount</code> operation, and the amount you send must be at least 1 XLM.',
                     )
                 }
             }
@@ -145,7 +144,7 @@ features have been implemented:
             sendAmount = availablePaths.filter(
                 (path) =>
                     path.source_asset_type === sendAsset ||
-                    sendAsset.startsWith(path.source_asset_code)
+                    sendAsset.startsWith(path.source_asset_code),
             )[0].source_amount
         } else {
             // Set the `receiveAmount` variable to the chosen path amount. The
@@ -155,7 +154,7 @@ features have been implemented:
             receiveAmount = availablePaths.filter(
                 (path) =>
                     path.destination_asset_type === receiveAsset ||
-                    receiveAsset.startsWith(path.destination_asset_code)
+                    receiveAsset.startsWith(path.destination_asset_code),
             )[0].destination_amount
         }
     }
@@ -182,7 +181,7 @@ features have been implemented:
      * @function previewPaymentTransaction
      */
     const previewPaymentTransaction = async () => {
-        const destinationAddress = otherDestination ? otherPublicKey : destination;
+        const destinationAddress = otherDestination ? otherPublicKey : destination
         let { transaction, network_passphrase } = createAccount
             ? await createCreateAccountTransaction({
                   source: data.publicKey,
@@ -191,43 +190,43 @@ features have been implemented:
                   memo: memo,
               })
             : contacts.isContractAddress(destinationAddress)
-            ? await createContractTransferTransaction({
-                  source: data.publicKey,
-                  destination: destinationAddress,
-                  asset: sendAsset,
-                  amount: sendAmount,
-              })
-            : pathPayment && strictReceive
-            ? await createPathPaymentStrictReceiveTransaction({
-                  source: data.publicKey,
-                  sourceAsset: sendAsset,
-                  sourceAmount: sendAmount,
-                  destination: destinationAddress,
-                  destinationAsset: receiveAsset,
-                  destinationAmount: receiveAmount,
-                  memo: memo,
-              })
-            : pathPayment && !strictReceive
-            ? await createPathPaymentStrictSendTransaction({
-                  source: data.publicKey,
-                  sourceAsset: sendAsset,
-                  sourceAmount: sendAmount,
-                  destination: destinationAddress,
-                  destinationAsset: receiveAsset,
-                  destinationAmount: receiveAmount,
-                  memo: memo,
-              })
-            : await createPaymentTransaction({
-                  source: data.publicKey,
-                  destination: destinationAddress,
-                  asset: sendAsset,
-                  amount: sendAmount,
-                  memo: memo,
-              });
+              ? await createContractTransferTransaction({
+                    source: data.publicKey,
+                    destination: destinationAddress,
+                    asset: sendAsset,
+                    amount: sendAmount,
+                })
+              : pathPayment && strictReceive
+                ? await createPathPaymentStrictReceiveTransaction({
+                      source: data.publicKey,
+                      sourceAsset: sendAsset,
+                      sourceAmount: sendAmount,
+                      destination: destinationAddress,
+                      destinationAsset: receiveAsset,
+                      destinationAmount: receiveAmount,
+                      memo: memo,
+                  })
+                : pathPayment && !strictReceive
+                  ? await createPathPaymentStrictSendTransaction({
+                        source: data.publicKey,
+                        sourceAsset: sendAsset,
+                        sourceAmount: sendAmount,
+                        destination: destinationAddress,
+                        destinationAsset: receiveAsset,
+                        destinationAmount: receiveAmount,
+                        memo: memo,
+                    })
+                  : await createPaymentTransaction({
+                        source: data.publicKey,
+                        destination: destinationAddress,
+                        asset: sendAsset,
+                        amount: sendAmount,
+                        memo: memo,
+                    })
 
         // Set the component variables to hold the transaction details
-        paymentXDR = transaction;
-        paymentNetwork = network_passphrase;
+        paymentXDR = transaction
+        paymentNetwork = network_passphrase
 
         // Open the confirmation modal for the user to confirm or reject the
         // transaction. We provide our customized `onConfirm` function, but we
@@ -236,7 +235,7 @@ features have been implemented:
             transactionXDR: paymentXDR,
             transactionNetwork: paymentNetwork,
             onConfirm: onConfirm,
-        });
+        })
     }
 </script>
 
@@ -258,7 +257,7 @@ features have been implemented:
         onchange={() => checkDestination(destination)}
         id="destination"
         name="destination"
-        class="select-bordered select"
+        class="select select-bordered"
     >
         <option value="" disabled selected>Select Recipient</option>
         {#each $contacts as contact (contact.id)}
@@ -282,7 +281,7 @@ features have been implemented:
             name="otherPublicKey"
             type="text"
             placeholder="G..."
-            class="input-bordered input"
+            class="input input-bordered"
         />
     </div>
 {/if}
@@ -298,7 +297,7 @@ features have been implemented:
     <div class="form-control my-1">
         <label class="label cursor-pointer">
             <span class="label-text">Send and Receive different assets?</span>
-            <input type="checkbox" class="toggle-accent toggle" bind:checked={pathPayment} />
+            <input type="checkbox" class="toggle toggle-accent" bind:checked={pathPayment} />
         </label>
     </div>
 {/if}
@@ -322,13 +321,13 @@ features have been implemented:
                                 name="sendAmount"
                                 placeholder="0.01"
                                 type="text"
-                                class="input-bordered input join-item w-full"
+                                class="input join-item input-bordered w-full"
                                 disabled={strictReceive}
                             />
                         </div>
                     </div>
                     <select
-                        class="select-bordered select join-item"
+                        class="join-item select select-bordered"
                         bind:value={sendAsset}
                         onchange={selectPath}
                     >
@@ -377,7 +376,7 @@ features have been implemented:
                                 name="receiveAmount"
                                 type="text"
                                 placeholder="0.01"
-                                class="input-bordered input join-item w-full"
+                                class="input join-item input-bordered w-full"
                                 disabled={!strictReceive}
                             />
                         </div>
@@ -385,7 +384,7 @@ features have been implemented:
                     <select
                         bind:value={receiveAsset}
                         onchange={selectPath}
-                        class="select-bordered select join-item"
+                        class="join-item select select-bordered"
                     >
                         <option value="" disabled>Select asset</option>
                         {#if !strictReceive && availablePaths}
@@ -430,7 +429,7 @@ features have been implemented:
                     <input
                         id="amount"
                         name="amount"
-                        class="input-bordered input join-item w-full"
+                        class="input join-item input-bordered w-full"
                         type="text"
                         placeholder="0.01"
                         bind:value={sendAmount}
@@ -440,7 +439,7 @@ features have been implemented:
             <select
                 id="asset"
                 name="asset"
-                class="select-bordered select join-item"
+                class="join-item select select-bordered"
                 bind:value={sendAsset}
                 disabled={createAccount}
             >
@@ -469,7 +468,7 @@ features have been implemented:
         id="memo"
         name="memo"
         type="text"
-        class="input-bordered input"
+        class="input input-bordered"
         placeholder="Maximum 28 characters"
         maxlength="28"
         bind:value={memo}
@@ -479,6 +478,6 @@ features have been implemented:
 
 <!-- Button -->
 <div class="form-control my-5">
-    <button class="btn-primary btn" onclick={previewPaymentTransaction}>Preview Transaction</button>
+    <button class="btn btn-primary" onclick={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->

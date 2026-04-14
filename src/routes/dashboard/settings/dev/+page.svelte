@@ -81,7 +81,7 @@ start fresh.
             <input
                 id="numContacts"
                 name="numContacts"
-                class="input-bordered input join-item"
+                class="input join-item input-bordered"
                 type="number"
                 placeholder="Number of contacts to add"
                 bind:value={addContactsOpts.numContacts}
@@ -91,7 +91,7 @@ start fresh.
     <input
         id="fundContacts"
         name="fundContacts"
-        class="btn-outline join-item btn"
+        class="btn btn-outline join-item"
         type="checkbox"
         aria-label="Fund New Contacts"
         bind:checked={addContactsOpts.fundContacts}
@@ -99,32 +99,32 @@ start fresh.
     <input
         id="addContactTrustlines"
         name="addContactTrustlines"
-        class="btn-outline join-item btn"
+        class="btn btn-outline join-item"
         type="checkbox"
         aria-label="Add Trustlines"
         bind:checked={addContactsOpts.addTrustlines}
         disabled={!addContactsOpts.fundContacts}
     />
     <button
-        class="btn-primary btn-accent join-item btn"
+        class="btn btn-primary btn-accent join-item"
         onclick={() => addContacts(addContactsOpts)}>Add Contacts</button
     >
 </div>
 
 <h2>Burn Bridges</h2>
 <p>Clear out everyone from the contacts list and start fresh</p>
-<button class="btn-warning btn" onclick={emptyContacts}>Empty Contacts List</button>
+<button class="btn btn-warning" onclick={emptyContacts}>Empty Contacts List</button>
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
-<button class="btn-success btn" onclick={() => mergeFriendbotAccount($walletStore.publicKey)}
+<button class="btn btn-success" onclick={() => mergeFriendbotAccount($walletStore.publicKey)}
     >I need a friend!</button
 >
 
 <h2>Launch Modal Rocket</h2>
 <p>Test the modal thing to see what comes up... I guess?</p>
-<button class="btn-primary btn" onclick={displayModal}>svelte-simple-modal</button>
+<button class="btn btn-primary" onclick={displayModal}>svelte-simple-modal</button>
 
 <h2>Throw it On the Ground!</h2>
 <p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>
-<button class="btn-error btn" onclick={nukeLocalStorage}>You can't buy me hot dog man!</button>
+<button class="btn btn-error" onclick={nukeLocalStorage}>You can't buy me hot dog man!</button>

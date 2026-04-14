@@ -11,7 +11,7 @@
      */
 
     /** @type {Props} */
-    let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) } = $props();
+    let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) } = $props()
 
     const putCustomerFields = async () => {
         let submittedCustomerFields = sep12Fields.reduce((fields, item) => {
@@ -52,7 +52,7 @@
             Please wait a moment and try again.
         </p>
         <button
-            class="btn-primary btn"
+            class="btn btn-primary"
             onclick={getSep12Fields({
                 authToken: $webAuthStore[homeDomain],
                 homeDomain: homeDomain,

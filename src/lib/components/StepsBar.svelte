@@ -13,7 +13,6 @@ This component has been **heavily** influenced by this Svelte REPL:
 -->
 
 <script>
-    
     /**
      * @typedef {Object} Props
      * @property {string[]} [steps]
@@ -21,7 +20,7 @@ This component has been **heavily** influenced by this Svelte REPL:
      */
 
     /** @type {Props} */
-    let { steps = [], currentActive = $bindable(1) } = $props();
+    let { steps = [], currentActive = $bindable(1) } = $props()
 
     /** @type {NodeListOf<HTMLUListElement>} */
     let stepMarkers

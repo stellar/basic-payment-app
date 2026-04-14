@@ -14,7 +14,7 @@
      */
 
     /** @type {Props} */
-    let { children } = $props();
+    let { children } = $props()
     const modal = writable(null)
 
     // @ts-ignore

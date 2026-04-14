@@ -17,8 +17,8 @@
         transferData = $bindable({}),
         formData = {},
         homeDomain = '',
-        transferJson = $bindable({})
-    } = $props();
+        transferJson = $bindable({}),
+    } = $props()
 
     const submitTransfer = async () => {
         if (transferData.transfer_submitted) {

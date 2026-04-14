@@ -1,14 +1,14 @@
 import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
-import { KeyManager, LocalStorageKeyStore, ScryptEncrypter, KeyType } from '@stellar/typescript-wallet-sdk-km'
-import { TransactionBuilder } from '@stellar/stellar-sdk'
 import {
-    StellarWalletsKit,
-    allowAllModules,
-    XBULL_ID
-  } from '@creit.tech/stellar-wallets-kit';
-
+    KeyManager,
+    LocalStorageKeyStore,
+    ScryptEncrypter,
+    KeyType,
+} from '@stellar/typescript-wallet-sdk-km'
+import { TransactionBuilder } from '@stellar/stellar-sdk'
+import { StellarWalletsKit, allowAllModules, XBULL_ID } from '@creit.tech/stellar-wallets-kit'
 
 /** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
 
@@ -22,7 +22,7 @@ import {
 
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
-    const { subscribe, set, } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
+    const { subscribe, set } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
 
     return {
         subscribe,
@@ -119,46 +119,42 @@ function createWalletStore() {
          */
         sign: async ({ transactionXDR, network, pincode }) => {
             try {
-
-                const { keyId, publicKey } = get(walletStore);
+                const { keyId, publicKey } = get(walletStore)
 
                 if (keyId === publicKey) {
-
-                const kit = new StellarWalletsKit({
-                    // @ts-ignore
-                    network: network,
-                    selectedWalletId: XBULL_ID,
-                    modules: allowAllModules(),
-                });
-                    const { address } = await kit.getAddress();
+                    const kit = new StellarWalletsKit({
+                        // @ts-ignore
+                        network: network,
+                        selectedWalletId: XBULL_ID,
+                        modules: allowAllModules(),
+                    })
+                    const { address } = await kit.getAddress()
 
                     // Sign the transaction using the wallet address
                     const { signedTxXdr } = await kit.signTransaction(transactionXDR, {
                         address,
                         networkPassphrase: network, // or use your specific network passphrase
-                    });
+                    })
 
                     // @ts-ignore
-                    return signedTxXdr; // Return the signed transaction
+                    return signedTxXdr // Return the signed transaction
                 } else {
-
-                    const keyManager = setupKeyManager();
+                    const keyManager = setupKeyManager()
                     // Fallback to signing with pincode if no wallet
                     const signedTransaction = await keyManager.signTransaction({
                         // @ts-ignore
                         transaction: TransactionBuilder.fromXDR(transactionXDR, network),
                         id: keyId,
                         password: pincode,
-                    });
+                    })
                     // @ts-ignore
-                    return signedTransaction;
+                    return signedTransaction
                 }
-            }catch (err) {
+            } catch (err) {
                 console.error('Error signing transaction', err)
                 // @ts-ignore
                 throw error(400, { message: err.toString() })
             }
-
         },
     }
 }

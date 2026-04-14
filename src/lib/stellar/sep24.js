@@ -92,7 +92,7 @@ export async function queryTransfers24({ authToken, assetCode, homeDomain }) {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
-        }
+        },
     )
     let json = await res.json()
 

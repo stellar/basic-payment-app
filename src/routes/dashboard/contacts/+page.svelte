@@ -66,7 +66,7 @@ the main `/dashboard` page.
                     name="name"
                     type="text"
                     placeholder="Name"
-                    class="input-bordered input input-sm w-full"
+                    class="input input-sm input-bordered w-full"
                 />
             </td>
             <td>
@@ -79,7 +79,7 @@ the main `/dashboard` page.
                     name="address"
                     type="text"
                     placeholder="Address"
-                    class="input-bordered input input-sm w-full"
+                    class="input input-sm input-bordered w-full"
                 />
             </td>
             <td class="text-center">
@@ -88,7 +88,7 @@ the main `/dashboard` page.
                     id="addContactButton"
                     name="addContactButton"
                     type="submit"
-                    class="btn-success btn-sm btn-square btn"
+                    class="btn btn-square btn-success btn-sm"
                 >
                     <UserPlusIcon size="16" />
                 </button>
@@ -129,7 +129,7 @@ the main `/dashboard` page.
                         onclick={() => contacts.remove(contact.id)}
                         id={`removeContact${contact.id}`}
                         name={`removeContact${contact.id}`}
-                        class="btn-error btn-sm btn-square btn"
+                        class="btn btn-square btn-error btn-sm"
                     >
                         <Trash2Icon size="16" />
                     </button>

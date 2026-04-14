@@ -2,9 +2,8 @@
 import { error } from '@sveltejs/kit'
 import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
 
-const horizonUrl = 'https://horizon-testnet.stellar.org';
-export const server = new Horizon.Server(horizonUrl);
-
+const horizonUrl = 'https://horizon-testnet.stellar.org'
+export const server = new Horizon.Server(horizonUrl)
 
 /**
  * @module $lib/stellar/horizonQueries
@@ -166,7 +165,7 @@ export async function fetchAssetsWithHomeDomains(balances) {
                     }
                 }
             }
-        })
+        }),
     )
 
     // Filter out any null array entries before returning

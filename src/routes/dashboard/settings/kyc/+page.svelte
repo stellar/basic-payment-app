@@ -28,7 +28,7 @@ initiated.
             name={`kyc-field-${key}`}
             id={`kyc-field-${key}`}
             type="text"
-            class="input-bordered input"
+            class="input input-bordered"
             bind:value={$kycStore[key]}
         />
     </div>

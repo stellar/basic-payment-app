@@ -22,11 +22,9 @@ list of menu links that can be used to navigate throughout the dashboard.
 
 <ul class="menu h-full w-80 bg-base-200 p-4 text-base-content">
     {#each dashboardRoutes as route}
-        {@const linkClass = page.route.id === route.route ? 'active': ''}
+        {@const linkClass = page.route.id === route.route ? 'active' : ''}
         <li>
-            <a href={route.route} class={linkClass}
-                >{route.text}</a
-            >
+            <a href={route.route} class={linkClass}>{route.text}</a>
         </li>
     {/each}
 </ul>

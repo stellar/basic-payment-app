@@ -23,7 +23,7 @@ For more details, check out the DaisyUI documentation on Drawer layouts:
      */
 
     /** @type {Props} */
-    let { children } = $props();
+    let { children } = $props()
 </script>
 
 <div class="drawer grow lg:drawer-open">

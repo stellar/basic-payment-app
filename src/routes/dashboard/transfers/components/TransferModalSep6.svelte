@@ -38,8 +38,8 @@
             asset_code: '',
             amount: '',
         }),
-        submitPayment = async (opts) => {}
-    } = $props();
+        submitPayment = async (opts) => {},
+    } = $props()
     let steps = ['Transfer Details', 'KYC Information', 'KYC Status', 'Submit Transfer']
     let currentActive = $state(1)
     /** @type {StepsBar} */
@@ -80,7 +80,7 @@
             />
             {#if transferData.endpoint === 'withdraw'}
                 <button
-                    class="btn-primary btn my-1"
+                    class="btn btn-primary my-1"
                     onclick={() =>
                         submitPayment({
                             withdrawDetails: transferJson,

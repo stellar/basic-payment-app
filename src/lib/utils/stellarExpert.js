@@ -34,7 +34,7 @@ export async function fetchAssets() {
             order: 'desc',
             limit: '10',
             cursor: '0',
-        })}`
+        })}`,
     )
     let json = await res.json()
 

@@ -58,7 +58,7 @@ contact entry. This is displayed to the user on the `/dashboard` page.
                         <TruncatedKey keyText={contact.address} lookupName={false} />
                     </td>
                     <th>
-                        <button class="btn-ghost btn-xs btn">Stellar.Expert</button>
+                        <button class="btn btn-ghost btn-xs">Stellar.Expert</button>
                     </th>
                 </tr>
             {/each}

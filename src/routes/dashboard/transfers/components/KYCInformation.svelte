@@ -5,7 +5,6 @@
     import { kycStore } from '$lib/stores/kycStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
 
-    
     /**
      * @typedef {Object} Props
      * @property {string} [homeDomain]
@@ -13,7 +12,7 @@
      */
 
     /** @type {Props} */
-    let { homeDomain = '', sep12Fields = [] } = $props();
+    let { homeDomain = '', sep12Fields = [] } = $props()
 
     const startSep12 = async () => {
         let json = await getSep12Fields({
@@ -54,11 +53,11 @@
                             {/if}
                         </label>
                         {#if details.type === 'binary'}
-                            <input type="file" class="file-input-bordered file-input" disabled />
+                            <input type="file" class="file-input file-input-bordered" disabled />
                         {:else}
                             <input
                                 bind:value={$kycStore[field]}
-                                class="input-bordered input"
+                                class="input input-bordered"
                                 type="text"
                                 name={field}
                                 id={field}
@@ -69,7 +68,7 @@
                     </div>
                 {/each}
                 <button
-                    class="btn-error btn"
+                    class="btn btn-error"
                     onclick={deleteSep12Customer({
                         authToken: $webAuthStore[homeDomain],
                         publicKey: $page.data.publicKey,
@@ -89,11 +88,11 @@
                 {/if}
             </label>
             {#if details.type === 'binary'}
-                <input type="file" class="file-input-bordered file-input my-1" />
+                <input type="file" class="file-input file-input-bordered my-1" />
             {:else}
                 <input
                     bind:value={$kycStore[field]}
-                    class="input-bordered input my-1"
+                    class="input input-bordered my-1"
                     type="text"
                     name={field}
                     id={field}

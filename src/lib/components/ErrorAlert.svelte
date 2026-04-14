@@ -15,14 +15,14 @@ structure of the page layout. The errors are caught and handled in
     import { errorMessage } from '$lib/stores/alertsStore'
 
     // The `dismissible` prop will be used to determine if the alert can be
-    
+
     /**
      * @typedef {Object} Props
      * @property {boolean} [dismissible] - closed by the user
      */
 
     /** @type {Props} */
-    let { dismissible = true } = $props();
+    let { dismissible = true } = $props()
 </script>
 
 {#if $errorMessage}
@@ -30,7 +30,7 @@ structure of the page layout. The errors are caught and handled in
         <XCircleIcon />
         <span>Error: {$errorMessage}</span>
         {#if dismissible}
-            <button class="btn-neutral btn-sm btn" onclick={() => errorMessage.set('')}
+            <button class="btn btn-neutral btn-sm" onclick={() => errorMessage.set('')}
                 >Dismiss</button
             >
         {/if}

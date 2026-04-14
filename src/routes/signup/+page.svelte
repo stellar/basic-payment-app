@@ -13,7 +13,7 @@ circumstance.
 -->
 
 <script>
-    import { preventDefault } from 'svelte/legacy';
+    import { preventDefault } from 'svelte/legacy'
 
     // We import things from external packages that will be needed
     import { Keypair } from '@stellar/stellar-sdk'
@@ -92,13 +92,13 @@ circumstance.
                             <label for="publicKey" class="label">
                                 <span class="label-text">Public Key</span>
                             </label>
-                            <div class="input-bordered input flex">
+                            <div class="input input-bordered flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
                             <label for="publicKey" class="label">
                                 <button
                                     onclick={() => (keypair = Keypair.random())}
-                                    class="link-hover label-text-alt link"
+                                    class="link-hover link label-text-alt"
                                 >
                                     Generate new address?
                                 </button>
@@ -111,7 +111,7 @@ circumstance.
                                     id="showSecret"
                                     name="showSecret"
                                     type="checkbox"
-                                    class="toggle-accent toggle"
+                                    class="toggle toggle-accent"
                                     bind:checked={showSecret}
                                 />
                             </label>
@@ -121,7 +121,7 @@ circumstance.
                                 <label for="secretKey" class="label">
                                     <span class="label-text">Secret Key</span>
                                 </label>
-                                <div class="input-bordered input flex">
+                                <div class="input input-bordered flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ circumstance.
                                 id="pincode"
                                 name="pincode"
                                 type="password"
-                                class="input-bordered input"
+                                class="input input-bordered"
                                 minlength="6"
                                 maxlength="6"
                                 required
@@ -142,14 +142,14 @@ circumstance.
                             />
                         </div>
                         <div class="form-control mt-6">
-                            <button type="submit" class="btn-primary btn">Signup</button>
+                            <button type="submit" class="btn btn-primary">Signup</button>
                         </div>
                         <div class="form-control mt-2">
-                           <WalletKitProvider buttonText='Sign up with wallet'/>
+                            <WalletKitProvider buttonText="Sign up with wallet" />
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
-                                <a class="link-hover label-text-alt link" href="/login">
+                                <a class="link-hover link label-text-alt" href="/login">
                                     Existing users, login here.
                                 </a>
                             </div>

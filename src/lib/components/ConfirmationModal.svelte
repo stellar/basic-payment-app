@@ -19,7 +19,7 @@ on the following occasions:
 -->
 
 <script>
-   import { preventDefault } from 'svelte/legacy';
+    import { preventDefault } from 'svelte/legacy'
 
     // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
@@ -42,7 +42,7 @@ on the following occasions:
     const { close } = getContext('simple-modal')
 
     // `onConfirm` is a dummy function that will be overridden from the
-    
+
     // `_onConfirm` is actually run when the user clicks the modal's "confirm"
     // button, and calls (in-turn) the supplied `onConfirm` function
     const _onConfirm = async () => {
@@ -84,7 +84,7 @@ on the following occasions:
     }
 
     // Just like above, `onReject` is a dummy function that will be overridden
-    
+
     // Just like above, `_onReject` is actually run when the user clicks the
     // modal's "reject" button, and calls (if provided) the supplied `onReject`
     // function
@@ -102,35 +102,34 @@ on the following occasions:
     // are available to set (and bind to) by outside components when they are
     // launching this modal. We are using this here to provide some default
     // variables for our modal which can be modified to suit the launching
-    
-    
-   /**
-    * @typedef {Object} Props
-    * @property {any} [onConfirm] - component that launches the modal
-    * @property {any} [onReject] - from the component that launches the modal
-    * @property {string} [title] - component's needs.
-    * @property {string} [body]
-    * @property {string} [confirmButton]
-    * @property {string} [rejectButton]
-    * @property {boolean} [hasPincodeForm]
-    * @property {string} [transactionXDR]
-    * @property {string} [transactionNetwork]
-    * @property {string} [firstPincode] - The `firstPincode` is only used during the signup process
-    */
 
-   /** @type {Props} */
-   let {
-      onConfirm = async () => {},
-      onReject = () => {},
-      title = 'Transaction Preview',
-      body = 'Please confirm the transaction below in order to sign and submit it to the network.',
-      confirmButton = 'Confirm',
-      rejectButton = 'Reject',
-      hasPincodeForm = true,
-      transactionXDR = '',
-      transactionNetwork = '',
-      firstPincode = ''
-   } = $props();
+    /**
+     * @typedef {Object} Props
+     * @property {any} [onConfirm] - component that launches the modal
+     * @property {any} [onReject] - from the component that launches the modal
+     * @property {string} [title] - component's needs.
+     * @property {string} [body]
+     * @property {string} [confirmButton]
+     * @property {string} [rejectButton]
+     * @property {boolean} [hasPincodeForm]
+     * @property {string} [transactionXDR]
+     * @property {string} [transactionNetwork]
+     * @property {string} [firstPincode] - The `firstPincode` is only used during the signup process
+     */
+
+    /** @type {Props} */
+    let {
+        onConfirm = async () => {},
+        onReject = () => {},
+        title = 'Transaction Preview',
+        body = 'Please confirm the transaction below in order to sign and submit it to the network.',
+        confirmButton = 'Confirm',
+        rejectButton = 'Reject',
+        hasPincodeForm = true,
+        transactionXDR = '',
+        transactionNetwork = '',
+        firstPincode = '',
+    } = $props()
 
     // All variable assignment declarations are automatically reactive. If
     // `isWaiting = true` is executed elsewhere in the code, any dependent
@@ -148,9 +147,11 @@ on the following occasions:
     // recomputed and any dependent components would be updated accordingly.
     /** @type {import('@stellar/stellar-sdk').Transaction}*/
     // @ts-ignore
-    let transaction = $derived(transactionXDR
-        ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
-        : null)
+    let transaction = $derived(
+        transactionXDR
+            ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
+            : null,
+    )
 </script>
 
 <div class="prose p-3">
@@ -203,7 +204,7 @@ on the following occasions:
         <div class="relative">
             <pre class="whitespace-normal break-words">{transactionXDR}</pre>
             <button
-                class="btn-ghost btn-square btn-sm btn absolute bottom-1 right-1"
+                class="btn btn-square btn-ghost btn-sm absolute bottom-1 right-1"
                 use:copy={transactionXDR}
             >
                 <CopyIcon size="16" />
@@ -224,14 +225,14 @@ on the following occasions:
                 <input
                     type="password"
                     id="pincode"
-                    class="input-bordered input"
+                    class="input input-bordered"
                     bind:value={pincode}
                 />
             </div>
             <div class="my-6 flex justify-end gap-3">
                 <button
                     onclick={preventDefault(_onConfirm)}
-                    class="btn-success btn"
+                    class="btn btn-success"
                     disabled={isWaiting}
                 >
                     {#if isWaiting}<span class="loading loading-spinner loading-sm"></span>{/if}
@@ -239,7 +240,7 @@ on the following occasions:
                 </button>
                 <button
                     onclick={preventDefault(_onReject)}
-                    class="btn-error btn"
+                    class="btn btn-error"
                     disabled={isWaiting}
                 >
                     {rejectButton}
@@ -251,13 +252,13 @@ on the following occasions:
         <div class="my-6 flex justify-end gap-3">
             <button
                 onclick={preventDefault(_onConfirm)}
-                class="btn-success btn"
+                class="btn btn-success"
                 disabled={isWaiting}
             >
                 {#if isWaiting}<span class="loading loading-spinner loading-sm"></span>{/if}
                 Confirm in Wallet
             </button>
-            <button onclick={preventDefault(_onReject)} class="btn-error btn" disabled={isWaiting}>
+            <button onclick={preventDefault(_onReject)} class="btn btn-error" disabled={isWaiting}>
                 {rejectButton}
             </button>
         </div>

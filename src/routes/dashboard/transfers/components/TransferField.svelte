@@ -7,11 +7,15 @@
      */
 
     /** @type {Props} */
-    let { field = '', fieldInfo = {
-        optional: false,
-        choices: [],
-        description: '',
-    }, value = $bindable('') } = $props();
+    let {
+        field = '',
+        fieldInfo = {
+            optional: false,
+            choices: [],
+            description: '',
+        },
+        value = $bindable(''),
+    } = $props()
 </script>
 
 <div class="form-control my-1">
@@ -23,7 +27,7 @@
     </label>
     {#if 'choices' in fieldInfo}
         <select
-            class="select-bordered select"
+            class="select select-bordered"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
@@ -36,7 +40,7 @@
     {:else}
         <input
             type="text"
-            class="input-bordered input"
+            class="input input-bordered"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
