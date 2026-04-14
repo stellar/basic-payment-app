@@ -17,7 +17,7 @@ import { getKycServer } from '$lib/stellar/sep1'
  * @param {string} opts.homeDomain Domain to query users's KYC status from
  * @returns {Promise<Object>} Returns the response from the server
  */
-export async function getSep12Fields({ authToken, homeDomain }) {
+export async function getSep12Fields({ authToken, homeDomain }: { authToken: string; homeDomain: string }): Promise<object> {
     let kycServer = await getKycServer(homeDomain)
 
     let res = await fetch(`${kycServer}/customer`, {
@@ -43,7 +43,7 @@ export async function getSep12Fields({ authToken, homeDomain }) {
  * @param {string} opts.homeDomain Domain to submit users's KYC information to
  * @returns {Promise<Object>} Returns the response from the server
  */
-export async function putSep12Fields({ authToken, fields, homeDomain }) {
+export async function putSep12Fields({ authToken, fields, homeDomain }: { authToken: string; fields: object; homeDomain: string }): Promise<object> {
     let kycServer = await getKycServer(homeDomain)
 
     let res = await fetch(`${kycServer}/customer`, {
@@ -71,7 +71,7 @@ export async function putSep12Fields({ authToken, fields, homeDomain }) {
  * @param {string} opts.homeDomain Domain to submit users's KYC information to
  * @returns {Promise<Object>} Returns the response from the server
  */
-export async function deleteSep12Customer({ authToken, publicKey, homeDomain }) {
+export async function deleteSep12Customer({ authToken, publicKey, homeDomain }: { authToken: string; publicKey: string; homeDomain: string }): Promise<object> {
     let kycServer = await getKycServer(homeDomain)
 
     let res = await fetch(`${kycServer}/customer/${publicKey}`, {

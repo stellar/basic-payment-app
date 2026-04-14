@@ -11,7 +11,7 @@ pincode is still required before the keypair can be decrypted to sign anything
 for submission to the network.
 -->
 
-<script>
+<script lang="ts">
     import { preventDefault } from 'svelte/legacy'
 
     // The `export let data` declaration allows us to receive and use the page

@@ -7,7 +7,7 @@ structure of the page layout. The errors are caught and handled in
 `/src/routes/+layout.svelte`.
 -->
 
-<script>
+<script lang="ts">
     // We import things from external packages that will be needed
     import { XCircleIcon } from 'svelte-feather-icons'
 
@@ -15,14 +15,11 @@ structure of the page layout. The errors are caught and handled in
     import { errorMessage } from '$lib/stores/alertsStore'
 
     // The `dismissible` prop will be used to determine if the alert can be
-
-    /**
-     * @typedef {Object} Props
-     * @property {boolean} [dismissible] - closed by the user
-     */
-
-    /** @type {Props} */
-    let { dismissible = true } = $props()
+    // closed by the user
+    interface Props {
+        dismissible?: boolean;
+    }
+    let { dismissible = true }: Props = $props()
 </script>
 
 {#if $errorMessage}

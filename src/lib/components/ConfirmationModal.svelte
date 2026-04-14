@@ -18,9 +18,7 @@ on the following occasions:
    sign, before it is sent back to the authentication server.
 -->
 
-<script>
-    import { preventDefault } from 'svelte/legacy'
-
+<script lang="ts">
     // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
@@ -33,7 +31,7 @@ on the following occasions:
 
     // We need a couple things from the stellar-sdk to reconstruct the
     // Transaction object from the XDR string, when the time comes
-    import { Networks, TransactionBuilder } from '@stellar/stellar-sdk'
+    import { Networks, TransactionBuilder, type Transaction } from '@stellar/stellar-sdk'
 
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
@@ -66,17 +64,16 @@ on the following occasions:
 
             // We call the `onConfirm` function that was given to the modal by
             // the outside component. This method allows each page that needs to
-            // display a modal to independantly customize the behavior that
+            // display a modal to independently customize the behavior that
             // should take place when the pincode is confirmed. (i.e., submit
             // the transaction to the network, login to the app, etc.)
-            // @ts-ignore
             // Pass pincode only for non-wallet users
             await onConfirm(isWalletUser ? undefined : pincode)
 
             // Now we can close the modal window
             close()
-        } catch (err) {
-            // If there was an error, we set our `errorMessage` alert
+        } catch (err: unknown) {
+            // If there was an error, we set our `errorMessage` alert]
             // @ts-ignore
             errorMessage.set(err.body?.message || err.message || 'Transaction failed')
         }
@@ -101,23 +98,22 @@ on the following occasions:
     // Svelte's way of exposing props of a component. Each of the variables here
     // are available to set (and bind to) by outside components when they are
     // launching this modal. We are using this here to provide some default
-    // variables for our modal which can be modified to suit the launching
+    // variables for our modal which can be modified to suit the launching component's needs.
 
-    /**
-     * @typedef {Object} Props
-     * @property {any} [onConfirm] - component that launches the modal
-     * @property {any} [onReject] - from the component that launches the modal
-     * @property {string} [title] - component's needs.
-     * @property {string} [body]
-     * @property {string} [confirmButton]
-     * @property {string} [rejectButton]
-     * @property {boolean} [hasPincodeForm]
-     * @property {string} [transactionXDR]
-     * @property {string} [transactionNetwork]
-     * @property {string} [firstPincode] - The `firstPincode` is only used during the signup process
-     */
+    interface Props {
+        onConfirm?: (pincode: undefined|string) => Promise<void>;
+        onReject?: () => void;
+        title?: string;
+        body?: string;
+        confirmButton?: string;
+        rejectButton?: string;
+        hasPincodeForm?: boolean;
+        transactionXDR?: string;
+        transactionNetwork?: string;
+        /** Only used during user signup */
+        firstPincode?: string;
+    }
 
-    /** @type {Props} */
     let {
         onConfirm = async () => {},
         onReject = () => {},
@@ -129,7 +125,7 @@ on the following occasions:
         transactionXDR = '',
         transactionNetwork = '',
         firstPincode = '',
-    } = $props()
+    }: Props = $props()
 
     // All variable assignment declarations are automatically reactive. If
     // `isWaiting = true` is executed elsewhere in the code, any dependent
@@ -145,11 +141,9 @@ on the following occasions:
     // opposed to an assignment) as _reactive_. In this case, every time
     // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
     // recomputed and any dependent components would be updated accordingly.
-    /** @type {import('@stellar/stellar-sdk').Transaction}*/
-    // @ts-ignore
     let transaction = $derived(
         transactionXDR
-            ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
+            ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET) as Transaction
             : null,
     )
 </script>
@@ -231,7 +225,7 @@ on the following occasions:
             </div>
             <div class="my-6 flex justify-end gap-3">
                 <button
-                    onclick={preventDefault(_onConfirm)}
+                    onclick={_onConfirm}
                     class="btn btn-success"
                     disabled={isWaiting}
                 >
@@ -239,7 +233,7 @@ on the following occasions:
                     {confirmButton}
                 </button>
                 <button
-                    onclick={preventDefault(_onReject)}
+                    onclick={_onReject}
                     class="btn btn-error"
                     disabled={isWaiting}
                 >
@@ -251,14 +245,14 @@ on the following occasions:
         <!-- Wallet user confirmation UI -->
         <div class="my-6 flex justify-end gap-3">
             <button
-                onclick={preventDefault(_onConfirm)}
+                onclick={_onConfirm}
                 class="btn btn-success"
                 disabled={isWaiting}
             >
                 {#if isWaiting}<span class="loading loading-spinner loading-sm"></span>{/if}
                 Confirm in Wallet
             </button>
-            <button onclick={preventDefault(_onReject)} class="btn btn-error" disabled={isWaiting}>
+            <button onclick={_onReject} class="btn btn-error" disabled={isWaiting}>
                 {rejectButton}
             </button>
         </div>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { initiateTransfer6, getTransferStatus6 } from '$lib/stellar/sep6'
     import { webAuthStore } from '$lib/stores/webAuthStore'
     import { transfers } from '$lib/stores/transfersStore'

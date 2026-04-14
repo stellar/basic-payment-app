@@ -10,6 +10,7 @@ import {
     nativeToScVal,
 } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
+
 /**
  * @module $lib/stellar/transactions
  * @description A collection of functions that will generate and return
@@ -37,10 +38,11 @@ const rpcUrl = 'https://soroban-testnet.stellar.org'
 /**
  * For consistency, all functions in this module will return the same type of object.
  * (This is also the structure of the Object returned when requesting a SEP-10 challenge transaction.)
- * @typedef {Object} TransactionResponse
- * @property {string} transaction Stellar transaction envelope in base64-encoded, XDR format
- * @property {string} network_passphrase Network passphrase the transaction was built for
  */
+interface TransactionResponse {
+    transaction: string
+    network_passphrase: string
+}
 
 /**
  * Constructs and returns a Stellar transaction that contains a `createAccount` operation and an optional memo.
@@ -53,7 +55,7 @@ const rpcUrl = 'https://soroban-testnet.stellar.org'
  * @param {string} [opts.memo] Memo to add to the transaction
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createCreateAccountTransaction({ source, destination, amount, memo }) {
+export async function createCreateAccountTransaction({ source, destination, amount, memo }: { source: string; destination: string; amount: number | string; memo?: string }): Promise<TransactionResponse> {
     // The minimum account balance on the Stellar network is 1 XLM (2 base
     // reserves). We'll check that `amount` meets or exceeds that requirement
     // early, so we can fail quickly.
@@ -105,7 +107,7 @@ export async function createCreateAccountTransaction({ source, destination, amou
  * @param {string|Buffer} [opts.memo] Memo to add to the transaction, either a string or a Buffer object
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createPaymentTransaction({ source, destination, asset, amount, memo }) {
+export async function createPaymentTransaction({ source, destination, asset, amount, memo }: { source: string; destination: string; asset?: string; amount: number | string; memo?: string | Buffer }): Promise<TransactionResponse> {
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
@@ -161,7 +163,7 @@ export async function createPaymentTransaction({ source, destination, asset, amo
  * @param {string|number} [opts.limit] Desired limit for the trustline on the `source` account (use '0' to delete the trustline)
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createChangeTrustTransaction({ source, asset, limit }) {
+export async function createChangeTrustTransaction({ source, asset, limit }: { source: string; asset: string; limit?: string | number }): Promise<TransactionResponse> {
     // We start by converting the asset provided in string format into a Stellar
     // Asset() object
     let trustAsset = new Asset(asset.split(':')[0], asset.split(':')[1])
@@ -218,7 +220,7 @@ export async function createPathPaymentStrictSendTransaction({
     destinationAsset,
     destinationAmount,
     memo,
-}) {
+}: { source: string; sourceAsset: string; sourceAmount: string; destination: string; destinationAsset: string; destinationAmount: string; memo?: string }): Promise<TransactionResponse> {
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
@@ -291,7 +293,7 @@ export async function createPathPaymentStrictReceiveTransaction({
     destinationAsset,
     destinationAmount,
     memo,
-}) {
+}: { source: string; sourceAsset: string; sourceAmount: string; destination: string; destinationAsset: string; destinationAmount: string; memo: string }): Promise<TransactionResponse> {
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
@@ -353,7 +355,7 @@ export async function createPathPaymentStrictReceiveTransaction({
  * @param {string} opts.asset Asset to be transferred (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createContractTransferTransaction({ source, destination, amount, asset }) {
+export async function createContractTransferTransaction({ source, destination, amount, asset }: { source: string; destination: string; amount: string; asset: string }): Promise<TransactionResponse> {
     const server = new rpc.Server(rpcUrl)
     const sourceAccount = await server.getAccount(source)
 

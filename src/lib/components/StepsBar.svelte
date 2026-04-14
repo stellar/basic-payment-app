@@ -12,21 +12,16 @@ This component has been **heavily** influenced by this Svelte REPL:
 <https://svelte.dev/repl/7b05d57dcdc04f49be72844e4b2825b3?version=3.44.0>
 -->
 
-<script>
-    /**
-     * @typedef {Object} Props
-     * @property {string[]} [steps]
-     * @property {number} [currentActive]
-     */
+<script lang="ts">
+    interface Props {
+        steps?: string[]
+        currentActive?: number;
+    }
+    let { steps = [], currentActive = $bindable(1) }: Props = $props()
 
-    /** @type {Props} */
-    let { steps = [], currentActive = $bindable(1) } = $props()
+    let stepMarkers: NodeListOf<HTMLUListElement>
 
-    /** @type {NodeListOf<HTMLUListElement>} */
-    let stepMarkers
-
-    /** @param {number} stepIncrement */
-    export const handleStep = (stepIncrement) => {
+    export const handleStep = (stepIncrement: number) => {
         stepMarkers = document.querySelectorAll('.step')
         if (stepIncrement == 1) {
             currentActive++

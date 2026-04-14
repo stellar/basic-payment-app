@@ -16,7 +16,7 @@ import { error } from '@sveltejs/kit'
  * @param {string} domain Domain to get the SEP-6 info for
  * @returns {Promise<Object>} SEP-6 info published by the domain
  */
-export async function getSep6Info(domain) {
+export async function getSep6Info(domain: string): Promise<object> {
     let transferServer = await getTransferServerSep6(domain)
     let res = await fetch(`${transferServer}/info`)
     let json = await res.json()
@@ -35,7 +35,7 @@ export async function getSep6Info(domain) {
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function initiateTransfer6({ authToken, endpoint, formData, domain }) {
+export async function initiateTransfer6({ authToken, endpoint, formData, domain }: { authToken: string; endpoint: string; formData: { [s: string]: string }; domain: string }): Promise<object> {
     let transferServer = await getTransferServerSep6(domain)
     console.log('here is all the formData', formData)
     let searchParams = new URLSearchParams(formData)
@@ -70,7 +70,7 @@ export async function initiateTransfer6({ authToken, endpoint, formData, domain 
  * @returns {Promise<Object>} JSON object with information about the transfer
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function getTransferStatus6({ authToken, transferId, domain }) {
+export async function getTransferStatus6({ authToken, transferId, domain }: { authToken: string; transferId: string; domain: string }): Promise<object> {
     let transferServer = await getTransferServerSep6(domain)
 
     let res = await fetch(
@@ -110,7 +110,7 @@ export async function getTransferStatus6({ authToken, transferId, domain }) {
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function queryTransfers6({ authToken, assetCode, publicKey, homeDomain }) {
+export async function queryTransfers6({ authToken, assetCode, publicKey, homeDomain }: { authToken: string; assetCode: string; publicKey: string; homeDomain: string }): Promise<object> {
     let transferServer = await getTransferServerSep6(homeDomain)
 
     let res = await fetch(

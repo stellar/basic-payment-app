@@ -18,7 +18,7 @@ import { error } from '@sveltejs/kit'
  * @returns {Promise<Object>} SEP-24 info published by the domain
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function getSep24Info(domain) {
+export async function getSep24Info(domain: string): Promise<object> {
     let transferServerSep24 = await getTransferServerSep24(domain)
 
     let res = await fetch(`${transferServerSep24}/info`)
@@ -45,7 +45,7 @@ export async function getSep24Info(domain) {
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlFields = {} }) {
+export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlFields = {} }: { authToken: string; endpoint: ('deposit' | 'withdraw'); homeDomain: string; urlFields?: object }): Promise<object> {
     let transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     let res = await fetch(`${transferServerSep24}/transactions/${endpoint}/interactive`, {
@@ -79,7 +79,7 @@ export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlF
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function queryTransfers24({ authToken, assetCode, homeDomain }) {
+export async function queryTransfers24({ authToken, assetCode, homeDomain }: { authToken: string; assetCode: string; homeDomain: string }): Promise<object> {
     let transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     let res = await fetch(

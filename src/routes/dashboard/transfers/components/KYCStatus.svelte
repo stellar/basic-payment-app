@@ -1,14 +1,13 @@
-<script>
+<script lang="ts">
     import { kycStore } from '$lib/stores/kycStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
     import { putSep12Fields, getSep12Fields } from '$lib/stellar/sep12'
 
-    /**
-     * @typedef {Object} Props
-     * @property {any} [sep12Fields]
-     * @property {string} [homeDomain]
-     * @property {any} [transferData]
-     */
+    interface Props {
+        sep12Fields?: any
+        homeDomain?: string;
+        transferData?: any
+    }
 
     /** @type {Props} */
     let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) } = $props()

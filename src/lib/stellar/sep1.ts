@@ -6,10 +6,9 @@ import { StellarToml } from '@stellar/stellar-sdk'
  * retrieve information from an account's `home_domain`. This is often used by
  * anchors to communicate details about their own infrastructure.
  */
-/**
- * We'll import the type definition that already exists within the `stellar-sdk` package for StellarToml, so our functions will know what to expect.
- * @typedef {StellarToml.Api.StellarToml} StellarToml
- */
+
+/** We'll import the type definition that already exists within the `stellar-sdk` package for StellarToml, so our functions will know what to expect. */
+type StellarToml = StellarToml.Api.StellarToml
 
 /**
  * Fetches and returns the stellar.toml file hosted by a provided domain.
@@ -18,7 +17,7 @@ import { StellarToml } from '@stellar/stellar-sdk'
  * @param {string} domain Domain to get the `stellar.toml` file for
  * @returns {Promise<StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
  */
-export async function fetchStellarToml(domain) {
+export async function fetchStellarToml(domain: string): Promise<StellarToml> {
     let stellarToml = await StellarToml.Resolver.resolve(domain)
     return stellarToml
 }
@@ -30,7 +29,7 @@ export async function fetchStellarToml(domain) {
  * @param {string} domain Domain to get the network passphrase for
  * @returns {Promise<string|undefined>} The passphrase for the specific Stellar network this infrastructure operates on
  */
-export async function getNetworkPassphrase(domain) {
+export async function getNetworkPassphrase(domain: string): Promise<string | undefined> {
     let { NETWORK_PASSPHRASE } = await fetchStellarToml(domain)
     return NETWORK_PASSPHRASE
 }
@@ -42,7 +41,7 @@ export async function getNetworkPassphrase(domain) {
  * @param {string} domain Domain to get the federation server for
  * @returns {Promise<string|undefined>} The endpoint for clients to resolve stellar addresses for users on domain via SEP-2 federation protocol
  */
-export async function getFederationServer(domain) {
+export async function getFederationServer(domain: string): Promise<string | undefined> {
     let { FEDERATION_SERVER } = await fetchStellarToml(domain)
     return FEDERATION_SERVER
 }
@@ -54,7 +53,7 @@ export async function getFederationServer(domain) {
  * @param {string} domain Domain to get the SEP-6 transfer server for
  * @returns {Promise<string|undefined>} The endpoint used for SEP-6 Anchor/Client interoperability
  */
-export async function getTransferServerSep6(domain) {
+export async function getTransferServerSep6(domain: string): Promise<string | undefined> {
     let { TRANSFER_SERVER } = await fetchStellarToml(domain)
     return TRANSFER_SERVER
 }
@@ -66,7 +65,7 @@ export async function getTransferServerSep6(domain) {
  * @param {string} domain Domain to get the SEP-24 transfer server for
  * @returns {Promise<string|undefined>} The endpoint used for SEP-24 Anchor/Client interoperability
  */
-export async function getTransferServerSep24(domain) {
+export async function getTransferServerSep24(domain: string): Promise<string | undefined> {
     let { TRANSFER_SERVER_SEP0024 } = await fetchStellarToml(domain)
     return TRANSFER_SERVER_SEP0024
 }
@@ -78,7 +77,7 @@ export async function getTransferServerSep24(domain) {
  * @param {string} domain Domain to get the KYC server for
  * @returns {Promise<string|undefined>} The endpoint used for KYC customer info transfer
  */
-export async function getKycServer(domain) {
+export async function getKycServer(domain: string): Promise<string | undefined> {
     let { KYC_SERVER, TRANSFER_SERVER } = await fetchStellarToml(domain)
     // If `KYC_SERVER` is undefined in the domain's TOML file, `TRANSFER_SERVER`
     // will be used
@@ -92,7 +91,7 @@ export async function getKycServer(domain) {
  * @param {string} domain Domain to get the web authentication endpoint for
  * @returns {Promise<string|undefined>} The endpoint used for SEP-10 Web Authentication
  */
-export async function getWebAuthEndpoint(domain) {
+export async function getWebAuthEndpoint(domain: string): Promise<string | undefined> {
     let { WEB_AUTH_ENDPOINT } = await fetchStellarToml(domain)
     return WEB_AUTH_ENDPOINT
 }
@@ -104,7 +103,7 @@ export async function getWebAuthEndpoint(domain) {
  * @param {string} domain Domain to get the signing key for
  * @returns {Promise<string|undefined>} The public key of the keypair used for SEP-10 authentication
  */
-export async function getServerSigningKey(domain) {
+export async function getServerSigningKey(domain: string): Promise<string | undefined> {
     let { SIGNING_KEY } = await fetchStellarToml(domain)
     return SIGNING_KEY
 }

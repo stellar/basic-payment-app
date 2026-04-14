@@ -12,7 +12,7 @@ be absolutely certain the secret key **does not** leave the browser under any
 circumstance.
 -->
 
-<script>
+<script lang="ts">
     import { preventDefault } from 'svelte/legacy'
 
     // We import things from external packages that will be needed

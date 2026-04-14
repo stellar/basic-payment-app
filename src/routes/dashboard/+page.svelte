@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     /**
      * @description For every directory contained within `/src/routes/`, the
      * `+page.svelte` file acts as the "entry point" for what is displayed for

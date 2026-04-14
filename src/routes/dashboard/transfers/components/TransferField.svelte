@@ -1,12 +1,14 @@
-<script>
-    /**
-     * @typedef {Object} Props
-     * @property {string} [field]
-     * @property {any} [fieldInfo]
-     * @property {string} [value]
-     */
+<script lang="ts">
+    interface Props {
+        field?: string;
+        fieldInfo?: {
+            optional: boolean;
+            choices: string[];
+            description: string;
+        };
+        value?: string;
+    }
 
-    /** @type {Props} */
     let {
         field = '',
         fieldInfo = {
@@ -15,7 +17,7 @@
             description: '',
         },
         value = $bindable(''),
-    } = $props()
+    }: Props = $props()
 </script>
 
 <div class="form-control my-1">

@@ -1,53 +1,48 @@
-<script>
+<script lang="ts">
     import StepsBar from '$lib/components/StepsBar.svelte'
     import TransferDetails from './TransferDetails.svelte'
     import KycInformation from './KYCInformation.svelte'
     import KycStatus from './KYCStatus.svelte'
     import Confirmation from './Confirmation.svelte'
 
-    /** @type {string[]} */
-    let sep12Fields = $state([])
+    let sep12Fields: string[] = $state([])
     let transferJson = $state({})
 
-    /**
-     * @typedef {Object} Props
-     * @property {string} [title]
-     * @property {string} [body]
-     * @property {string} [homeDomain]
-     * @property {any} [sep6Info]
-     * @property {string} [assetIssuer]
-     * @property {any} [transferData]
-     * @property {any} [formData]
-     * @property {any} [submitPayment]
-     */
+    interface Props {
+        title?: string
+        body?: string
+        homeDomain?: string
+        sep6Info?: any
+        assetIssuer?: string
+        transferData?: {
+            endpoint: string;
+            customer_id: string;
+            transfer_id: string;
+            transfer_submitted: boolean;
+        }
+        formData?: {
+            asset_code: string;
+            amount: string;
+        }
+        submitPayment?: (opts: object) => Promise<void>
+    }
 
-    /** @type {Props} */
     let {
         title = 'Initiate SEP-6 Transfer',
         body = 'Please follow the steps to begin a transfer with your chosen anchor.',
         homeDomain = $bindable(''),
         sep6Info = $bindable({}),
         assetIssuer = '',
-        transferData = $bindable({
-            endpoint: '',
-            customer_id: '',
-            transfer_id: '',
-            transfer_submitted: false,
-        }),
-        formData = $bindable({
-            asset_code: '',
-            amount: '',
-        }),
+        transferData = $bindable(),
+        formData = $bindable(),
         submitPayment = async (opts) => {},
-    } = $props()
+    }: Props = $props()
     let steps = ['Transfer Details', 'KYC Information', 'KYC Status', 'Submit Transfer']
     let currentActive = $state(1)
-    /** @type {StepsBar} */
-    let stepsBar = $state()
+    let stepsBar: StepsBar|null = $state(null)
     let activeStep = $derived(steps[currentActive - 1])
 
-    /** @param {number} stepIncrement */
-    const handleStep = (stepIncrement) => {
+    const handleStep = (stepIncrement: number) => {
         stepsBar.handleStep(stepIncrement)
     }
 </script>

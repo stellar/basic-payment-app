@@ -8,7 +8,7 @@ displayed if a "payment" the user is sending must take the form of a
 Stellar network (yet.)
 -->
 
-<script>
+<script lang="ts">
     // We import things from external packages that will be needed
     import { InfoIcon } from 'svelte-feather-icons'
 
@@ -16,14 +16,11 @@ Stellar network (yet.)
     import { infoMessage } from '$lib/stores/alertsStore'
 
     // The `dismissible` prop will be used to determine if the alert can be
-
-    /**
-     * @typedef {Object} Props
-     * @property {boolean} [dismissible] - closed by the user - Sometimes, the use of `@html` inside a Svelte tag could open users up to
-     */
-
-    /** @type {Props} */
-    let { dismissible = true } = $props()
+    // closed by the user
+    interface Props {
+        dismissible?: boolean;
+    }
+    let { dismissible = true }: Props = $props()
 
     // XSS attacks. The Svelte compiler will remind us of that. We are only ever
     // populating this `infoAlert` with our own text, so we will choose to

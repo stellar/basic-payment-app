@@ -1,10 +1,12 @@
-<script>
+<script lang="ts">
     /**
      * @description If a directory contained within `/src/routes/` contains a
      * `+layout.svelte` file, that file will act as a "container" for everything
      * else nested beneath that directory.
      * @see {@link https://kit.svelte.dev/docs/routing#layout-layout-svelte}
      */
+
+    import type { LayoutProps } from './$types';
 
     // `$props()` in a Svelte layout will load data returned by the
     // file's accompanying `+layout.js` file. The data here will then be
@@ -13,14 +15,7 @@
     // noted, we aren't actually _doing_ anything with the `data` in this
     // layout, except logging it to the console. You could safely delete these
     // lines, and the loaded data would still flow down to where it's needed.)
-    /**
-     * @typedef {Object} Props
-     * @property {import('./$types').LayoutData} data
-     * @property {import('svelte').Snippet} [children]
-     */
-
-    /** @type {Props} */
-    let { data, children } = $props()
+    let { data, children }: LayoutProps = $props()
     $inspect('routes/dashboard/+layout.svelte data', data)
 
     import Navbar from './components/Navbar.svelte'
@@ -31,8 +26,8 @@
 <div class="flex min-h-screen flex-col">
     <Navbar />
     <Drawer>
-        <!-- A `<slot />` is the Svelte way of rendering this layout's child component(s) -->
-        {@render children?.()}
+        <!-- This is the Svelte way of rendering this layout's child component(s) -->
+        {@render children()}
     </Drawer>
     <Footer />
 </div>

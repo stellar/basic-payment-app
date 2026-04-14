@@ -14,15 +14,9 @@ up. We'll try to comment things in a sensible way, but you may need to take a
 couple read-throughs to understand everything.
 -->
 
-<script>
-    // `$props()` allows us to pull in any parent load data for use here.
-    /**
-     * @typedef {Object} Props
-     * @property {import('./$types').PageData} data
-     */
-
-    /** @type {Props} */
-    let { data } = $props()
+<script lang="ts">
+    import type { PageProps } from './$types'
+    let { data }: PageProps = $props()
     $inspect('routes/dashboard/transfers/+page.svelte data', data)
 
     // We import things from external packages that will be needed
@@ -75,9 +69,9 @@ couple read-throughs to understand everything.
     /**
      * A simple function that checks whether a user has a SEP-10 authentication token stored for an anchor, and if it is expired or not.
      * @function getAuthStatus
-     * @param {string} homeDomain Domain to examine current authentication status for
+     * @param homeDomain Domain to examine current authentication status for
      */
-    const getAuthStatus = (homeDomain) => {
+    const getAuthStatus = (homeDomain: string) => {
         if ($webAuthStore[homeDomain]) {
             if (webAuthStore.isTokenExpired(homeDomain)) {
                 return 'auth_expired'
@@ -92,9 +86,9 @@ couple read-throughs to understand everything.
     /**
      * Takes an action after the pincode has been confirmed by the user on a SEP-10 challenge transaction.
      * @function onAuthConfirm
-     * @param {string} pincode Pincode that was confirmed by the modal window
+     * @param pincode Pincode that was confirmed by the modal window
      */
-    const onAuthConfirm = async (pincode) => {
+    const onAuthConfirm = async (pincode: string) => {
         // Sign the transaction with the user's keypair
         let signedTransaction = await walletStore.sign({
             transactionXDR: challengeXDR,
@@ -116,9 +110,9 @@ couple read-throughs to understand everything.
      * Requests a challenge transaction from a SEP-10 server, and presents it to the user for pincode verification
      * @async
      * @function auth
-     * @param {string} homeDomain Domain to authenticate with via SEP-10 protocol
+     * @param homeDomain Domain to authenticate with via SEP-10 protocol
      */
-    const auth = async (homeDomain) => {
+    const auth = async (homeDomain: string) => {
         // Request the challenge transaction, expecting back the XDR string
         let { transaction, network_passphrase } = await getChallengeTransaction({
             publicKey: data.publicKey,
@@ -145,12 +139,12 @@ couple read-throughs to understand everything.
     /**
      * Launch the SEP-6 modal to begin the transfer process and gather information from the user.
      * @function launchtransferModalSep6
-     * @param {Object} opts Options object
-     * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
-     * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
-     * @param {string} opts.assetIssuer Public Stellar address that issues the asset being transferred
-     * @param {Object} opts.sep6Info Info published by the anchor detailing what assets and/or transfer methods are available
-     * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
+     * @param opts Options object
+     * @param opts.homeDomain Domain of the anchor that is handling the transfer
+     * @param opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param opts.assetIssuer Public Stellar address that issues the asset being transferred
+     * @param opts.sep6Info Info published by the anchor detailing what assets and/or transfer methods are available
+     * @param opts.endpoint Endpoint of the transfer server to interact with (e.g., `deposit` or `withdraw`)
      */
     const launchTransferModalSep6 = ({
         homeDomain,
@@ -158,7 +152,7 @@ couple read-throughs to understand everything.
         assetIssuer,
         endpoint,
         sep6Info,
-    }) => {
+    }: { homeDomain: string; assetCode: string; assetIssuer: string; sep6Info: object; endpoint: ('deposit' | 'withdraw') }) => {
         // Open the SEP-6 transfer modal, supplying the relevant props for our
         // desired type of transfer.
         open(TransferModalSep6, {
@@ -180,9 +174,9 @@ couple read-throughs to understand everything.
      * After a withdraw transaction has been presented to the user, and they've confirmed with the correct pincode, sign and submit the transaction to the Stellar network.
      * @async
      * @function onPaymentConfirm
-     * @param {string} pincode The 6-digit pincode the user has confirmed that will decrypt the Stellar secret key for signing
+     * @param pincode The 6-digit pincode the user has confirmed that will decrypt the Stellar secret key for signing
      */
-    const onPaymentConfirm = async (pincode) => {
+    const onPaymentConfirm = async (pincode: string) => {
         // Use the walletStore to sign the transaction
         let signedTransaction = await walletStore.sign({
             transactionXDR: paymentXDR,
@@ -195,13 +189,13 @@ couple read-throughs to understand everything.
 
     /**
      * Builds a Stellar payment to present to the user which will complete a transfer to the Anchor.
-     * @param {Object} opts Options object
-     * @param {Object} opts.withdrawDetails Object containing details about how a withdraw should proceed
-     * @param {string} opts.assetCode Stellar asset code to be transferred in the payment transaction
-     * @param {string} opts.assetIssuer Public Stellar address that issues the asset
-     * @param {string|number} opts.amount Amount of the asset to send in the payment
+     * @param opts Options object
+     * @param opts.withdrawDetails Object containing details about how a withdraw should proceed
+     * @param opts.assetCode Stellar asset code to be transferred in the payment transaction
+     * @param opts.assetIssuer Public Stellar address that issues the asset
+     * @param opts.amount Amount of the asset to send in the payment
      */
-    let submitPayment = async ({ withdrawDetails, assetCode, assetIssuer, amount }) => {
+    let submitPayment = async ({ withdrawDetails, assetCode, assetIssuer, amount }: { withdrawDetails: object; assetCode: string; assetIssuer: string; amount: string | number }) => {
         let { transaction, network_passphrase } = await createPaymentTransaction({
             source: data.publicKey,
             // @ts-ignore
@@ -228,13 +222,13 @@ couple read-throughs to understand everything.
     /**
      * Launch the interactive SEP-24 popup window for the user to interact directly with the anchor to begin a transfer.
      * @function launchTransferWindowSep24
-     * @param {Object} opts Options object
-     * @param {string} opts.homeDomain Domain of the anchor that is handling the transfer
-     * @param {string} opts.assetCode Stellar asset code that will be transferred using the anchor
-     * @param {string} opts.assetIssuer Public Stellar address that issues the asset
-     * @param {('deposit'|'withdraw')} opts.endpoint Endpoint of the transfer server to interact with (i.e., `deposit` or `withdraw`)
+     * @param opts Options object
+     * @param opts.homeDomain Domain of the anchor that is handling the transfer
+     * @param opts.assetCode Stellar asset code that will be transferred using the anchor
+     * @param opts.assetIssuer Public Stellar address that issues the asset
+     * @param opts.endpoint Endpoint of the transfer server to interact with (i.e., `deposit` or `withdraw`)
      */
-    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, assetIssuer, endpoint }) => {
+    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, assetIssuer, endpoint }: { homeDomain: string; assetCode: string; assetIssuer: string; endpoint: ('deposit' | 'withdraw') }) => {
         // We initiate the transfer from the SEP-24 server, and get the
         // interactive URL back from it
         // @ts-ignore

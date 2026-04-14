@@ -6,22 +6,19 @@ gone wrong, but not "catastrophically" so. They can continue with whatever they
 were doing, but they should know about whatever happened.
 -->
 
-<script>
+<script lang="ts">
     // We import things from external packages that will be needed
     import { AlertTriangleIcon } from 'svelte-feather-icons'
 
     // We import any stores we will need to read and/or write
     import { warningMessage } from '$lib/stores/alertsStore'
 
-    // The `dismissible` prop will be used to determin if the alert can be
-
-    /**
-     * @typedef {Object} Props
-     * @property {boolean} [dismissible] - closed by the user
-     */
-
-    /** @type {Props} */
-    let { dismissible = true } = $props()
+    // The `dismissible` prop will be used to determine if the alert can be
+    // closed by the user
+    interface Props {
+        dismissible?: boolean;
+    }
+    let { dismissible = true }: Props = $props()
 </script>
 
 {#if $warningMessage}

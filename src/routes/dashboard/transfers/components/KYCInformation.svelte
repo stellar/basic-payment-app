@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { page } from '$app/stores'
 
     import { deleteSep12Customer, getSep12Fields } from '$lib/stellar/sep12'

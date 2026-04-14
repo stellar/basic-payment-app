@@ -2,7 +2,7 @@ import { get } from 'svelte/store'
 import { contacts } from '$lib/stores/contactsStore'
 import { Asset, Keypair, Operation } from '@stellar/stellar-sdk'
 import { fundWithFriendbot, startTransaction, submit } from '$lib/stellar/horizonQueries'
-import { fetchAssets } from '$lib/utils/stellarExpert'
+import { fetchAssets, type RankedAsset } from '$lib/utils/stellarExpert'
 
 /**
  * @module $lib/utils/devHelpers
@@ -15,11 +15,14 @@ import { fetchAssets } from '$lib/utils/stellarExpert'
 
 /**
  * A filtered user object requested and retrieved from dummyJSON
- * @typedef {Object} DummyJsonUser
- * @property {string} firstName First name of the user
- * @property {number} id ID number of this user
  * @see {@link https://dummyjson.com}
  */
+interface DummyJsonUser {
+    /** First name of the user */
+    firstName: string;
+    /** ID number of this user */
+    id: number;
+}
 
 /**
  * Creates a number of new contact entries and adds them to the `contacts` store.
@@ -30,7 +33,7 @@ import { fetchAssets } from '$lib/utils/stellarExpert'
  * @param {boolean} opts.fundContacts Whether or not the contact accounts should be funded by Friendbot
  * @param {boolean} opts.addTrustlines Whether or not the contact accounts should have trustlines created for some non-native assets
  */
-export async function addContacts({ numContacts, fundContacts, addTrustlines }) {
+export async function addContacts({ numContacts, fundContacts, addTrustlines }: { numContacts: number; fundContacts: boolean; addTrustlines: boolean }) {
     // Fetch some user names from dummyjson.com, just so we don't have to think
     // of any ourselves.
     let usersRes = await fetch(
@@ -39,13 +42,11 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
         }&select=firstName`,
     )
     let json = await usersRes.json()
-    /** @type {DummyJsonUser[]} */
-    let users = json.users
+    let users: DummyJsonUser[] = json.users
 
     // If the user has selected to add trustlines to the new contacts, query the
     // top-ranked assets from stellar.expert now, so we only have to do it once.
-    /** @type {RankedAsset[]} */
-    let assets
+    let assets: RankedAsset[]
     if (addTrustlines) {
         assets = await fetchAssets()
     }
@@ -83,7 +84,7 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
  * @param {Keypair} keypair Stellar keypair representing the contact's account on the Stellar network.
  * @param {RankedAsset[]} assets Array of top assets, as ranked by Stellar.Expert
  */
-async function addContactTrustlines(keypair, assets) {
+async function addContactTrustlines(keypair: Keypair, assets: RankedAsset[]) {
     // Begin a transaction using the typical properties.
     let transaction = await startTransaction(keypair.publicKey())
 
@@ -126,7 +127,7 @@ export function emptyContacts() {
  * @function mergeFriendbotAccount
  * @param {string} publicKey Public Stellar address that should have the freshly funded account merged into it
  */
-export async function mergeFriendbotAccount(publicKey) {
+export async function mergeFriendbotAccount(publicKey: string) {
     let kp = Keypair.random()
     await fundWithFriendbot(kp.publicKey())
 

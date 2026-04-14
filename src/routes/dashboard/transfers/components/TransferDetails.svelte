@@ -3,18 +3,16 @@
 Here's some documentation for this component. It will show up on hover.
 -->
 
-<script>
+<script lang="ts">
     import TransferField from './TransferField.svelte'
 
-    /**
-     * @typedef {Object} Props
-     * @property {Object.<string, string>} [formData]
-     * @property {import('./TransferModalSep6.svelte')} [transferData]
-     * @property {Object.<string, Object>} [sep6Info]
-     */
+    interface Props {
+        formData?: Record<string, string>;
+        transferData?: Record<string, string|boolean>;
+        sep6Info?: Record<string, Object>;
+    }
 
-    /** @type {Props} */
-    let { formData = $bindable({}), transferData = $bindable({}), sep6Info = {} } = $props()
+    let { formData = $bindable({}), transferData = $bindable({}), sep6Info = {} }: Props = $props()
 </script>
 
 <p>Let's begin by deciding what kind of transfer you want to make.</p>

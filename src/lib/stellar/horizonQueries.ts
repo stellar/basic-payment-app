@@ -8,20 +8,21 @@ export const server = new Horizon.Server(horizonUrl)
 /**
  * @module $lib/stellar/horizonQueries
  * @description A collection of function that helps query various information
- * from the [Horizon API](https://developers.stellar.org/api/horizon). This
- * allows us to abstract and simplify some interactions so we don't have to have
+ * from the [Horizon
+ * API](https://developers.stellar.org/docs/data/apis/horizon). This allows us
+ * to abstract and simplify some interactions so we don't have to have
  * _everything_ contained within our `*.svelte` files.
  */
 
 // We'll import some type definitions that already exists within the
-// `stellar-sdk` package, so our functions will know what to expect.
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.AccountRecord} AccountRecord */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.ErrorResponseData} ErrorResponseData */
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord} PaymentOperationRecord */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLine} BalanceLine */
-/** @typedef {import('@stellar/stellar-sdk').Horizon.BalanceLineAsset} BalanceLineAsset */
-/** @typedef {import('@stellar/stellar-sdk').Transaction} Transaction */
-/** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
+// `@stellar/stellar-sdk` package, so our functions will know what to expect.
+type AccountRecord = import('@stellar/stellar-sdk').Horizon.ServerApi.AccountRecord;
+type ErrorResponseData = import('@stellar/stellar-sdk').Horizon.ErrorResponseData;
+type PaymentOperationRecord = import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord;
+type BalanceLine = import('@stellar/stellar-sdk').Horizon.BalanceLine;
+type BalanceLineAsset = import('@stellar/stellar-sdk').Horizon.BalanceLineAsset;
+type Transaction = import('@stellar/stellar-sdk').Transaction;
+type PaymentPathRecord = import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord;
 
 /**
  * Fetches and returns details about an account on the Stellar network.
@@ -137,21 +138,21 @@ export async function submit(transaction) {
     }
 }
 
-/**
- * @typedef {Object} HomeDomainObject
- * @property {string} home_domain Domain name the issuer of this asset has set for their account on the Stellar network.
- */
+interface HomeDomainObject {
+    home_domain: string;
+}
 
-/** @typedef {BalanceLineAsset & HomeDomainObject} HomeDomainBalanceLine */
+type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject;
+// /** @typedef {BalanceLineAsset & HomeDomainObject} HomeDomainBalanceLine */
 
 /**
  * Fetches `home_domain` from asset issuer accounts on the Stellar network and returns an array of balances.
  * @async
  * @function fetchAssetsWithHomeDomains
- * @param {BalanceLine[]} balances Array of balances to query issuer accounts of
- * @returns {Promise<HomeDomainBalanceLine[]>} Array of balance details for assets that do have a `home_domain` setting
+ * @param balances Array of balances to query issuer accounts of
+ * @returns Array of balance details for assets that do have a `home_domain` setting
  */
-export async function fetchAssetsWithHomeDomains(balances) {
+export async function fetchAssetsWithHomeDomains(balances: BalanceLine[]): Promise<HomeDomainBalanceLine[]> {
     let homeDomains = await Promise.all(
         balances.map(async (asset) => {
             // We are only interested in issued assets (i.e., not LPs and not XLM)
@@ -169,7 +170,6 @@ export async function fetchAssetsWithHomeDomains(balances) {
     )
 
     // Filter out any null array entries before returning
-    // @ts-ignore
     return homeDomains.filter((balance) => balance)
 }
 

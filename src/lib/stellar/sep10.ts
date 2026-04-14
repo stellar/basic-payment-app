@@ -19,7 +19,7 @@ import { fetchStellarToml, getWebAuthEndpoint } from '$lib/stellar/sep1'
  * @param {string} opts.homeDomain Domain to request a challenge transaction from
  * @throws Will throw an error if one of the required entries is missing from the domain's StellarToml file
  */
-export async function getChallengeTransaction({ publicKey, homeDomain }) {
+export async function getChallengeTransaction({ publicKey, homeDomain }: { publicKey: string; homeDomain: string }) {
     let { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(homeDomain)
 
     // In order for the SEP-10 flow to work, we must have at least a server
@@ -71,7 +71,7 @@ function validateChallengeTransaction({
     clientPublicKey,
     homeDomain,
     clientDomain,
-}) {
+}: { transactionXDR: string; serverSigningKey: string; network: string; clientPublicKey: string; homeDomain: string; clientDomain?: string }) {
     if (!clientDomain) {
         clientDomain = homeDomain
     }
@@ -107,7 +107,7 @@ function validateChallengeTransaction({
  * @returns {Promise<string>} JSON web token which can be used to authenticate with this anchor server
  * @throws Will throw an error if the server responds with one.
  */
-export async function submitChallengeTransaction({ transactionXDR, homeDomain }) {
+export async function submitChallengeTransaction({ transactionXDR, homeDomain }: { transactionXDR: string; homeDomain: string }): Promise<string> {
     let webAuthEndpoint = await getWebAuthEndpoint(homeDomain)
 
     if (!webAuthEndpoint)

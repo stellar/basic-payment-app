@@ -7,7 +7,7 @@ parent container. It also includes a copy button to let the user easily
 copy/paste the value of `keyText`.
 -->
 
-<script>
+<script lang="ts">
     // We import things from external packages that will be needed
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
@@ -16,17 +16,13 @@ copy/paste the value of `keyText`.
     import { contacts } from '$lib/stores/contactsStore'
 
     // Since we have contact names mapped to addresses, it would be nice to
-    // display the contact names, when possible. This `export let` property
-    // allows us to determine if the TruncatedKey component should bother with
-
-    /**
-     * @typedef {Object} Props
-     * @property {string} [keyText]
-     * @property {boolean} [lookupName] - that or not.
-     */
-
-    /** @type {Props} */
-    let { keyText = '', lookupName = true } = $props()
+    // display the contact names, when possible. This `lookupName` prop allows
+    // us to determine if the TruncatedKey component should bother with that.
+    interface Props {
+        keyText: string;
+        lookupName: boolean;
+    }
+    let { keyText = '', lookupName = true }: Props = $props()
 
     // The `contactName` variable will be _reactive_ to any changes to the
     // `lookupName` or `keyText` variables.
