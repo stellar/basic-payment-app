@@ -13,9 +13,15 @@ This component has been **heavily** influenced by this Svelte REPL:
 -->
 
 <script>
-    /** @type {string[]} */
-    export let steps = []
-    export let currentActive = 1
+    
+    /**
+     * @typedef {Object} Props
+     * @property {string[]} [steps]
+     * @property {number} [currentActive]
+     */
+
+    /** @type {Props} */
+    let { steps = [], currentActive = $bindable(1) } = $props();
 
     /** @type {NodeListOf<HTMLUListElement>} */
     let stepMarkers

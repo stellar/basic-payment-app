@@ -7,7 +7,7 @@ transfers the user has initiated with an anchor.
 
 <script>
     // We import any stores we will need to read and/or write
-    import { page } from '$app/stores'
+    import { page } from '$app/state'
     import { transfers } from '$lib/stores/transfersStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
 
@@ -15,7 +15,7 @@ transfers the user has initiated with an anchor.
     import { queryTransfers24 } from '$lib/stellar/sep24'
     import { queryTransfers6 } from '$lib/stellar/sep6'
 
-    let expiredToken = false
+    let expiredToken = $state(false)
     const protocolBadgeClasses = {
         sep6: 'badge badge-secondary',
         sep24: 'badge badge-accent',
@@ -34,7 +34,7 @@ transfers the user has initiated with an anchor.
                 ? queryTransfers6({
                       authToken: $webAuthStore[homeDomain],
                       assetCode: assetCode,
-                      publicKey: $page.data.publicKey,
+                      publicKey: page.data.publicKey,
                       homeDomain: homeDomain,
                   }).then(({ transactions }) =>
                       resolve(

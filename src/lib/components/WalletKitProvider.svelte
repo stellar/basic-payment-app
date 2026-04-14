@@ -7,7 +7,13 @@
 
 
 
-  export let buttonText = 'Connect Wallet';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [buttonText]
+   */
+
+  /** @type {Props} */
+  let { buttonText = 'Connect Wallet' } = $props();
   const kit = new StellarWalletsKit({
       network: WalletNetwork.TESTNET,
       selectedWalletId: XBULL_ID,
@@ -37,6 +43,6 @@
 </script>
 
 <!-- You can provide a button or any UI elements if needed -->
-<button type="button" class="btn-secondary btn" on:click={connectWallet}>
+<button type="button" class="btn-secondary btn" onclick={connectWallet}>
   {buttonText}
 </button>

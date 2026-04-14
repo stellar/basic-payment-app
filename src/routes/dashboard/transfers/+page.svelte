@@ -15,13 +15,17 @@ couple read-throughs to understand everything.
 -->
 
 <script>
-    // `export let data` allows us to pull in any parent load data for use here.
-    /** @type {import('./$types').PageData} */
-    export let data
-    console.log('routes/dashboard/transfers/+page.svelte data', data)
+    // `$props()` allows us to pull in any parent load data for use here.
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props()
+    $inspect('routes/dashboard/transfers/+page.svelte data', data)
 
     // We import things from external packages that will be needed
-    import { Buffer } from 'buffer'
     import { LogInIcon, LogOutIcon } from 'svelte-feather-icons'
 
     // We import any Svelte components we will need
@@ -348,7 +352,7 @@ couple read-throughs to understand everything.
                     id={`authButton${asset.asset_code}`}
                     name={`authButton${asset.asset_code}`}
                     class="btn-primary btn"
-                    on:click={() => auth(asset.home_domain)}>Authenticate with Anchor</button
+                    onclick={() => auth(asset.home_domain)}>Authenticate with Anchor</button
                 >
                 <div class="form-control">
                     <label class="label" for={`authButton${asset.asset_code}`}>
@@ -372,7 +376,7 @@ couple read-throughs to understand everything.
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
                                                     disabled={authStatus !== 'auth_valid'}
-                                                    on:click={() =>
+                                                    onclick={() =>
                                                         launchTransferModalSep6({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
@@ -398,7 +402,7 @@ couple read-throughs to understand everything.
                         {/await}
                     {/if}
                     {#if 'TRANSFER_SERVER' in stellarToml && 'TRANSFER_SERVER_SEP0024' in stellarToml}
-                        <div class="divider lg:divider-horizontal" />
+                        <div class="divider lg:divider-horizontal"></div>
                     {/if}
                     {#if 'TRANSFER_SERVER_SEP0024' in stellarToml}
                         {#await getSep24Info(asset.home_domain) then sep24Info}
@@ -413,7 +417,7 @@ couple read-throughs to understand everything.
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
                                                     disabled={authStatus !== 'auth_valid'}
-                                                    on:click={() =>
+                                                    onclick={() =>
                                                         launchTransferWindowSep24({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,

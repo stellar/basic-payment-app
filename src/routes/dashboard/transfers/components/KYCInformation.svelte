@@ -5,9 +5,15 @@
     import { kycStore } from '$lib/stores/kycStore'
     import { webAuthStore } from '$lib/stores/webAuthStore'
 
-    export let homeDomain = ''
-    /** @type {string[]} */
-    export let sep12Fields = []
+    
+    /**
+     * @typedef {Object} Props
+     * @property {string} [homeDomain]
+     * @property {string[]} [sep12Fields]
+     */
+
+    /** @type {Props} */
+    let { homeDomain = '', sep12Fields = [] } = $props();
 
     const startSep12 = async () => {
         let json = await getSep12Fields({
@@ -64,7 +70,7 @@
                 {/each}
                 <button
                     class="btn-error btn"
-                    on:click={deleteSep12Customer({
+                    onclick={deleteSep12Customer({
                         authToken: $webAuthStore[homeDomain],
                         publicKey: $page.data.publicKey,
                         homeDomain: homeDomain,

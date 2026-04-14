@@ -31,11 +31,11 @@ start fresh.
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let addContactsOpts = {
+    let addContactsOpts = $state({
         numContacts: 1,
         fundContacts: false,
         addTrustlines: false,
-    }
+    })
 
     /**
      * Display a modal. Use this to play around with settings, props, and such.
@@ -107,24 +107,24 @@ start fresh.
     />
     <button
         class="btn-primary btn-accent join-item btn"
-        on:click={() => addContacts(addContactsOpts)}>Add Contacts</button
+        onclick={() => addContacts(addContactsOpts)}>Add Contacts</button
     >
 </div>
 
 <h2>Burn Bridges</h2>
 <p>Clear out everyone from the contacts list and start fresh</p>
-<button class="btn-warning btn" on:click={emptyContacts}>Empty Contacts List</button>
+<button class="btn-warning btn" onclick={emptyContacts}>Empty Contacts List</button>
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
-<button class="btn-success btn" on:click={() => mergeFriendbotAccount($walletStore.publicKey)}
+<button class="btn-success btn" onclick={() => mergeFriendbotAccount($walletStore.publicKey)}
     >I need a friend!</button
 >
 
 <h2>Launch Modal Rocket</h2>
 <p>Test the modal thing to see what comes up... I guess?</p>
-<button class="btn-primary btn" on:click={displayModal}>svelte-simple-modal</button>
+<button class="btn-primary btn" onclick={displayModal}>svelte-simple-modal</button>
 
 <h2>Throw it On the Ground!</h2>
 <p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>
-<button class="btn-error btn" on:click={nukeLocalStorage}>You can't buy me hot dog man!</button>
+<button class="btn-error btn" onclick={nukeLocalStorage}>You can't buy me hot dog man!</button>

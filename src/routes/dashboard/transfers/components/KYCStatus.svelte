@@ -3,9 +3,15 @@
     import { webAuthStore } from '$lib/stores/webAuthStore'
     import { putSep12Fields, getSep12Fields } from '$lib/stellar/sep12'
 
-    export let sep12Fields = []
-    export let homeDomain = ''
-    export let transferData = {}
+    /**
+     * @typedef {Object} Props
+     * @property {any} [sep12Fields]
+     * @property {string} [homeDomain]
+     * @property {any} [transferData]
+     */
+
+    /** @type {Props} */
+    let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) } = $props();
 
     const putCustomerFields = async () => {
         let submittedCustomerFields = sep12Fields.reduce((fields, item) => {
@@ -47,7 +53,7 @@
         </p>
         <button
             class="btn-primary btn"
-            on:click={getSep12Fields({
+            onclick={getSep12Fields({
                 authToken: $webAuthStore[homeDomain],
                 homeDomain: homeDomain,
             })}>Refresh status</button

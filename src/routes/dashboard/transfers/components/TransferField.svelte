@@ -1,12 +1,17 @@
 <script>
-    export let field = ''
-    export let fieldInfo = {
+    /**
+     * @typedef {Object} Props
+     * @property {string} [field]
+     * @property {any} [fieldInfo]
+     * @property {string} [value]
+     */
+
+    /** @type {Props} */
+    let { field = '', fieldInfo = {
         optional: false,
         choices: [],
         description: '',
-    }
-
-    export let value = ''
+    }, value = $bindable('') } = $props();
 </script>
 
 <div class="form-control my-1">

@@ -5,33 +5,46 @@
     import KycStatus from './KYCStatus.svelte'
     import Confirmation from './Confirmation.svelte'
 
-    export let title = 'Initiate SEP-6 Transfer'
-    export let body = 'Please follow the steps to begin a transfer with your chosen anchor.'
-    export let homeDomain = ''
-    export let sep6Info = {}
-    export let assetIssuer = ''
-
-    export let transferData = {
-        endpoint: '',
-        customer_id: '',
-        transfer_id: '',
-        transfer_submitted: false,
-    }
-    export let formData = {
-        asset_code: '',
-        amount: '',
-    }
-
     /** @type {string[]} */
-    let sep12Fields = []
-    let transferJson = {}
-    /** @param {Object} [opts] Options object */
-    export let submitPayment = async (opts) => {}
+    let sep12Fields = $state([])
+    let transferJson = $state({})
+
+    /**
+     * @typedef {Object} Props
+     * @property {string} [title]
+     * @property {string} [body]
+     * @property {string} [homeDomain]
+     * @property {any} [sep6Info]
+     * @property {string} [assetIssuer]
+     * @property {any} [transferData]
+     * @property {any} [formData]
+     * @property {any} [submitPayment]
+     */
+
+    /** @type {Props} */
+    let {
+        title = 'Initiate SEP-6 Transfer',
+        body = 'Please follow the steps to begin a transfer with your chosen anchor.',
+        homeDomain = $bindable(''),
+        sep6Info = $bindable({}),
+        assetIssuer = '',
+        transferData = $bindable({
+            endpoint: '',
+            customer_id: '',
+            transfer_id: '',
+            transfer_submitted: false,
+        }),
+        formData = $bindable({
+            asset_code: '',
+            amount: '',
+        }),
+        submitPayment = async (opts) => {}
+    } = $props();
     let steps = ['Transfer Details', 'KYC Information', 'KYC Status', 'Submit Transfer']
-    let currentActive = 1
+    let currentActive = $state(1)
     /** @type {StepsBar} */
-    let stepsBar
-    $: activeStep = steps[currentActive - 1]
+    let stepsBar = $state()
+    let activeStep = $derived(steps[currentActive - 1])
 
     /** @param {number} stepIncrement */
     const handleStep = (stepIncrement) => {
@@ -68,7 +81,7 @@
             {#if transferData.endpoint === 'withdraw'}
                 <button
                     class="btn-primary btn my-1"
-                    on:click={() =>
+                    onclick={() =>
                         submitPayment({
                             withdrawDetails: transferJson,
                             assetCode: formData.asset_code,
@@ -81,10 +94,10 @@
     </form>
 
     <div class="my-4">
-        <button class="btn" on:click={() => handleStep(-1)} disabled={currentActive === 1}
+        <button class="btn" onclick={() => handleStep(-1)} disabled={currentActive === 1}
             >Prev</button
         >
-        <button class="btn" on:click={() => handleStep(1)} disabled={currentActive === steps.length}
+        <button class="btn" onclick={() => handleStep(1)} disabled={currentActive === steps.length}
             >Next</button
         >
     </div>

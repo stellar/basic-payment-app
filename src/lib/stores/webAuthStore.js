@@ -1,6 +1,5 @@
 import { get } from 'svelte/store'
 import { persisted } from 'svelte-local-storage-store'
-import { Buffer } from 'buffer'
 
 /**
  * @module $lib/stores/webAuthStore

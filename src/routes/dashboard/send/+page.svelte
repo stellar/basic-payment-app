@@ -19,8 +19,7 @@ features have been implemented:
 
 <script>
     // `export let data` allows us to pull in any parent load data for use here.
-    /** @type {import('./$types').PageData} */
-    export let data
+    
 
     // We import any Svelte components we will need
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
@@ -49,23 +48,30 @@ features have been implemented:
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
+  /**
+   * @typedef {Object} Props
+   * @property {import('./$types').PageData} data
+   */
+
+  /** @type {Props} */
+  let { data } = $props();
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let destination = ''
-    $: otherDestination = destination === 'other'
-    let otherPublicKey = ''
-    let sendAsset = 'native'
-    let sendAmount = ''
-    let receiveAsset = ''
-    let receiveAmount = ''
-    let memo = ''
+    let destination = $state('')
+    let otherDestination = $derived(destination === 'other')
+    let otherPublicKey = $state('')
+    let sendAsset = $state('native')
+    let sendAmount = $state('')
+    let receiveAsset = $state('')
+    let receiveAmount = $state('')
+    let memo = $state('')
     /** @type {boolean|null} */
-    let createAccount = null
-    let pathPayment = false
+    let createAccount = $state(null)
+    let pathPayment = $state(false)
     /** @type {import('@stellar/stellar-sdk').Horizon.ServerApi.PaymentPathRecord[]} */
-    let availablePaths = []
-    let strictReceive = false
+    let availablePaths = $state([])
+    let strictReceive = $state(false)
     let paymentXDR = ''
     let paymentNetwork = ''
 
@@ -249,7 +255,7 @@ features have been implemented:
     </label>
     <select
         bind:value={destination}
-        on:change={() => checkDestination(destination)}
+        onchange={() => checkDestination(destination)}
         id="destination"
         name="destination"
         class="select-bordered select"
@@ -271,7 +277,7 @@ features have been implemented:
         </label>
         <input
             bind:value={otherPublicKey}
-            on:change={() => checkDestination(otherPublicKey)}
+            onchange={() => checkDestination(otherPublicKey)}
             id="otherPublicKey"
             name="otherPublicKey"
             type="text"
@@ -311,7 +317,7 @@ features have been implemented:
                         <div>
                             <input
                                 bind:value={sendAmount}
-                                on:change={findPaths}
+                                onchange={findPaths}
                                 id="sendAmount"
                                 name="sendAmount"
                                 placeholder="0.01"
@@ -324,7 +330,7 @@ features have been implemented:
                     <select
                         class="select-bordered select join-item"
                         bind:value={sendAsset}
-                        on:change={selectPath}
+                        onchange={selectPath}
                     >
                         <option value="" disabled>Select asset</option>
                         {#if strictReceive && availablePaths}
@@ -366,7 +372,7 @@ features have been implemented:
                         <div>
                             <input
                                 bind:value={receiveAmount}
-                                on:change={findPaths}
+                                onchange={findPaths}
                                 id="receiveAmount"
                                 name="receiveAmount"
                                 type="text"
@@ -378,7 +384,7 @@ features have been implemented:
                     </div>
                     <select
                         bind:value={receiveAsset}
-                        on:change={selectPath}
+                        onchange={selectPath}
                         class="select-bordered select join-item"
                     >
                         <option value="" disabled>Select asset</option>
@@ -473,6 +479,6 @@ features have been implemented:
 
 <!-- Button -->
 <div class="form-control my-5">
-    <button class="btn-primary btn" on:click={previewPaymentTransaction}>Preview Transaction</button>
+    <button class="btn-primary btn" onclick={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->

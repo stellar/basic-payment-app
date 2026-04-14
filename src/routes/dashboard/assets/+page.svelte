@@ -10,9 +10,7 @@ that already exist on their account.
 
 <script>
     // `export let data` allows us to pull in any parent load data for use here.
-    /** @type {import('./$types').PageData} */
-    export let data
-    $: balances = data.balances ?? []
+    
 
     // We import things from external packages that will be needed
     import { Trash2Icon } from 'svelte-feather-icons'
@@ -32,15 +30,21 @@ that already exist on their account.
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props();
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let addAsset = ''
-    let customAssetCode = ''
-    let customAssetIssuer = ''
+    let addAsset = $state('')
+    let customAssetCode = $state('')
+    let customAssetIssuer = $state('')
     let changeTrustXDR = ''
     let changeTrustNetwork = ''
-    $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -89,6 +93,8 @@ that already exist on their account.
             onConfirm: onConfirm,
         })
     }
+    let balances = $derived(data.balances ?? [])
+    let asset = $derived(addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`)
 </script>
 
 <h1>Assets</h1>
@@ -143,7 +149,7 @@ that already exist on their account.
         />
     </div>
 {/if}
-<button class="btn-primary btn-block btn my-2" on:click={() => previewChangeTrustTransaction()}
+<button class="btn-primary btn-block btn my-2" onclick={() => previewChangeTrustTransaction()}
     >Add Asset</button
 >
 
@@ -181,7 +187,7 @@ that already exist on their account.
                             {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                             <button
                                 class="btn-error btn-square btn-sm btn"
-                                on:click={() => previewChangeTrustTransaction(false, assetString)}
+                                onclick={() => previewChangeTrustTransaction(false, assetString)}
                                 ><Trash2Icon size="16" /></button
                             >
                         {/if}

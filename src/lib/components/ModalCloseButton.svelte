@@ -12,10 +12,16 @@ implemented this is for stylistic consistency of the UI.
 
     // `onClose` is a dummy function that will be overridden by the
     // `svelte-simple-modal` package to close the modal window when the button
-    // is clicked
-    export let onClose = () => {}
+    
+    /**
+     * @typedef {Object} Props
+     * @property {any} [onClose] - is clicked
+     */
+
+    /** @type {Props} */
+    let { onClose = () => {} } = $props();
 </script>
 
-<button class="btn-square btn absolute right-6 top-3 z-10 bg-base-300" on:click={onClose}>
+<button class="btn-square btn absolute right-6 top-3 z-10 bg-base-300" onclick={onClose}>
     <XIcon />
 </button>

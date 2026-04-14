@@ -16,7 +16,7 @@ More information about SEP-33 can be found here:
     import { MenuIcon } from 'svelte-feather-icons'
 
     // We import any stores we will need to read and/or write
-    import { page } from '$app/stores'
+    import { page } from '$app/state'
 </script>
 
 <header class="navbar bg-base-300">

@@ -14,8 +14,14 @@ were doing, but they should know about whatever happened.
     import { warningMessage } from '$lib/stores/alertsStore'
 
     // The `dismissible` prop will be used to determin if the alert can be
-    // closed by the user
-    export let dismissible = true
+    
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [dismissible] - closed by the user
+     */
+
+    /** @type {Props} */
+    let { dismissible = true } = $props();
 </script>
 
 {#if $warningMessage}
@@ -23,7 +29,7 @@ were doing, but they should know about whatever happened.
         <AlertTriangleIcon />
         <span>Warning: {$warningMessage}</span>
         {#if dismissible}
-            <button class="btn-neutral btn-sm btn" on:click={() => warningMessage.set('')}>
+            <button class="btn-neutral btn-sm btn" onclick={() => warningMessage.set('')}>
                 Dismiss
             </button>
         {/if}

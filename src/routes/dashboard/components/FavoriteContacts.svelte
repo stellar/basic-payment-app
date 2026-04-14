@@ -15,7 +15,7 @@ contact entry. This is displayed to the user on the `/dashboard` page.
 
     // The `favoriteContacts` variable will be _reactive_ and update any time
     // a contact is either marked or unmarked as a favorite
-    $: favoriteContacts = $contacts?.filter((contact) => contact.favorite)
+    let favoriteContacts = $derived($contacts?.filter((contact) => contact.favorite))
 </script>
 
 <h3>Favorite Contacts</h3>
@@ -36,7 +36,7 @@ contact entry. This is displayed to the user on the `/dashboard` page.
                             type="checkbox"
                             class="checkbox-accent checkbox checkbox-sm"
                             checked={contact.favorite}
-                            on:click={() => contacts.favorite(contact.id)}
+                            onclick={() => contacts.favorite(contact.id)}
                         />
                     </th>
                     <td>

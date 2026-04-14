@@ -15,7 +15,7 @@ balances.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { page } from '$app/stores'
+    import { page } from '$app/state'
 
     // We import the `EffectRecord` type from the stellar-sdk so we can
     // predictably display who was the recipient of an `account_merge` operation
@@ -33,7 +33,7 @@ balances.
         </tr>
     </thead>
     <tbody>
-        {#each $page.data.payments as payment}
+        {#each page.data.payments as payment}
             <tr>
                 <th>
                     {#if payment.amount}
@@ -56,7 +56,7 @@ balances.
                     {/if}
                 </td>
                 <td>
-                    {#if payment.to === $page.data.publicKey || ('funder' in payment && payment.funder !== $page.data.publicKey) || ('into' in payment && payment.into === $page.data.publicKey)}
+                    {#if payment.to === page.data.publicKey || ('funder' in payment && payment.funder !== page.data.publicKey) || ('into' in payment && payment.into === page.data.publicKey)}
                         Received
                     {:else}
                         Sent
@@ -64,19 +64,19 @@ balances.
                 </td>
                 <td>
                     {#if 'to' in payment}
-                        {#if payment.to === $page.data.publicKey}
+                        {#if payment.to === page.data.publicKey}
                             <TruncatedKey keyText={payment.from} />
                         {:else}
                             <TruncatedKey keyText={payment.to} />
                         {/if}
                     {:else if 'funder' in payment}
-                        {#if payment.funder === $page.data.publicKey}
+                        {#if payment.funder === page.data.publicKey}
                             <TruncatedKey keyText={payment.account} />
                         {:else}
                             <TruncatedKey keyText={payment.funder} />
                         {/if}
                     {:else if 'into' in payment}
-                        {#if payment.into === $page.data.publicKey}
+                        {#if payment.into === page.data.publicKey}
                             <TruncatedKey keyText={payment.account} />
                         {:else}
                             <TruncatedKey keyText={payment.into} />

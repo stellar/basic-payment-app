@@ -12,10 +12,11 @@ for submission to the network.
 -->
 
 <script>
+   import { preventDefault } from 'svelte/legacy';
+
     // The `export let data` declaration allows us to receive and use the page
     // load data from our `+page.js` file.
-    /** @type {import('./$types').PageData} */
-    export let data
+    
 
     // We import any Svelte components we will need
     import ErrorAlert from '$lib/components/ErrorAlert.svelte'
@@ -26,8 +27,15 @@ for submission to the network.
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
     import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
+   /**
+    * @typedef {Object} Props
+    * @property {import('./$types').PageData} data
+    */
+
+   /** @type {Props} */
+   let { data } = $props();
     // Define some component variables that will be used throughout the page
-    let pincode = ''
+    let pincode = $state('')
 
    
 
@@ -65,7 +73,7 @@ for submission to the network.
         <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
             <div class="card-body">
                 <ErrorAlert dismissible={false} />
-                <form on:submit|preventDefault={login}>
+                <form onsubmit={preventDefault(login)}>
                     <div class="form-control">
                         <label class="label" for="publicKey">
                             <span class="label-text">Public Key</span>
