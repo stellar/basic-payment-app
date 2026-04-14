@@ -13,10 +13,6 @@ circumstance.
 -->
 
 <script>
-    /**
-     * @description
-     */
-
     // We import things from external packages that will be needed
     import { Keypair } from '@stellar/stellar-sdk'
 
@@ -39,8 +35,6 @@ circumstance.
     $: secretKey = keypair.secret()
     let showSecret = false
     let pincode = ''
-
-
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -75,11 +69,6 @@ circumstance.
             onConfirm: onConfirm,
         })
     }
-
-
-
-
-
 </script>
 
 <div class="hero min-h-screen bg-base-200">
