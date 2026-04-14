@@ -13,10 +13,6 @@ circumstance.
 -->
 
 <script>
-    /**
-     * @description
-     */
-
     // We import things from external packages that will be needed
     import { Keypair } from '@stellar/stellar-sdk'
 
@@ -40,16 +36,13 @@ circumstance.
     let showSecret = false
     let pincode = ''
 
-
-
     /**
      * Takes an action after the pincode has been confirmed by the user.
      * @async
      * @function onConfirm
-     * @param {string} pincode Pincode that was confirmed by the modal window
      */
-    const onConfirm = async (pincode) => {
-        // Register the encryped keypair in the user's browser
+    const onConfirm = async () => {
+        // Register the encrypted keypair in the user's browser
         await walletStore.register({
             publicKey: publicKey,
             secretKey: secretKey,
@@ -76,11 +69,6 @@ circumstance.
             onConfirm: onConfirm,
         })
     }
-
-
-
-
-    
 </script>
 
 <div class="hero min-h-screen bg-base-200">

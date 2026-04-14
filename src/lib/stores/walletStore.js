@@ -23,12 +23,11 @@ import {
 function createWalletStore() {
     /** @type {import('svelte/store').Writable<WalletStore>} */
     const { subscribe, set, } = persisted('bpa:walletStore', { keyId: '', publicKey: '' })
+
     return {
         subscribe,
 
-
-
-  /**
+        /**
          * Connects a user by their public key (wallet-based registration)
          * @param {Object} opts Options object
          * @param {string} opts.publicKey Public Stellar address

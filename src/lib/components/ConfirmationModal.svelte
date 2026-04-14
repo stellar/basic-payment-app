@@ -121,7 +121,8 @@ on the following occasions:
     let pincode = ''
 
     // Get wallet status
-    $: isWalletUser = get(walletStore).keyId === get(walletStore).publicKey
+    let wallet = get(walletStore)
+    $: isWalletUser = wallet.keyId && wallet.keyId === wallet.publicKey
 
     // The `$: variableName` syntax marks the output of some **expression** (as
     // opposed to an assignment) as _reactive_. In this case, every time
