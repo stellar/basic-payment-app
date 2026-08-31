@@ -26,13 +26,65 @@ that already exist on their account.
     import { invalidateAll } from '$app/navigation'
 
     // We import some of our `$lib` functions
-    import { submit } from '$lib/stellar/horizonQueries'
     import { createChangeTrustTransaction } from '$lib/stellar/transactions'
     import { fetchAssets } from '$lib/utils/stellarExpert'
+    
+    // We import the Server and API types from @stellar/stellar-sdk/rpc for transaction submission
+    import { Server, Api } from '@stellar/stellar-sdk/rpc'
+    import { error } from '@sveltejs/kit'
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
+
+    // RPC server configuration for transaction submission
+    const rpcUrl = 'https://soroban-testnet.stellar.org'
+    const server = new Server(rpcUrl)
+
+    // Local submit function to send transactions using RPC
+    const submit = async (transaction) => {
+        try {
+            // Send the transaction and get initial response
+            const sendTransactionResponse = await server.sendTransaction(transaction)
+
+            // Check if transaction was accepted for processing
+            if (sendTransactionResponse.status !== 'PENDING') {
+                throw new Error(
+                    `Failed to send transaction, status: ${sendTransactionResponse.status}`,
+                )
+            }
+
+            // Poll for the final transaction status
+            const finalResponse = await server.pollTransaction(
+                sendTransactionResponse.hash,
+            )
+
+            // Handle the final transaction status
+            switch (finalResponse.status) {
+                case Api.GetTransactionStatus.FAILED:
+                    // Include error details for failed transactions
+                    let errorDetails = `Transaction failed with status: ${finalResponse.status}`
+                    if (finalResponse.resultXdr) {
+                        errorDetails += `\nResult XDR: ${finalResponse.resultXdr}`
+                    }
+                    throw new Error(errorDetails)
+                case Api.GetTransactionStatus.NOT_FOUND:
+                    throw new Error(
+                        `Transaction was not included in the ledger. Status: ${finalResponse.status}`,
+                    )
+                case Api.GetTransactionStatus.SUCCESS:
+                    return finalResponse
+                default:
+                    throw new Error(
+                        `Unexpected transaction status: ${finalResponse.status}`,
+                    )
+            }
+        } catch (err) {
+            throw error(400, {
+                message: err.message || `Transaction failed: ${err}`,
+            })
+        }
+    }
 
     // Define some component variables that will be used throughout the page
     let addAsset = ''
