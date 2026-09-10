@@ -6,15 +6,15 @@ Here's some documentation for this component. It will show up on hover.
 <script>
     import TransferField from './TransferField.svelte'
 
-    /** @type {Object.<string, string>} */
-    export let formData = {}
-
     /**
-     * @type {import('./TransferModalSep6.svelte')}
+     * @typedef {Object} Props
+     * @property {Object.<string, string>} [formData]
+     * @property {import('./TransferModalSep6.svelte')} [transferData]
+     * @property {Object.<string, Object>} [sep6Info]
      */
-    export let transferData = {}
-    /** @type {Object.<string, Object>} */
-    export let sep6Info = {}
+
+    /** @type {Props} */
+    let { formData = $bindable({}), transferData = $bindable({}), sep6Info = {} } = $props()
 </script>
 
 <p>Let's begin by deciding what kind of transfer you want to make.</p>
@@ -23,7 +23,7 @@ Here's some documentation for this component. It will show up on hover.
         <span class="label-text">What kind of transfer would you like to make?</span>
     </label>
     <select
-        class="select-bordered select"
+        class="select select-bordered"
         id="endpoint-select"
         name="endpoint-select"
         bind:value={transferData.endpoint}
@@ -45,7 +45,7 @@ Here's some documentation for this component. It will show up on hover.
             <span class="label-text">Please choose an asset</span>
         </label>
         <select
-            class="select-bordered select"
+            class="select select-bordered"
             id="asset-select"
             name="asset-select"
             bind:value={formData.asset_code}
@@ -78,7 +78,7 @@ Here's some documentation for this component. It will show up on hover.
                 <select
                     name="transfer-type"
                     id="transfer-type"
-                    class="select-bordered select"
+                    class="select select-bordered"
                     bind:value={formData.type}
                 >
                     <option value="" disabled selected>Select one</option>
@@ -104,7 +104,7 @@ Here's some documentation for this component. It will show up on hover.
         </label>
         <input
             bind:value={formData.amount}
-            class="input-bordered input"
+            class="input input-bordered"
             type="text"
             name="amount"
             id="amount"

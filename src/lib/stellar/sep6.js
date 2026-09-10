@@ -84,7 +84,7 @@ export async function getTransferStatus6({ authToken, transferId, domain }) {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
-        }
+        },
     )
     let json = await res.json()
 
@@ -124,7 +124,7 @@ export async function queryTransfers6({ authToken, assetCode, publicKey, homeDom
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
-        }
+        },
     )
 
     let json = await res.json()

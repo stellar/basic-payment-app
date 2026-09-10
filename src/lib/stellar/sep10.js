@@ -37,7 +37,7 @@ export async function getChallengeTransaction({ publicKey, homeDomain }) {
             // Possible parameters are `account`, `memo`, `home_domain`, and
             // `client_domain`. For our purposes, we only supply `account`.
             account: publicKey,
-        })}`
+        })}`,
     )
     let json = await res.json()
 
@@ -84,7 +84,7 @@ function validateChallengeTransaction({
             serverSigningKey,
             network,
             homeDomain,
-            clientDomain
+            clientDomain,
         )
         // Also make sure the transaction was created for the correct user
         if (results.clientAccountID === clientPublicKey) {

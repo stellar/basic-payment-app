@@ -36,7 +36,7 @@ export async function addContacts({ numContacts, fundContacts, addTrustlines }) 
     let usersRes = await fetch(
         `https://dummyjson.com/users?limit=${numContacts}&skip=${
             get(contacts).length
-        }&select=firstName`
+        }&select=firstName`,
     )
     let json = await usersRes.json()
     /** @type {DummyJsonUser[]} */
@@ -91,7 +91,7 @@ async function addContactTrustlines(keypair, assets) {
     transaction.addOperation(
         Operation.changeTrust({
             asset: new Asset('SRT', 'GCDNJUBQSX7AJWLJACMJ7I4BC3Z47BQUTMHEICZLE6MU4KQBRYG5JY6B'),
-        })
+        }),
     )
 
     // Add the top 3 assets, as ranked by Stellar.Expert (we skip index 0
@@ -101,7 +101,7 @@ async function addContactTrustlines(keypair, assets) {
         transaction.addOperation(
             Operation.changeTrust({
                 asset: assetObj,
-            })
+            }),
         )
     }
 
@@ -134,7 +134,7 @@ export async function mergeFriendbotAccount(publicKey) {
     transaction.addOperation(
         Operation.accountMerge({
             destination: publicKey,
-        })
+        }),
     )
 
     let builtTransaction = transaction.setTimeout(30).build()

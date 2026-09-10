@@ -19,12 +19,12 @@ the main `/dashboard` page.
 
     // We declare a _reactive_ component variable that will hold information for
     // a user-created contact entry, which can be added to the contacts store.
-    $: newContact = {
+    let newContact = $derived({
         name: '',
         address: '',
         favorite: false,
         id: '',
-    }
+    })
 </script>
 
 <h1>Contacts</h1>
@@ -66,7 +66,7 @@ the main `/dashboard` page.
                     name="name"
                     type="text"
                     placeholder="Name"
-                    class="input-bordered input input-sm w-full"
+                    class="input input-sm input-bordered w-full"
                 />
             </td>
             <td>
@@ -79,16 +79,16 @@ the main `/dashboard` page.
                     name="address"
                     type="text"
                     placeholder="Address"
-                    class="input-bordered input input-sm w-full"
+                    class="input input-sm input-bordered w-full"
                 />
             </td>
             <td class="text-center">
                 <button
-                    on:click={() => contacts.add(newContact)}
+                    onclick={() => contacts.add(newContact)}
                     id="addContactButton"
                     name="addContactButton"
                     type="submit"
-                    class="btn-success btn-sm btn-square btn"
+                    class="btn btn-square btn-success btn-sm"
                 >
                     <UserPlusIcon size="16" />
                 </button>
@@ -98,7 +98,7 @@ the main `/dashboard` page.
             <tr>
                 <th class="text-center">
                     <input
-                        on:click={() => contacts.favorite(contact.id)}
+                        onclick={() => contacts.favorite(contact.id)}
                         id={`favoriteCheckbox${contact.id}`}
                         name={`favoriteCheckbox${contact.id}`}
                         type="checkbox"
@@ -126,10 +126,10 @@ the main `/dashboard` page.
                 </td>
                 <td class="text-center">
                     <button
-                        on:click={() => contacts.remove(contact.id)}
+                        onclick={() => contacts.remove(contact.id)}
                         id={`removeContact${contact.id}`}
                         name={`removeContact${contact.id}`}
-                        class="btn-error btn-sm btn-square btn"
+                        class="btn btn-square btn-error btn-sm"
                     >
                         <Trash2Icon size="16" />
                     </button>

@@ -10,12 +10,12 @@ for each asset they hold a trustline to.
     // We import the `page` store into this component so we can access the
     // loaded data the `+page.svelte` file has access to without having to pass
     // props to this component
-    import { page } from '$app/stores'
+    import { page } from '$app/state'
 </script>
 
 <h3>Assets Overview</h3>
 <div class="stats stats-vertical w-full bg-primary text-primary-content shadow lg:stats-horizontal">
-    {#each $page.data.balances as balance}
+    {#each page.data.balances as balance}
         <div class="stat">
             <div class="stat-title">{balance.asset_code ?? 'XLM'} Balance</div>
             <div class="stat-value">

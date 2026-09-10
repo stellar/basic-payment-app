@@ -1,4 +1,14 @@
-import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, Horizon, rpc, nativeToScVal } from '@stellar/stellar-sdk'
+import {
+    TransactionBuilder,
+    Networks,
+    Operation,
+    Asset,
+    Memo,
+    Contract,
+    Horizon,
+    rpc,
+    nativeToScVal,
+} from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 /**
  * @module $lib/stellar/transactions
@@ -71,7 +81,7 @@ export async function createCreateAccountTransaction({ source, destination, amou
         Operation.createAccount({
             destination: destination,
             startingBalance: amount.toString(),
-        })
+        }),
     )
 
     // Before the transaction can be signed, it requires timebounds, and it must
@@ -129,7 +139,7 @@ export async function createPaymentTransaction({ source, destination, asset, amo
             destination: destination,
             amount: amount.toString(),
             asset: sendAsset,
-        })
+        }),
     )
 
     // Before the transaction can be signed, it requires timebounds, and it must
@@ -174,7 +184,7 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
             Operation.changeTrust({
                 asset: trustAsset,
                 limit: limit?.toString(),
-            })
+            }),
         )
         // Before the transaction can be signed, it requires timebounds
         .setTimeout(standardTimebounds)
@@ -247,7 +257,7 @@ export async function createPathPaymentStrictSendTransaction({
             destination: destination,
             destAsset: destAsset,
             destMin: destMin,
-        })
+        }),
     )
 
     // Before the transaction can be signed, it requires timebounds, and it must
@@ -320,7 +330,7 @@ export async function createPathPaymentStrictReceiveTransaction({
             destination: destination,
             destAsset: destAsset,
             destAmount: destinationAmount,
-        })
+        }),
     )
 
     // Before the transaction can be signed, it requires timebounds, and it must
@@ -345,33 +355,33 @@ export async function createPathPaymentStrictReceiveTransaction({
  */
 export async function createContractTransferTransaction({ source, destination, amount, asset }) {
     const server = new rpc.Server(rpcUrl)
-const sourceAccount = await server.getAccount(source)
+    const sourceAccount = await server.getAccount(source)
 
     const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
-    });
+    })
 
-    const [assetCode, assetIssuer] = asset.split(':');
-    const contractId = new Asset(assetCode, assetIssuer).contractId(networkPassphrase);
-    const contract = new Contract(contractId);
+    const [assetCode, assetIssuer] = asset.split(':')
+    const contractId = new Asset(assetCode, assetIssuer).contractId(networkPassphrase)
+    const contract = new Contract(contractId)
 
     const transferOp = contract.call(
-        "transfer",
+        'transfer',
         nativeToScVal(source, { type: 'address' }),
         nativeToScVal(destination, { type: 'address' }),
-        nativeToScVal(amount, { type: 'i128' })
+        nativeToScVal(amount, { type: 'i128' }),
     )
-    transaction.addOperation(transferOp);
+    transaction.addOperation(transferOp)
 
-    const builtTransaction = transaction.setTimeout(standardTimebounds).build();
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build()
 
     // Simulate the transaction
-    const rpcServer = new rpc.Server(rpcUrl);
+    const rpcServer = new rpc.Server(rpcUrl)
     const simulatedTx = await server.prepareTransaction(builtTransaction)
 
     return {
         transaction: simulatedTx.toXDR(),
         network_passphrase: networkPassphrase,
-    };
+    }
 }

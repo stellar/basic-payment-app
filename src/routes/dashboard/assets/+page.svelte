@@ -10,9 +10,6 @@ that already exist on their account.
 
 <script>
     // `export let data` allows us to pull in any parent load data for use here.
-    /** @type {import('./$types').PageData} */
-    export let data
-    $: balances = data.balances ?? []
 
     // We import things from external packages that will be needed
     import { Trash2Icon } from 'svelte-feather-icons'
@@ -32,15 +29,21 @@ that already exist on their account.
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props()
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let addAsset = ''
-    let customAssetCode = ''
-    let customAssetIssuer = ''
+    let addAsset = $state('')
+    let customAssetCode = $state('')
+    let customAssetIssuer = $state('')
     let changeTrustXDR = ''
     let changeTrustNetwork = ''
-    $: asset = addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -89,20 +92,24 @@ that already exist on their account.
             onConfirm: onConfirm,
         })
     }
+    let balances = $derived(data.balances ?? [])
+    let asset = $derived(
+        addAsset !== 'custom' ? addAsset : `${customAssetCode}:${customAssetIssuer}`,
+    )
 </script>
 
 <h1>Assets</h1>
 <p>
     The <code>/dashboard/assets</code> page will allow the user to manage the Stellar assets their account
-    carries trustlines to. On this page, they can select from several pre-suggested or highly ranked
-    assets, or they could specify their own asset to trust using an asset code and issuer public key.
-    They can also remove trustlines that already exist on their account.
+    carries trustlines to. On this page, they can select from several pre-suggested or highly ranked assets,
+    or they could specify their own asset to trust using an asset code and issuer public key. They can
+    also remove trustlines that already exist on their account.
 </p>
 
 <h2>Add Trusted Assets</h2>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
 
-<select class="select-bordered select my-2 w-full" bind:value={addAsset}>
+<select class="select select-bordered my-2 w-full" bind:value={addAsset}>
     <option disabled selected value="">Select Asset</option>
     <option disabled
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
@@ -131,19 +138,19 @@ that already exist on their account.
     <div class="join my-2 w-full flex-wrap">
         <input
             type="text"
-            class="input-bordered input join-item grow"
+            class="input join-item input-bordered grow"
             placeholder="Asset Code"
             bind:value={customAssetCode}
         />
         <input
             type="text"
-            class="input-bordered input join-item grow"
+            class="input join-item input-bordered grow"
             placeholder="Asset Issuer"
             bind:value={customAssetIssuer}
         />
     </div>
 {/if}
-<button class="btn-primary btn-block btn my-2" on:click={() => previewChangeTrustTransaction()}
+<button class="btn btn-primary btn-block my-2" onclick={() => previewChangeTrustTransaction()}
     >Add Asset</button
 >
 
@@ -180,8 +187,8 @@ that already exist on their account.
                         {#if 'asset_code' in balance}
                             {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                             <button
-                                class="btn-error btn-square btn-sm btn"
-                                on:click={() => previewChangeTrustTransaction(false, assetString)}
+                                class="btn btn-square btn-error btn-sm"
+                                onclick={() => previewChangeTrustTransaction(false, assetString)}
                                 ><Trash2Icon size="16" /></button
                             >
                         {/if}

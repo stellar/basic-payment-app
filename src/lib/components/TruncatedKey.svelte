@@ -15,18 +15,22 @@ copy/paste the value of `keyText`.
     // We import any stores we will need to read and/or write
     import { contacts } from '$lib/stores/contactsStore'
 
-    /** @param {string} keyText Stellar `StrKey` to display in a truncated manner with a copy button */
-    export let keyText = ''
-
     // Since we have contact names mapped to addresses, it would be nice to
     // display the contact names, when possible. This `export let` property
     // allows us to determine if the TruncatedKey component should bother with
-    // that or not.
-    export let lookupName = true
+
+    /**
+     * @typedef {Object} Props
+     * @property {string} [keyText]
+     * @property {boolean} [lookupName] - that or not.
+     */
+
+    /** @type {Props} */
+    let { keyText = '', lookupName = true } = $props()
 
     // The `contactName` variable will be _reactive_ to any changes to the
     // `lookupName` or `keyText` variables.
-    $: contactName = lookupName ? contacts.lookup(keyText) : false
+    let contactName = $derived(lookupName ? contacts.lookup(keyText) : false)
 </script>
 
 <div class="flex max-w-full items-center gap-2">
@@ -40,7 +44,7 @@ copy/paste the value of `keyText`.
             <span class="font-mono">{keyText.slice(-3)}</span>
         {/if}
     </div>
-    <button class="btn-ghost btn-square btn-sm btn" use:copy={keyText}>
+    <button class="btn btn-square btn-ghost btn-sm" use:copy={keyText}>
         <CopyIcon size="16" />
     </button>
 </div>

@@ -17,6 +17,13 @@ For more details, check out the DaisyUI documentation on Drawer layouts:
     // We import any Svelte components we will need
     import SidebarMenu from './SidebarMenu.svelte'
     import ErrorAlert from '$lib/components/ErrorAlert.svelte'
+    /**
+     * @typedef {Object} Props
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let { children } = $props()
 </script>
 
 <div class="drawer grow lg:drawer-open">
@@ -24,11 +31,11 @@ For more details, check out the DaisyUI documentation on Drawer layouts:
     <div class="drawer-content flex flex-col">
         <main class="prose max-w-full p-6">
             <ErrorAlert />
-            <slot />
+            {@render children?.()}
         </main>
     </div>
     <div class="drawer-side z-10 lg:h-auto">
-        <label for="drawer-toggle" class="drawer-overlay" />
+        <label for="drawer-toggle" class="drawer-overlay"></label>
         <SidebarMenu />
     </div>
 </div>

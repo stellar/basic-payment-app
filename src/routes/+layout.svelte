@@ -7,6 +7,14 @@
     import ModalCloseButton from '$lib/components/ModalCloseButton.svelte'
 
     import Modal from 'svelte-simple-modal'
+
+    /**
+     * @typedef {Object} Props
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let { children } = $props()
     const modal = writable(null)
 
     // @ts-ignore
@@ -18,8 +26,8 @@
     }
 </script>
 
-<svelte:window on:error={handleError} />
+<svelte:window onerror={handleError} />
 
-<Modal show={$modal} classContent="rounded bg-base-100" closeButton={ModalCloseButton}>
-    <slot />
+<Modal show={$modal} classContent="rounded bg-base-100" closeButton={true}>
+    {@render children?.()}
 </Modal>

@@ -20,7 +20,7 @@ export default defineConfig({
         noExternal: [
             '@creit.tech/stellar-wallets-kit',
             '@stellar/freighter-api',
-            '@lobstrco/signer-extension-api'
+            '@lobstrco/signer-extension-api',
         ],
     },
     test: {

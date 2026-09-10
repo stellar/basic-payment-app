@@ -13,6 +13,8 @@ circumstance.
 -->
 
 <script>
+    import { preventDefault } from 'svelte/legacy'
+
     // We import things from external packages that will be needed
     import { Keypair } from '@stellar/stellar-sdk'
 
@@ -30,11 +32,11 @@ circumstance.
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let keypair = Keypair.random()
-    $: publicKey = keypair.publicKey()
-    $: secretKey = keypair.secret()
-    let showSecret = false
-    let pincode = ''
+    let keypair = $state(Keypair.random())
+    let publicKey = $derived(keypair.publicKey())
+    let secretKey = $derived(keypair.secret())
+    let showSecret = $state(false)
+    let pincode = $state('')
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -85,18 +87,18 @@ circumstance.
         <div class="flex-col">
             <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
                 <div class="card-body">
-                    <form on:submit|preventDefault={signup}>
+                    <form onsubmit={preventDefault(signup)}>
                         <div class="form-control my-1">
                             <label for="publicKey" class="label">
                                 <span class="label-text">Public Key</span>
                             </label>
-                            <div class="input-bordered input flex">
+                            <div class="input input-bordered flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
                             <label for="publicKey" class="label">
                                 <button
-                                    on:click={() => (keypair = Keypair.random())}
-                                    class="link-hover label-text-alt link"
+                                    onclick={() => (keypair = Keypair.random())}
+                                    class="link-hover link label-text-alt"
                                 >
                                     Generate new address?
                                 </button>
@@ -109,7 +111,7 @@ circumstance.
                                     id="showSecret"
                                     name="showSecret"
                                     type="checkbox"
-                                    class="toggle-accent toggle"
+                                    class="toggle toggle-accent"
                                     bind:checked={showSecret}
                                 />
                             </label>
@@ -119,7 +121,7 @@ circumstance.
                                 <label for="secretKey" class="label">
                                     <span class="label-text">Secret Key</span>
                                 </label>
-                                <div class="input-bordered input flex">
+                                <div class="input input-bordered flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
                             </div>
@@ -132,7 +134,7 @@ circumstance.
                                 id="pincode"
                                 name="pincode"
                                 type="password"
-                                class="input-bordered input"
+                                class="input input-bordered"
                                 minlength="6"
                                 maxlength="6"
                                 required
@@ -140,14 +142,14 @@ circumstance.
                             />
                         </div>
                         <div class="form-control mt-6">
-                            <button type="submit" class="btn-primary btn">Signup</button>
+                            <button type="submit" class="btn btn-primary">Signup</button>
                         </div>
                         <div class="form-control mt-2">
-                           <WalletKitProvider buttonText='Sign up with wallet'/>
+                            <WalletKitProvider buttonText="Sign up with wallet" />
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
-                                <a class="link-hover label-text-alt link" href="/login">
+                                <a class="link-hover link label-text-alt" href="/login">
                                     Existing users, login here.
                                 </a>
                             </div>

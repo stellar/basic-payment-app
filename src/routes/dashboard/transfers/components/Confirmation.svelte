@@ -4,10 +4,21 @@
     import { transfers } from '$lib/stores/transfersStore'
     console.log('here are the transfers', $transfers)
 
-    export let transferData = {}
-    export let formData = {}
-    export let homeDomain = ''
-    export let transferJson = {}
+    /**
+     * @typedef {Object} Props
+     * @property {any} [transferData]
+     * @property {any} [formData]
+     * @property {string} [homeDomain]
+     * @property {any} [transferJson]
+     */
+
+    /** @type {Props} */
+    let {
+        transferData = $bindable({}),
+        formData = {},
+        homeDomain = '',
+        transferJson = $bindable({}),
+    } = $props()
 
     const submitTransfer = async () => {
         if (transferData.transfer_submitted) {

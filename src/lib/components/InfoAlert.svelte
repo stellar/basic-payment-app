@@ -16,10 +16,15 @@ Stellar network (yet.)
     import { infoMessage } from '$lib/stores/alertsStore'
 
     // The `dismissible` prop will be used to determine if the alert can be
-    // closed by the user
-    export let dismissible = true
 
-    // Sometimes, the use of `@html` inside a Svelte tag could open users up to
+    /**
+     * @typedef {Object} Props
+     * @property {boolean} [dismissible] - closed by the user - Sometimes, the use of `@html` inside a Svelte tag could open users up to
+     */
+
+    /** @type {Props} */
+    let { dismissible = true } = $props()
+
     // XSS attacks. The Svelte compiler will remind us of that. We are only ever
     // populating this `infoAlert` with our own text, so we will choose to
     // ignore the eslint error in this instance.
@@ -31,7 +36,7 @@ Stellar network (yet.)
         <InfoIcon />
         <span>{@html $infoMessage}</span>
         {#if dismissible}
-            <button class="btn-neutral btn-sm btn" on:click={() => infoMessage.set('')}
+            <button class="btn btn-neutral btn-sm" onclick={() => infoMessage.set('')}
                 >Dismiss</button
             >
         {/if}

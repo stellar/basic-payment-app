@@ -12,10 +12,10 @@ for submission to the network.
 -->
 
 <script>
+    import { preventDefault } from 'svelte/legacy'
+
     // The `export let data` declaration allows us to receive and use the page
     // load data from our `+page.js` file.
-    /** @type {import('./$types').PageData} */
-    export let data
 
     // We import any Svelte components we will need
     import ErrorAlert from '$lib/components/ErrorAlert.svelte'
@@ -26,14 +26,15 @@ for submission to the network.
     import { errorMessage } from '$lib/stores/alertsStore'
     import { walletStore } from '$lib/stores/walletStore'
     import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props()
     // Define some component variables that will be used throughout the page
-    let pincode = ''
-
-   
-
-
-
-
+    let pincode = $state('')
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
@@ -65,12 +66,12 @@ for submission to the network.
         <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
             <div class="card-body">
                 <ErrorAlert dismissible={false} />
-                <form on:submit|preventDefault={login}>
+                <form onsubmit={preventDefault(login)}>
                     <div class="form-control">
                         <label class="label" for="publicKey">
                             <span class="label-text">Public Key</span>
                         </label>
-                        <div class="input-bordered input flex">
+                        <div class="input input-bordered flex">
                             <TruncatedKey keyText={data.publicKey} />
                         </div>
                     </div>
@@ -82,7 +83,7 @@ for submission to the network.
                             id="pincode"
                             name="pincode"
                             type="password"
-                            class="input-bordered input"
+                            class="input input-bordered"
                             minlength="6"
                             maxlength="6"
                             required
@@ -90,12 +91,11 @@ for submission to the network.
                         />
                     </div>
                     <div class="form-control mt-6">
-                        <button class="btn-primary btn">Login</button>
+                        <button class="btn btn-primary">Login</button>
                     </div>
 
-
                     <div class="form-control mt-2">
-                      <WalletKitProvider buttonText='Login with wallet'/>
+                        <WalletKitProvider buttonText="Login with wallet" />
                     </div>
                 </form>
             </div>

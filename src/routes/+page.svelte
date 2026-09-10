@@ -6,8 +6,8 @@
             <p class="py-6">The app that lets you pay, <em>basically</em>, anyone.</p>
             <!-- These SvelteKit preload attributes keep the redirects from firing when the user hovers over the button -->
             <div data-sveltekit-preload-data="tap" data-sveltekit-preload-code="hover">
-                <a href="/signup" class="btn-primary btn">Signup Now</a>
-                <a href="/login" class="btn-outline btn">Login</a>
+                <a href="/signup" class="btn btn-primary">Signup Now</a>
+                <a href="/login" class="btn btn-outline">Login</a>
             </div>
         </div>
     </div>

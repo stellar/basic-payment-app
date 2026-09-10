@@ -15,13 +15,17 @@ couple read-throughs to understand everything.
 -->
 
 <script>
-    // `export let data` allows us to pull in any parent load data for use here.
-    /** @type {import('./$types').PageData} */
-    export let data
-    console.log('routes/dashboard/transfers/+page.svelte data', data)
+    // `$props()` allows us to pull in any parent load data for use here.
+    /**
+     * @typedef {Object} Props
+     * @property {import('./$types').PageData} data
+     */
+
+    /** @type {Props} */
+    let { data } = $props()
+    $inspect('routes/dashboard/transfers/+page.svelte data', data)
 
     // We import things from external packages that will be needed
-    import { Buffer } from 'buffer'
     import { LogInIcon, LogOutIcon } from 'svelte-feather-icons'
 
     // We import any Svelte components we will need
@@ -299,8 +303,8 @@ couple read-throughs to understand everything.
     The <code>/dashboard/transfers</code> page will allow the user to view assets they hold trustlines
     for, which have infrastructure available to utilize for asset transfers. A few series of server queries
     find out which assets the user can transfer, which protocols are available for those transfers (SEP-6
-    and SEP-24 currently), check the authentication status of the user with the relevant anchor, and
-    present them with buttons that will allow them to initiate a transfer with the anchor.
+    and SEP-24 currently), check the authentication status of the user with the relevant anchor, and present
+    them with buttons that will allow them to initiate a transfer with the anchor.
 </p>
 <p>
     Use the Stellar network's rails to existing financial infrastructure to move assets between the
@@ -338,7 +342,7 @@ couple read-throughs to understand everything.
                 <div class={authStatusClasses[authStatus]}>{authStatus}</div>
             </h3>
             {@const assetDescription = stellarToml.CURRENCIES?.filter(
-                ({ code }) => code === asset.asset_code
+                ({ code }) => code === asset.asset_code,
             )[0].desc}
             {#if assetDescription}
                 <p>{assetDescription}</p>
@@ -347,8 +351,8 @@ couple read-throughs to understand everything.
                 <button
                     id={`authButton${asset.asset_code}`}
                     name={`authButton${asset.asset_code}`}
-                    class="btn-primary btn"
-                    on:click={() => auth(asset.home_domain)}>Authenticate with Anchor</button
+                    class="btn btn-primary"
+                    onclick={() => auth(asset.home_domain)}>Authenticate with Anchor</button
                 >
                 <div class="form-control">
                     <label class="label" for={`authButton${asset.asset_code}`}>
@@ -362,17 +366,17 @@ couple read-throughs to understand everything.
                     {#if 'TRANSFER_SERVER' in stellarToml}
                         {#await getSep6Info(asset.home_domain) then sep6Info}
                             <div
-                                class="card rounded-box grid flex-grow place-items-center bg-base-300"
+                                class="card grid flex-grow place-items-center rounded-box bg-base-300"
                             >
                                 <div class="card-body w-full">
                                     <h4>SEP-6 Transfers</h4>
-                                    <div class="join-vertical join w-full lg:join-horizontal">
+                                    <div class="join join-vertical w-full lg:join-horizontal">
                                         {#each Object.entries(sep6Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
                                                     disabled={authStatus !== 'auth_valid'}
-                                                    on:click={() =>
+                                                    onclick={() =>
                                                         launchTransferModalSep6({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
@@ -398,22 +402,22 @@ couple read-throughs to understand everything.
                         {/await}
                     {/if}
                     {#if 'TRANSFER_SERVER' in stellarToml && 'TRANSFER_SERVER_SEP0024' in stellarToml}
-                        <div class="divider lg:divider-horizontal" />
+                        <div class="divider lg:divider-horizontal"></div>
                     {/if}
                     {#if 'TRANSFER_SERVER_SEP0024' in stellarToml}
                         {#await getSep24Info(asset.home_domain) then sep24Info}
                             <div
-                                class="card rounded-box grid flex-grow place-items-center bg-base-300"
+                                class="card grid flex-grow place-items-center rounded-box bg-base-300"
                             >
                                 <div class="card-body w-full">
                                     <h4>SEP-24 Transfers</h4>
-                                    <div class="join-vertical join w-full lg:join-horizontal">
+                                    <div class="join join-vertical w-full lg:join-horizontal">
                                         {#each Object.entries(sep24Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
                                                     disabled={authStatus !== 'auth_valid'}
-                                                    on:click={() =>
+                                                    onclick={() =>
                                                         launchTransferWindowSep24({
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
