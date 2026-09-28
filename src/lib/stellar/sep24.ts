@@ -1,5 +1,6 @@
 import { getTransferServerSep24 } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
+import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
 
 /**
  * @module $lib/stellar/sep24
@@ -45,7 +46,17 @@ export async function getSep24Info(domain: string): Promise<object> {
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlFields = {} }: { authToken: string; endpoint: ('deposit' | 'withdraw'); homeDomain: string; urlFields?: object }): Promise<object> {
+export async function initiateTransfer24({
+    authToken,
+    endpoint,
+    homeDomain,
+    urlFields = {},
+}: {
+    authToken: string
+    endpoint: 'deposit' | 'withdraw'
+    homeDomain: string
+    urlFields?: object
+}): Promise<{ type: string; url: string; id: string }> {
     let transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     let res = await fetch(`${transferServerSep24}/transactions/${endpoint}/interactive`, {
@@ -69,6 +80,48 @@ export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlF
 }
 
 /**
+ * Queries and returns information about an individual SEP-24 transfer.
+ * @async
+ * @function getTransferStatus24
+ * @param {Object} opts Options object
+ * @param {string} opts.authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} opts.transferId Unique ID of the transfer we want to know more about
+ * @param {string} opts.homeDomain Domain of the anchor to query for transfer details
+ * @returns {Promise<AnchorTransaction>} Information about the transfer
+ * @throws Will throw an error if the server response is not `ok`.
+ */
+export async function getTransferStatus24({
+    authToken,
+    transferId,
+    homeDomain,
+}: {
+    authToken: string
+    transferId: string
+    homeDomain: string
+}): Promise<AnchorTransaction> {
+    let transferServerSep24 = await getTransferServerSep24(homeDomain)
+
+    let res = await fetch(
+        `${transferServerSep24}/transaction?${new URLSearchParams({ id: transferId })}`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        },
+    )
+    let json = await res.json()
+
+    if (!res.ok) {
+        throw error(res.status, {
+            message: json.error,
+        })
+    } else {
+        return json.transaction
+    }
+}
+
+/**
  * Queries and returns information about all SEP-24 transfers for a given address and asset.
  * @async
  * @function queryTransfers24
@@ -79,7 +132,15 @@ export async function initiateTransfer24({ authToken, endpoint, homeDomain, urlF
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function queryTransfers24({ authToken, assetCode, homeDomain }: { authToken: string; assetCode: string; homeDomain: string }): Promise<object> {
+export async function queryTransfers24({
+    authToken,
+    assetCode,
+    homeDomain,
+}: {
+    authToken: string
+    assetCode: string
+    homeDomain: string
+}): Promise<object> {
     let transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     let res = await fetch(

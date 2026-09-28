@@ -28,21 +28,24 @@ couple read-throughs to understand everything.
 
     // We import any stores we will need to read and/or write
     import { invalidateAll } from '$app/navigation'
-    import { transfers } from '$lib/stores/transfersStore'
-    import { walletStore } from '$lib/stores/walletStore'
-    import { webAuthStore } from '$lib/stores/webAuthStore'
+    import { transfers } from '$lib/state/Transfers.svelte'
+    import { wallet } from '$lib/state/Wallet.svelte'
+    import { webAuth } from '$lib/state/WebAuth.svelte'
 
     // We import some of our `$lib` functions
     import { submit } from '$lib/stellar/horizonQueries'
     import { fetchStellarToml } from '$lib/stellar/sep1'
     import { getSep6Info } from '$lib/stellar/sep6'
     import { getChallengeTransaction, submitChallengeTransaction } from '$lib/stellar/sep10'
-    import { getSep24Info, initiateTransfer24 } from '$lib/stellar/sep24'
+    import { getSep24Info, getTransferStatus24, initiateTransfer24 } from '$lib/stellar/sep24'
     import { createPaymentTransaction } from '$lib/stellar/transactions'
+    import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
+    import { alert } from '$lib/state/Alert.svelte'
+    import { error } from '@sveltejs/kit'
 
-    // The `open` Svelte context is used to open the confirmation modal
+    // The `open` and `close` Svelte context functions control the modal window
     import { getContext } from 'svelte'
-    const { open } = getContext('simple-modal')
+    const { open, close } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
     let challengeXDR = ''
@@ -72,8 +75,8 @@ couple read-throughs to understand everything.
      * @param homeDomain Domain to examine current authentication status for
      */
     const getAuthStatus = (homeDomain: string) => {
-        if ($webAuthStore[homeDomain]) {
-            if (webAuthStore.isTokenExpired(homeDomain)) {
+        if (webAuth.getToken(homeDomain)) {
+            if (webAuth.isTokenExpired(homeDomain)) {
                 return 'auth_expired'
             } else {
                 return 'auth_valid'
@@ -90,18 +93,18 @@ couple read-throughs to understand everything.
      */
     const onAuthConfirm = async (pincode: string) => {
         // Sign the transaction with the user's keypair
-        let signedTransaction = await walletStore.sign({
+        let signedTransaction = await wallet.sign({
             transactionXDR: challengeXDR,
             network: challengeNetwork,
             pincode: pincode,
         })
         // Submit the signed tx to the SEP-10 server, and get the JWT token back
         let token = await submitChallengeTransaction({
-            transactionXDR: signedTransaction.toXDR(),
+            transactionXDR: signedTransaction.toXdr(),
             homeDomain: challengeHomeDomain,
         })
         // Add the token to our store
-        webAuthStore.setAuth(challengeHomeDomain, token)
+        webAuth.setAuth(challengeHomeDomain, token)
         // Reload any relevant `load()` functions (i.e., refresh the page)
         invalidateAll()
     }
@@ -152,7 +155,13 @@ couple read-throughs to understand everything.
         assetIssuer,
         endpoint,
         sep6Info,
-    }: { homeDomain: string; assetCode: string; assetIssuer: string; sep6Info: object; endpoint: ('deposit' | 'withdraw') }) => {
+    }: {
+        homeDomain: string
+        assetCode: string
+        assetIssuer: string
+        sep6Info: object
+        endpoint: 'deposit' | 'withdraw'
+    }) => {
         // Open the SEP-6 transfer modal, supplying the relevant props for our
         // desired type of transfer.
         open(TransferModalSep6, {
@@ -166,7 +175,14 @@ couple read-throughs to understand everything.
                 asset_code: assetCode,
             },
             sep6Info: sep6Info,
-            submitPayment: submitPayment,
+            // The SEP-6 modal is still open when the user is ready to pay. Our
+            // modal library can't swap one modal for another, so we close
+            // this one first, and open the payment confirmation once it's gone.
+            payAnchor: async (opts: {
+                transaction: AnchorTransaction
+                assetCode: string
+                assetIssuer: string
+            }) => close({ onClosed: () => payAnchor(opts) }),
         })
     }
 
@@ -177,8 +193,8 @@ couple read-throughs to understand everything.
      * @param pincode The 6-digit pincode the user has confirmed that will decrypt the Stellar secret key for signing
      */
     const onPaymentConfirm = async (pincode: string) => {
-        // Use the walletStore to sign the transaction
-        let signedTransaction = await walletStore.sign({
+        // Use the wallet to sign the transaction
+        let signedTransaction = await wallet.sign({
             transactionXDR: paymentXDR,
             network: paymentNetwork,
             pincode: pincode,
@@ -188,31 +204,51 @@ couple read-throughs to understand everything.
     }
 
     /**
-     * Builds a Stellar payment to present to the user which will complete a transfer to the Anchor.
+     * Builds the Stellar payment that completes a withdrawal, and presents it to the user for confirmation. We only call this once the anchor's transaction is `pending_user_transfer_start`, which is when it tells us where to send the payment, how much to send, and which memo to use.
      * @param opts Options object
-     * @param opts.withdrawDetails Object containing details about how a withdraw should proceed
+     * @param opts.transaction The anchor's transaction for this withdrawal (SEP-6 and SEP-24 use the same format)
      * @param opts.assetCode Stellar asset code to be transferred in the payment transaction
      * @param opts.assetIssuer Public Stellar address that issues the asset
-     * @param opts.amount Amount of the asset to send in the payment
      */
-    let submitPayment = async ({ withdrawDetails, assetCode, assetIssuer, amount }: { withdrawDetails: object; assetCode: string; assetIssuer: string; amount: string | number }) => {
-        let { transaction, network_passphrase } = await createPaymentTransaction({
+    const payAnchor = async ({
+        transaction,
+        assetCode,
+        assetIssuer,
+    }: {
+        transaction: AnchorTransaction
+        assetCode: string
+        assetIssuer: string
+    }) => {
+        // The anchor tells us where to send the payment, how much to send, and
+        // which memo to attach (so it can match our payment to this transfer)
+        let payment = await createPaymentTransaction({
             source: data.publicKey,
-            // @ts-ignore
-            destination: withdrawDetails.account_id,
+            destination: transaction.withdraw_anchor_account ?? '',
             asset: `${assetCode}:${assetIssuer}`,
-            amount: amount,
-            // @ts-ignore
-            memo: withdrawDetails.memo ? Buffer.from(withdrawDetails.memo, 'base64') : undefined,
+            amount: transaction.amount_in ?? '',
+            memo: transaction.withdraw_memo,
+            memoType: transaction.withdraw_memo_type,
         })
 
         // Set the component variables to hold the transaction details
-        paymentXDR = transaction
-        paymentNetwork = network_passphrase
+        paymentXDR = payment.transaction
+        paymentNetwork = payment.network_passphrase
 
-        // We close the SEP-6 modal, and open the regular confirmation modal
-        close()
+        // SEP-24 asks wallets to show the user where their funds are going,
+        // and where they can learn more about the withdrawal
+        let body = 'To finish your withdrawal, send this payment to the anchor.'
+        if (transaction.to && transaction.external_extra_text) {
+            body += ` Your funds will go to ${transaction.external_extra_text} (${transaction.to}).`
+        } else if (transaction.to) {
+            body += ` Your funds will go to ${transaction.to}.`
+        }
+        if (transaction.more_info_url) {
+            body += ` You can follow the withdrawal's progress at ${transaction.more_info_url}`
+        }
+
         open(ConfirmationModal, {
+            title: 'Complete Your Withdrawal',
+            body: body,
             transactionXDR: paymentXDR,
             transactionNetwork: paymentNetwork,
             onConfirm: onPaymentConfirm,
@@ -228,67 +264,97 @@ couple read-throughs to understand everything.
      * @param opts.assetIssuer Public Stellar address that issues the asset
      * @param opts.endpoint Endpoint of the transfer server to interact with (i.e., `deposit` or `withdraw`)
      */
-    const launchTransferWindowSep24 = async ({ homeDomain, assetCode, assetIssuer, endpoint }: { homeDomain: string; assetCode: string; assetIssuer: string; endpoint: ('deposit' | 'withdraw') }) => {
+    const launchTransferWindowSep24 = async ({
+        homeDomain,
+        assetCode,
+        assetIssuer,
+        endpoint,
+    }: {
+        homeDomain: string
+        assetCode: string
+        assetIssuer: string
+        endpoint: 'deposit' | 'withdraw'
+    }) => {
+        // We open the popup window right away, while the browser still sees
+        // this as a response to the user's click. If we waited until after
+        // talking to the anchor, popup blockers might stop the window.
+        const popup = window.open('', 'bpaTransfer24Window', 'popup')
+        if (!popup) {
+            error(400, { message: 'Please allow popups for this site, so the anchor can open' })
+        }
+
         // We initiate the transfer from the SEP-24 server, and get the
-        // interactive URL back from it
-        // @ts-ignore
-        let { url } = await initiateTransfer24({
-            authToken: $webAuthStore[homeDomain],
-            endpoint: endpoint,
-            homeDomain: homeDomain,
-            urlFields: {
-                asset_code: assetCode,
-                account: data.publicKey,
-            },
-        })
-
-        // We add our callback method to the end of the URL and launch the popup
-        // window for the user to interact with
-        let interactiveUrl = `${url}&callback=postMessage`
-        let popup = window.open(interactiveUrl, 'bpaTransfer24Window', 'popup')
-
-        // We listen for the callback `message` from the popup window
-        window.addEventListener('message', async (event) => {
-            console.log('here is the event i heard from the popup window', event)
-            popup?.close()
-
-            // Store the transfer in the browser's localStorage
-            transfers.addTransfer({
+        // interactive URL (and the transfer's ID) back from it
+        let response
+        try {
+            response = await initiateTransfer24({
+                authToken: webAuth.requireToken(homeDomain),
+                endpoint: endpoint,
                 homeDomain: homeDomain,
-                protocol: 'sep24',
-                assetCode: assetCode,
-                transferID: event.data.transaction.id,
+                urlFields: {
+                    asset_code: assetCode,
+                    account: data.publicKey,
+                },
             })
+        } catch (err) {
+            popup.close()
+            throw err
+        }
+        const { url, id } = response
 
-            // If the user has requested a withdraw with the anchor, they will
-            // need to submit a Stellar transaction that sends the asset from
-            // the user's account to an account controlled by the anchor.
-            if (event.data.transaction.kind === 'withdrawal') {
-                // Generate a transaction with the necessary details to complete
-                // the transfer
-                let { transaction, network_passphrase } = await createPaymentTransaction({
-                    source: data.publicKey,
-                    destination: event.data.transaction.withdraw_anchor_account,
-                    asset: `${assetCode}:${assetIssuer}`,
-                    amount: event.data.transaction.amount_in,
-                    memo: Buffer.from(event.data.transaction.withdraw_memo, 'base64'),
-                })
+        // SEP-24 recommends not giving the anchor's page access to our window
+        // (like `noopener` would), so we cut that link before sending the
+        // popup to the anchor
+        popup.opener = null
+        popup.location.href = url
 
-                // Set the component variables to hold the transaction details
-                paymentXDR = transaction
-                paymentNetwork = network_passphrase
-
-                // Open the confirmation modal for the user to confirm or reject
-                // the Stellar payment transaction. We provide our customized
-                // `onPaymentConfirm` function to be called as part of the
-                // modal's confirming process.
-                open(ConfirmationModal, {
-                    transactionXDR: paymentXDR,
-                    transactionNetwork: paymentNetwork,
-                    onConfirm: onPaymentConfirm,
-                })
-            }
+        // Store the transfer in the browser's localStorage, so we can check on
+        // it later from the transfer history
+        transfers.addTransfer({
+            homeDomain: homeDomain,
+            protocol: 'sep24',
+            assetCode: assetCode,
+            transferID: id,
         })
+
+        // For a deposit, the anchor's window has everything the user needs, so
+        // our part is done
+        if (endpoint === 'deposit') return
+
+        // For a withdrawal, we keep checking the transfer until the user is
+        // done in the anchor's window (or closes it). SEP-24 also lets anchors
+        // send us a callback, but checking the `/transaction` endpoint works
+        // with every anchor.
+        let transaction = await getTransferStatus24({
+            authToken: webAuth.requireToken(homeDomain),
+            transferId: id,
+            homeDomain: homeDomain,
+        })
+        while (transaction.status === 'incomplete' && !popup.closed) {
+            // Wait a few seconds before checking again
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+            transaction = await getTransferStatus24({
+                authToken: webAuth.requireToken(homeDomain),
+                transferId: id,
+                homeDomain: homeDomain,
+            })
+        }
+        // We try to close the anchor's window, but because we cut its link to
+        // our window (above), the browser may not let us. If so, the user can
+        // close it themselves.
+        popup.close()
+
+        if (transaction.status === 'pending_user_transfer_start') {
+            // The anchor is ready for the user to send their payment
+            await payAnchor({ transaction, assetCode, assetIssuer })
+        } else if (transaction.status !== 'incomplete') {
+            // Something else happened (e.g., the anchor had an error)
+            alert.setAlert({
+                type: 'info',
+                title: 'Withdrawal not started',
+                message: `The anchor says this withdrawal is ${transaction.status}. ${transaction.message ?? ''}`,
+            })
+        }
     }
 </script>
 
@@ -364,7 +430,7 @@ couple read-throughs to understand everything.
                             >
                                 <div class="card-body w-full">
                                     <h4>SEP-6 Transfers</h4>
-                                    <div class="join join-vertical w-full lg:join-horizontal">
+                                    <div class="join w-full join-vertical lg:join-horizontal">
                                         {#each Object.entries(sep6Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button
@@ -405,7 +471,7 @@ couple read-throughs to understand everything.
                             >
                                 <div class="card-body w-full">
                                     <h4>SEP-24 Transfers</h4>
-                                    <div class="join join-vertical w-full lg:join-horizontal">
+                                    <div class="join w-full join-vertical lg:join-horizontal">
                                         {#each Object.entries(sep24Info) as [endpoint, details]}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button

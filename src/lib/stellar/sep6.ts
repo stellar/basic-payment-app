@@ -1,5 +1,6 @@
 import { getTransferServerSep6 } from '$lib/stellar/sep1'
 import { error } from '@sveltejs/kit'
+import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
 
 /**
  * @module $lib/stellar/sep6
@@ -35,9 +36,23 @@ export async function getSep6Info(domain: string): Promise<object> {
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function initiateTransfer6({ authToken, endpoint, formData, domain }: { authToken: string; endpoint: string; formData: { [s: string]: string }; domain: string }): Promise<object> {
+export async function initiateTransfer6({
+    authToken,
+    endpoint,
+    formData,
+    domain,
+}: {
+    authToken: string
+    endpoint: string
+    formData: { [s: string]: string }
+    domain: string
+}): Promise<{ id: string }> {
     let transferServer = await getTransferServerSep6(domain)
-    console.log('here is all the formData', formData)
+    // SEP-6 replaced the `type` parameter with `funding_method`. We send both,
+    // so older anchors (that only know about `type`) still understand us.
+    if (formData.type && !formData.funding_method) {
+        formData = { ...formData, funding_method: formData.type }
+    }
     let searchParams = new URLSearchParams(formData)
 
     let res = await fetch(`${transferServer}/${endpoint}?${searchParams}`, {
@@ -70,7 +85,15 @@ export async function initiateTransfer6({ authToken, endpoint, formData, domain 
  * @returns {Promise<Object>} JSON object with information about the transfer
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function getTransferStatus6({ authToken, transferId, domain }: { authToken: string; transferId: string; domain: string }): Promise<object> {
+export async function getTransferStatus6({
+    authToken,
+    transferId,
+    domain,
+}: {
+    authToken: string
+    transferId: string
+    domain: string
+}): Promise<AnchorTransaction> {
     let transferServer = await getTransferServerSep6(domain)
 
     let res = await fetch(
@@ -110,7 +133,17 @@ export async function getTransferStatus6({ authToken, transferId, domain }: { au
  * @returns {Promise<Object>} JSON response from the server
  * @throws Will throw an error if the server response is not `ok`.
  */
-export async function queryTransfers6({ authToken, assetCode, publicKey, homeDomain }: { authToken: string; assetCode: string; publicKey: string; homeDomain: string }): Promise<object> {
+export async function queryTransfers6({
+    authToken,
+    assetCode,
+    publicKey,
+    homeDomain,
+}: {
+    authToken: string
+    assetCode: string
+    publicKey: string
+    homeDomain: string
+}): Promise<object> {
     let transferServer = await getTransferServerSep6(homeDomain)
 
     let res = await fetch(
