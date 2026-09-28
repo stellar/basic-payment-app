@@ -22,21 +22,20 @@ on the following occasions:
     // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import ErrorAlert from './ErrorAlert.svelte'
+    import { alert } from '$lib/state/Alert.svelte'
+    import Alert from './Alert.svelte'
 
-    // We will use the `walletStore.confirmPincode` to ensure the user knows the
+    // We will use the `wallet.confirmPincode` to ensure the user knows the
     // encryption password to the keypair before we attempt to sign anything
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
 
     // We need a couple things from the stellar-sdk to reconstruct the
     // Transaction object from the XDR string, when the time comes
-    import { Networks, TransactionBuilder, type Transaction } from '@stellar/stellar-sdk'
+    import { Networks, TransactionBuilder, type Transaction, type Memo } from '@stellar/stellar-sdk'
 
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
     import { getContext } from 'svelte'
-    import { get } from 'svelte/store'
     const { close } = getContext('simple-modal')
 
     // `onConfirm` is a dummy function that will be overridden from the
@@ -49,13 +48,9 @@ on the following occasions:
         isWaiting = true
 
         try {
-            // Check if this is a wallet user
-            const { keyId, publicKey } = get(walletStore)
-            const isWalletUser = keyId === publicKey
-
-            if (!isWalletUser) {
+            if (!wallet.isWalletUser) {
                 // Only verify pincode for non-wallet users
-                await walletStore.confirmPincode({
+                await wallet.confirmPincode({
                     pincode: pincode,
                     firstPincode: firstPincode,
                     signup: firstPincode ? true : false,
@@ -68,14 +63,18 @@ on the following occasions:
             // should take place when the pincode is confirmed. (i.e., submit
             // the transaction to the network, login to the app, etc.)
             // Pass pincode only for non-wallet users
-            await onConfirm(isWalletUser ? undefined : pincode)
+            await onConfirm(wallet.isWalletUser ? undefined : pincode)
 
             // Now we can close the modal window
             close()
         } catch (err: unknown) {
-            // If there was an error, we set our `errorMessage` alert]
-            // @ts-ignore
-            errorMessage.set(err.body?.message || err.message || 'Transaction failed')
+            // If there was an error, we set our alert
+            console.error('error in confirmation modal', err)
+            alert.setAlert({
+                // @ts-ignore
+                message: err.body?.message || err.message || 'Transaction failed',
+                type: 'error',
+            })
         }
         isWaiting = false
     }
@@ -101,17 +100,17 @@ on the following occasions:
     // variables for our modal which can be modified to suit the launching component's needs.
 
     interface Props {
-        onConfirm?: (pincode: undefined|string) => Promise<void>;
-        onReject?: () => void;
-        title?: string;
-        body?: string;
-        confirmButton?: string;
-        rejectButton?: string;
-        hasPincodeForm?: boolean;
-        transactionXDR?: string;
-        transactionNetwork?: string;
+        onConfirm?: (pincode: undefined | string) => Promise<void>
+        onReject?: () => void
+        title?: string
+        body?: string
+        confirmButton?: string
+        rejectButton?: string
+        hasPincodeForm?: boolean
+        transactionXDR?: string
+        transactionNetwork?: string
         /** Only used during user signup */
-        firstPincode?: string;
+        firstPincode?: string
     }
 
     let {
@@ -133,9 +132,8 @@ on the following occasions:
     let isWaiting = $state(false)
     let pincode = $state('')
 
-    // Get wallet status
-    let wallet = get(walletStore)
-    let isWalletUser = $derived(wallet.keyId && wallet.keyId === wallet.publicKey)
+    // Wallet users sign with their wallet, so they don't need to enter a pincode
+    let isWalletUser = $derived(wallet.isWalletUser)
 
     // The `$: variableName` syntax marks the output of some **expression** (as
     // opposed to an assignment) as _reactive_. In this case, every time
@@ -143,9 +141,31 @@ on the following occasions:
     // recomputed and any dependent components would be updated accordingly.
     let transaction = $derived(
         transactionXDR
-            ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET) as Transaction
+            ? (TransactionBuilder.fromXdr(
+                  transactionXDR,
+                  transactionNetwork || Networks.TESTNET,
+              ) as Transaction)
             : null,
     )
+
+    // Memos decoded from XDR hold raw bytes (a `Uint8Array`), so we decode text
+    // memos as UTF-8, and display hash and return memos as base64
+    const formatMemo = ({ type, value }: Memo) => {
+        if (value === null || typeof value === 'string') return value
+        if (type === 'text') return new TextDecoder().decode(value)
+        return btoa(String.fromCharCode(...value))
+    }
+
+    // Some operation fields (like a `manageData` value) are raw bytes too. We show
+    // them as text when they are valid UTF-8, and as base64 otherwise.
+    const formatValue = (value: unknown) => {
+        if (!(value instanceof Uint8Array)) return value
+        try {
+            return new TextDecoder('utf-8', { fatal: true }).decode(value)
+        } catch {
+            return btoa(String.fromCharCode(...value))
+        }
+    }
 </script>
 
 <div class="prose p-3">
@@ -162,13 +182,7 @@ on the following occasions:
         {#if 'memo' in transaction}
             <p>
                 Memo ({transaction.memo.type}):
-                <code
-                    >{transaction.memo.type === 'text'
-                        ? transaction.memo?.value?.toString('utf-8')
-                        : transaction.memo.type === 'hash'
-                          ? transaction.memo?.value?.toString('base64')
-                          : transaction.memo.value}</code
-                >
+                <code>{formatMemo(transaction.memo)}</code>
             </p>
         {/if}
 
@@ -179,7 +193,7 @@ on the following occasions:
                 <li>Operation {i}</li>
                 <ul>
                     {#each Object.entries(operation) as [key, value]}
-                        <li>{key}: <code>{value}</code></li>
+                        <li>{key}: <code>{formatValue(value)}</code></li>
                     {/each}
                 </ul>
             {/each}
@@ -196,9 +210,9 @@ on the following occasions:
             >.
         </p>
         <div class="relative">
-            <pre class="whitespace-normal break-words">{transactionXDR}</pre>
+            <pre class="break-words whitespace-normal">{transactionXDR}</pre>
             <button
-                class="btn btn-square btn-ghost btn-sm absolute bottom-1 right-1"
+                class="btn absolute right-1 bottom-1 btn-square btn-ghost btn-sm"
                 use:copy={transactionXDR}
             >
                 <CopyIcon size="16" />
@@ -206,8 +220,7 @@ on the following occasions:
         </div>
     {/if}
 
-    <!-- ErrorAlert will be displayed whenever the errorMessage is truthy -->
-    <ErrorAlert />
+    <Alert />
 
     <!-- Display the pincode form: the input element, and the "confirm" and "reject" buttons -->
     {#if hasPincodeForm && !isWalletUser}
@@ -219,24 +232,16 @@ on the following occasions:
                 <input
                     type="password"
                     id="pincode"
-                    class="input input-bordered"
+                    class="input-bordered input"
                     bind:value={pincode}
                 />
             </div>
             <div class="my-6 flex justify-end gap-3">
-                <button
-                    onclick={_onConfirm}
-                    class="btn btn-success"
-                    disabled={isWaiting}
-                >
-                    {#if isWaiting}<span class="loading loading-spinner loading-sm"></span>{/if}
+                <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>
+                    {#if isWaiting}<span class="loading loading-sm loading-spinner"></span>{/if}
                     {confirmButton}
                 </button>
-                <button
-                    onclick={_onReject}
-                    class="btn btn-error"
-                    disabled={isWaiting}
-                >
+                <button onclick={_onReject} class="btn btn-error" disabled={isWaiting}>
                     {rejectButton}
                 </button>
             </div>
@@ -244,12 +249,8 @@ on the following occasions:
     {:else if isWalletUser}
         <!-- Wallet user confirmation UI -->
         <div class="my-6 flex justify-end gap-3">
-            <button
-                onclick={_onConfirm}
-                class="btn btn-success"
-                disabled={isWaiting}
-            >
-                {#if isWaiting}<span class="loading loading-spinner loading-sm"></span>{/if}
+            <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>
+                {#if isWaiting}<span class="loading loading-sm loading-spinner"></span>{/if}
                 Confirm in Wallet
             </button>
             <button onclick={_onReject} class="btn btn-error" disabled={isWaiting}>

@@ -16,13 +16,13 @@ export const server = new Horizon.Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `@stellar/stellar-sdk` package, so our functions will know what to expect.
-type AccountRecord = import('@stellar/stellar-sdk').Horizon.ServerApi.AccountRecord;
-type ErrorResponseData = import('@stellar/stellar-sdk').Horizon.ErrorResponseData;
-type PaymentOperationRecord = import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord;
-type BalanceLine = import('@stellar/stellar-sdk').Horizon.BalanceLine;
-type BalanceLineAsset = import('@stellar/stellar-sdk').Horizon.BalanceLineAsset;
-type Transaction = import('@stellar/stellar-sdk').Transaction;
-type PaymentPathRecord = import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord;
+type AccountRecord = import('@stellar/stellar-sdk').Horizon.ServerApi.AccountRecord
+type ErrorResponseData = import('@stellar/stellar-sdk').Horizon.ErrorResponseData
+type PaymentOperationRecord = import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord
+type BalanceLine = import('@stellar/stellar-sdk').Horizon.BalanceLine
+type BalanceLineAsset = import('@stellar/stellar-sdk').Horizon.BalanceLineAsset
+type Transaction = import('@stellar/stellar-sdk').Transaction
+type PaymentPathRecord = import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord
 
 /**
  * Fetches and returns details about an account on the Stellar network.
@@ -38,24 +38,11 @@ export async function fetchAccount(publicKey) {
             let account = await server.accounts().accountId(publicKey).call()
             return account
         } catch (err) {
-            // @ts-ignore
-            if (err.response?.status === 404) {
-                try {
-                    await fundWithFriendbot(publicKey)
-                    let account = await server.accounts().accountId(publicKey).call()
-                    return account
-                } catch (err) {
-                    throw error(500, {
-                        message: `Unable to fund account ${publicKey}: ${err.message}`,
-                    })
-                }
-            } else {
-                // @ts-ignore
-                throw error(err.response?.status ?? 400, {
-                    // @ts-ignore
-                    message: `${err.response?.title} - ${err.response?.detail}`,
-                })
-            }
+            // A 404 here means the account isn't funded yet. We pass the status
+            // along, so the send page can offer a `createAccount` operation.
+            throw error(err.response?.status ?? 400, {
+                message: `${err.response?.title} - ${err.response?.detail}`,
+            })
         }
     } else {
         throw error(400, { message: 'invalid public key' })
@@ -131,18 +118,23 @@ export async function submit(transaction) {
     try {
         await server.submitTransaction(transaction)
     } catch (err) {
+        // Horizon's response body lives in `err.response.data`, and failed
+        // transactions include result codes explaining what went wrong
+        const data = err.response?.data
+        const codes = data?.extras?.result_codes
         throw error(400, {
-            // @ts-ignore
-            message: `${err.response?.title} - ${err.response?.data.extras.result_codes}`,
+            message: codes
+                ? `${data.title} - ${[codes.transaction, ...(codes.operations ?? [])].join(', ')}`
+                : err.message,
         })
     }
 }
 
 interface HomeDomainObject {
-    home_domain: string;
+    home_domain: string
 }
 
-type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject;
+type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject
 // /** @typedef {BalanceLineAsset & HomeDomainObject} HomeDomainBalanceLine */
 
 /**
@@ -152,7 +144,9 @@ type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject;
  * @param balances Array of balances to query issuer accounts of
  * @returns Array of balance details for assets that do have a `home_domain` setting
  */
-export async function fetchAssetsWithHomeDomains(balances: BalanceLine[]): Promise<HomeDomainBalanceLine[]> {
+export async function fetchAssetsWithHomeDomains(
+    balances: BalanceLine[],
+): Promise<HomeDomainBalanceLine[]> {
     let homeDomains = await Promise.all(
         balances.map(async (asset) => {
             // We are only interested in issued assets (i.e., not LPs and not XLM)

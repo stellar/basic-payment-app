@@ -10,6 +10,7 @@ import {
     nativeToScVal,
 } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
+import { base64ToBytes } from '$lib/utils/base64'
 
 /**
  * @module $lib/stellar/transactions
@@ -90,8 +91,29 @@ export async function createCreateAccountTransaction({ source, destination, amou
     // be "built"
     let builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
-        transaction: builtTransaction.toXDR(),
+        transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
+    }
+}
+
+/** The kinds of memo an anchor may ask us to attach to a payment */
+export type MemoType = 'text' | 'id' | 'hash'
+
+/**
+ * Builds a Stellar memo of the given type. This is how anchors (in SEP-6 and
+ * SEP-24) tell us to label a payment, so they know which transfer it's for.
+ * @param value The memo value. For hash memos, anchors send this base64-encoded.
+ * @param type What kind of memo this is
+ * @returns A memo ready to add to a transaction
+ */
+export function buildMemo(value: string, type: MemoType = 'text') {
+    switch (type) {
+        case 'id':
+            return Memo.id(value)
+        case 'hash':
+            return Memo.hash(base64ToBytes(value))
+        default:
+            return Memo.text(value)
     }
 }
 
@@ -104,10 +126,11 @@ export async function createCreateAccountTransaction({ source, destination, amou
  * @param {string} opts.destination Public Stellar address to receive the payment
  * @param {string} [opts.asset=native] Asset to be sent to the destination address (example: USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5)
  * @param {number|string} opts.amount Amount of the asset to send in the payment
- * @param {string|Buffer} [opts.memo] Memo to add to the transaction, either a string or a Buffer object
+ * @param {string} [opts.memo] Memo to add to the transaction
+ * @param {MemoType} [opts.memoType=text] What kind of memo `memo` is (anchors tell us this, alongside the memo itself)
  * @returns {Promise<TransactionResponse>} Object containing the relevant network passphrase and the built transaction envelope in XDR base64 encoding, ready to be signed and submitted
  */
-export async function createPaymentTransaction({ source, destination, asset, amount, memo }: { source: string; destination: string; asset?: string; amount: number | string; memo?: string | Buffer }): Promise<TransactionResponse> {
+export async function createPaymentTransaction({ source, destination, asset, amount, memo, memoType = 'text' }: { source: string; destination: string; asset?: string; amount: number | string; memo?: string; memoType?: MemoType }): Promise<TransactionResponse> {
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
@@ -125,14 +148,10 @@ export async function createPaymentTransaction({ source, destination, asset, amo
         sendAsset = Asset.native()
     }
 
-    // If a memo was supplied, add it to the transaction. Here, we have the
-    // option of a hash memo because this is common practice by anchor transfers
+    // If a memo was supplied, add it to the transaction. Anchors may ask for a
+    // text, id, or hash memo, so the anchor can match our payment to a transfer
     if (memo) {
-        if (typeof memo === 'string') {
-            transaction.addMemo(Memo.text(memo))
-        } else if (typeof memo === 'object') {
-            transaction.addMemo(Memo.hash(memo.toString('hex')))
-        }
+        transaction.addMemo(buildMemo(memo, memoType))
     }
 
     // Add a single `payment` operation
@@ -148,7 +167,7 @@ export async function createPaymentTransaction({ source, destination, asset, amo
     // be "built"
     let builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
-        transaction: builtTransaction.toXDR(),
+        transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
     }
 }
@@ -194,7 +213,7 @@ export async function createChangeTrustTransaction({ source, asset, limit }: { s
         .build()
 
     return {
-        transaction: transaction.toXDR(),
+        transaction: transaction.toXdr(),
         network_passphrase: networkPassphrase,
     }
 }
@@ -266,7 +285,7 @@ export async function createPathPaymentStrictSendTransaction({
     // be "built"
     let builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
-        transaction: builtTransaction.toXDR(),
+        transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
     }
 }
@@ -339,7 +358,7 @@ export async function createPathPaymentStrictReceiveTransaction({
     // be "built"
     let builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
-        transaction: builtTransaction.toXDR(),
+        transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
     }
 }
@@ -383,7 +402,7 @@ export async function createContractTransferTransaction({ source, destination, a
     const simulatedTx = await server.prepareTransaction(builtTransaction)
 
     return {
-        transaction: simulatedTx.toXDR(),
+        transaction: simulatedTx.toXdr(),
         network_passphrase: networkPassphrase,
     }
 }
