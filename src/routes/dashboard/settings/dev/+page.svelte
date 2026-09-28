@@ -16,7 +16,7 @@ start fresh.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
 
     // We import some of our `$lib` functions
     import {
@@ -63,12 +63,12 @@ start fresh.
 <dl>
     <dt><strong>Public Key</strong></dt>
     <dd>
-        <TruncatedKey keyText={$walletStore.publicKey} />
+        <TruncatedKey keyText={wallet.publicKey} />
     </dd>
-    {#if $walletStore.devInfo}
+    {#if wallet.devInfo}
         <dt><strong>Secret Key</strong></dt>
         <dd>
-            <TruncatedKey keyText={$walletStore.devInfo.secretKey} />
+            <TruncatedKey keyText={wallet.devInfo.secretKey} />
         </dd>
     {/if}
 </dl>
@@ -81,7 +81,7 @@ start fresh.
             <input
                 id="numContacts"
                 name="numContacts"
-                class="input join-item input-bordered"
+                class="input-bordered input join-item"
                 type="number"
                 placeholder="Number of contacts to add"
                 bind:value={addContactsOpts.numContacts}
@@ -91,7 +91,7 @@ start fresh.
     <input
         id="fundContacts"
         name="fundContacts"
-        class="btn btn-outline join-item"
+        class="btn join-item btn-outline"
         type="checkbox"
         aria-label="Fund New Contacts"
         bind:checked={addContactsOpts.fundContacts}
@@ -99,14 +99,14 @@ start fresh.
     <input
         id="addContactTrustlines"
         name="addContactTrustlines"
-        class="btn btn-outline join-item"
+        class="btn join-item btn-outline"
         type="checkbox"
         aria-label="Add Trustlines"
         bind:checked={addContactsOpts.addTrustlines}
         disabled={!addContactsOpts.fundContacts}
     />
     <button
-        class="btn btn-primary btn-accent join-item"
+        class="btn join-item btn-accent btn-primary"
         onclick={() => addContacts(addContactsOpts)}>Add Contacts</button
     >
 </div>
@@ -117,7 +117,7 @@ start fresh.
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
-<button class="btn btn-success" onclick={() => mergeFriendbotAccount($walletStore.publicKey)}
+<button class="btn btn-success" onclick={() => mergeFriendbotAccount(wallet.publicKey)}
     >I need a friend!</button
 >
 

@@ -19,7 +19,7 @@ that already exist on their account.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
     import { invalidateAll } from '$app/navigation'
 
     // We import some of our `$lib` functions
@@ -52,8 +52,8 @@ that already exist on their account.
      * @param {string} pincode Pincode that was confirmed by the modal window
      */
     const onConfirm = async (pincode) => {
-        // Use the walletStore to sign the transaction
-        let signedTransaction = await walletStore.sign({
+        // Use the wallet to sign the transaction
+        let signedTransaction = await wallet.sign({
             transactionXDR: changeTrustXDR,
             network: changeTrustNetwork,
             pincode: pincode,
@@ -109,7 +109,7 @@ that already exist on their account.
 <h2>Add Trusted Assets</h2>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
 
-<select class="select select-bordered my-2 w-full" bind:value={addAsset}>
+<select class="select-bordered select my-2 w-full" bind:value={addAsset}>
     <option disabled selected value="">Select Asset</option>
     <option disabled
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
@@ -138,19 +138,19 @@ that already exist on their account.
     <div class="join my-2 w-full flex-wrap">
         <input
             type="text"
-            class="input join-item input-bordered grow"
+            class="input-bordered input join-item grow"
             placeholder="Asset Code"
             bind:value={customAssetCode}
         />
         <input
             type="text"
-            class="input join-item input-bordered grow"
+            class="input-bordered input join-item grow"
             placeholder="Asset Issuer"
             bind:value={customAssetIssuer}
         />
     </div>
 {/if}
-<button class="btn btn-primary btn-block my-2" onclick={() => previewChangeTrustTransaction()}
+<button class="btn my-2 btn-block btn-primary" onclick={() => previewChangeTrustTransaction()}
     >Add Asset</button
 >
 

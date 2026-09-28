@@ -8,18 +8,17 @@
 
 import type { LayoutLoad } from './$types'
 
-import { get } from 'svelte/store'
 import { goto } from '$app/navigation'
 
 import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
-import { walletStore } from '$lib/stores/walletStore'
+import { wallet } from '$lib/state/Wallet.svelte'
 
 export const load: LayoutLoad = async () => {
     // We check that a wallet's `publicKey` has been stored in the browser, and
     // if it isn't there, we redirect to `/signup`. Since we define this
     // behavior in the top-most dashboard `+layout.js` file, it will have the
     // same affect on any nested pages visited.
-    const { publicKey } = get(walletStore)
+    const { publicKey } = wallet
     if (!publicKey) {
         goto('/signup')
     }

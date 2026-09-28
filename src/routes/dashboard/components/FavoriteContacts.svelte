@@ -11,11 +11,11 @@ contact entry. This is displayed to the user on the `/dashboard` page.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { contacts } from '$lib/stores/contactsStore'
+    import { contacts } from '$lib/state/Contacts.svelte'
 
     // The `favoriteContacts` variable will be _reactive_ and update any time
     // a contact is either marked or unmarked as a favorite
-    let favoriteContacts = $derived($contacts?.filter((contact) => contact.favorite))
+    let favoriteContacts = $derived(contacts.list.filter((contact) => contact.favorite))
 </script>
 
 <h3>Favorite Contacts</h3>
@@ -34,7 +34,7 @@ contact entry. This is displayed to the user on the `/dashboard` page.
                     <th>
                         <input
                             type="checkbox"
-                            class="checkbox-accent checkbox checkbox-sm"
+                            class="checkbox checkbox-sm checkbox-accent"
                             checked={contact.favorite}
                             onclick={() => contacts.favorite(contact.id)}
                         />

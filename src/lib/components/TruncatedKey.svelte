@@ -13,7 +13,7 @@ copy/paste the value of `keyText`.
     import { CopyIcon } from 'svelte-feather-icons'
 
     // We import any stores we will need to read and/or write
-    import { contacts } from '$lib/stores/contactsStore'
+    import { contacts } from '$lib/state/Contacts.svelte'
 
     // Since we have contact names mapped to addresses, it would be nice to
     // display the contact names, when possible. This `lookupName` prop allows

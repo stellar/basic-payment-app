@@ -15,8 +15,8 @@ For more details, check out the DaisyUI documentation on Drawer layouts:
 
 <script>
     // We import any Svelte components we will need
+    import Alert from '$lib/components/Alert.svelte'
     import SidebarMenu from './SidebarMenu.svelte'
-    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
     /**
      * @typedef {Object} Props
      * @property {import('svelte').Snippet} [children]
@@ -30,7 +30,7 @@ For more details, check out the DaisyUI documentation on Drawer layouts:
     <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col">
         <main class="prose max-w-full p-6">
-            <ErrorAlert />
+            <Alert />
             {@render children?.()}
         </main>
     </div>

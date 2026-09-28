@@ -17,17 +17,16 @@ features have been implemented:
 - An optional memo field is available for text-only memos.
 -->
 
-<script>
+<script lang="ts">
     // `export let data` allows us to pull in any parent load data for use here.
 
     // We import any Svelte components we will need
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
-    import InfoAlert from '$lib/components/InfoAlert.svelte'
 
     // We import any stores we will need to read and/or write
-    import { infoMessage } from '$lib/stores/alertsStore'
-    import { contacts } from '$lib/stores/contactsStore'
-    import { walletStore } from '$lib/stores/walletStore'
+    import { alert } from '$lib/state/Alert.svelte'
+    import { contacts } from '$lib/state/Contacts.svelte'
+    import { wallet } from '$lib/state/Wallet.svelte'
 
     // We import some of our `$lib` functions
     import {
@@ -47,14 +46,10 @@ features have been implemented:
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
-    /**
-     * @typedef {Object} Props
-     * @property {import('./$types').PageData} data
-     */
-
-    /** @type {Props} */
-    let { data } = $props()
     const { open } = getContext('simple-modal')
+
+    import type { PageProps } from './$types'
+    let { data }: PageProps = $props()
 
     // Define some component variables that will be used throughout the page
     let destination = $state('')
@@ -65,8 +60,7 @@ features have been implemented:
     let receiveAsset = $state('')
     let receiveAmount = $state('')
     let memo = $state('')
-    /** @type {boolean|null} */
-    let createAccount = $state(null)
+    let createAccount: boolean | null = $state(null)
     let pathPayment = $state(false)
     /** @type {import('@stellar/stellar-sdk').Horizon.ServerApi.PaymentPathRecord[]} */
     let availablePaths = $state([])
@@ -80,7 +74,7 @@ features have been implemented:
      * @function checkDestination
      * @param {string} publicKey Public Stellar address to check on the network
      */
-    let checkDestination = async (publicKey) => {
+    let checkDestination = async (publicKey: string) => {
         // Only do this if the `publicKey` is not "other". This check lets us
         // use the same function for both the select dropdown, and the
         // `otherPublicKey` input element.
@@ -89,6 +83,8 @@ features have been implemented:
                 // If the account returns successfully, ensure we're not using a
                 // `createAccount` operation
                 await fetchAccount(publicKey)
+                // Clear the "Account Not Funded" notice from a previous check
+                if (createAccount) alert.clear()
                 createAccount = false
             } catch (err) {
                 // Otherwise, inform the user about what will take place
@@ -96,9 +92,12 @@ features have been implemented:
                 if (err.status === 404) {
                     createAccount = true
                     sendAsset = 'native'
-                    infoMessage.set(
-                        'Account Not Funded: You are sending a payment to an account that does not yet exist on the Stellar ledger. Your payment will take the form of a <code>creatAccount</code> operation, and the amount you send must be at least 1 XLM.',
-                    )
+                    alert.setAlert({
+                        type: 'info',
+                        title: 'Account Not Funded',
+                        message:
+                            'You are sending a payment to an account that does not yet exist on the Stellar ledger. Your payment will take the form of a createAccount operation, and the amount you send must be at least 1 XLM.',
+                    })
                 }
             }
         }
@@ -165,8 +164,8 @@ features have been implemented:
      * @function onConfirm
      * @param {string} pincode Pincode that was confirmed by the modal window */
     const onConfirm = async (pincode) => {
-        // Use the walletStore to sign the transaction
-        let signedTransaction = await walletStore.sign({
+        // Use the wallet to sign the transaction
+        let signedTransaction = await wallet.sign({
             transactionXDR: paymentXDR,
             network: paymentNetwork,
             pincode: pincode,
@@ -257,10 +256,10 @@ features have been implemented:
         onchange={() => checkDestination(destination)}
         id="destination"
         name="destination"
-        class="select select-bordered"
+        class="select-bordered select"
     >
         <option value="" disabled selected>Select Recipient</option>
-        {#each $contacts as contact (contact.id)}
+        {#each contacts.list as contact (contact.id)}
             <option value={contact.address}>{contact.name}</option>
         {/each}
         <option value="other">Other...</option>
@@ -281,17 +280,11 @@ features have been implemented:
             name="otherPublicKey"
             type="text"
             placeholder="G..."
-            class="input input-bordered"
+            class="input-bordered input"
         />
     </div>
 {/if}
 <!-- /OtherDestination -->
-
-<!-- InfoAlert -->
-{#if createAccount}
-    <InfoAlert />
-{/if}
-<!-- /InfoAlert -->
 
 {#if createAccount !== null && !createAccount}
     <div class="form-control my-1">
@@ -321,13 +314,13 @@ features have been implemented:
                                 name="sendAmount"
                                 placeholder="0.01"
                                 type="text"
-                                class="input join-item input-bordered w-full"
+                                class="input-bordered input join-item w-full"
                                 disabled={strictReceive}
                             />
                         </div>
                     </div>
                     <select
-                        class="join-item select select-bordered"
+                        class="select-bordered select join-item"
                         bind:value={sendAsset}
                         onchange={selectPath}
                     >
@@ -354,7 +347,7 @@ features have been implemented:
                 </div>
             </div>
         </div>
-        <div class="divider divider-horizontal mx-5 w-1/6">
+        <div class="divider mx-5 divider-horizontal w-1/6">
             Strict {strictReceive ? 'Receive' : 'Send'}
             <input bind:checked={strictReceive} type="checkbox" class="toggle" />
         </div>
@@ -376,7 +369,7 @@ features have been implemented:
                                 name="receiveAmount"
                                 type="text"
                                 placeholder="0.01"
-                                class="input join-item input-bordered w-full"
+                                class="input-bordered input join-item w-full"
                                 disabled={!strictReceive}
                             />
                         </div>
@@ -384,7 +377,7 @@ features have been implemented:
                     <select
                         bind:value={receiveAsset}
                         onchange={selectPath}
-                        class="join-item select select-bordered"
+                        class="select-bordered select join-item"
                     >
                         <option value="" disabled>Select asset</option>
                         {#if !strictReceive && availablePaths}
@@ -429,7 +422,7 @@ features have been implemented:
                     <input
                         id="amount"
                         name="amount"
-                        class="input join-item input-bordered w-full"
+                        class="input-bordered input join-item w-full"
                         type="text"
                         placeholder="0.01"
                         bind:value={sendAmount}
@@ -439,7 +432,7 @@ features have been implemented:
             <select
                 id="asset"
                 name="asset"
-                class="join-item select select-bordered"
+                class="select-bordered select join-item"
                 bind:value={sendAsset}
                 disabled={createAccount}
             >
@@ -468,7 +461,7 @@ features have been implemented:
         id="memo"
         name="memo"
         type="text"
-        class="input input-bordered"
+        class="input-bordered input"
         placeholder="Maximum 28 characters"
         maxlength="28"
         bind:value={memo}

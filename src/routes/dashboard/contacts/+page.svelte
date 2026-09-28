@@ -15,11 +15,11 @@ the main `/dashboard` page.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { contacts } from '$lib/stores/contactsStore'
+    import { contacts } from '$lib/state/Contacts.svelte'
 
     // We declare a _reactive_ component variable that will hold information for
     // a user-created contact entry, which can be added to the contacts store.
-    let newContact = $derived({
+    let newContact = $state({
         name: '',
         address: '',
         favorite: false,
@@ -53,7 +53,7 @@ the main `/dashboard` page.
                     id="favorite"
                     name="favorite"
                     type="checkbox"
-                    class="checkbox-accent checkbox checkbox-sm"
+                    class="checkbox checkbox-sm checkbox-accent"
                 />
             </th>
             <td>
@@ -66,7 +66,7 @@ the main `/dashboard` page.
                     name="name"
                     type="text"
                     placeholder="Name"
-                    class="input input-sm input-bordered w-full"
+                    class="input-bordered input w-full input-sm"
                 />
             </td>
             <td>
@@ -79,7 +79,7 @@ the main `/dashboard` page.
                     name="address"
                     type="text"
                     placeholder="Address"
-                    class="input input-sm input-bordered w-full"
+                    class="input-bordered input w-full input-sm"
                 />
             </td>
             <td class="text-center">
@@ -88,13 +88,13 @@ the main `/dashboard` page.
                     id="addContactButton"
                     name="addContactButton"
                     type="submit"
-                    class="btn btn-square btn-success btn-sm"
+                    class="btn btn-square btn-sm btn-success"
                 >
                     <UserPlusIcon size="16" />
                 </button>
             </td>
         </tr>
-        {#each $contacts as contact (contact.id)}
+        {#each contacts.list as contact (contact.id)}
             <tr>
                 <th class="text-center">
                     <input
@@ -103,7 +103,7 @@ the main `/dashboard` page.
                         name={`favoriteCheckbox${contact.id}`}
                         type="checkbox"
                         checked={contact.favorite}
-                        class="checkbox-accent checkbox checkbox-sm"
+                        class="checkbox checkbox-sm checkbox-accent"
                     />
                 </th>
                 <td>

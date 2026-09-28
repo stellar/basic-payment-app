@@ -1,5 +1,4 @@
-import { get } from 'svelte/store'
-import { contacts } from '$lib/stores/contactsStore'
+import { contacts } from '$lib/state/Contacts.svelte'
 import { Asset, Keypair, Operation } from '@stellar/stellar-sdk'
 import { fundWithFriendbot, startTransaction, submit } from '$lib/stellar/horizonQueries'
 import { fetchAssets, type RankedAsset } from '$lib/utils/stellarExpert'
@@ -11,17 +10,15 @@ import { fetchAssets, type RankedAsset } from '$lib/utils/stellarExpert'
  * lumens to an account, and nuking the whole account, etc.
  */
 
-/** @typedef {import('$lib/utils/stellarExpert').RankedAsset} RankedAsset */
-
 /**
  * A filtered user object requested and retrieved from dummyJSON
  * @see {@link https://dummyjson.com}
  */
 interface DummyJsonUser {
     /** First name of the user */
-    firstName: string;
+    firstName: string
     /** ID number of this user */
-    id: number;
+    id: number
 }
 
 /**
@@ -33,12 +30,20 @@ interface DummyJsonUser {
  * @param {boolean} opts.fundContacts Whether or not the contact accounts should be funded by Friendbot
  * @param {boolean} opts.addTrustlines Whether or not the contact accounts should have trustlines created for some non-native assets
  */
-export async function addContacts({ numContacts, fundContacts, addTrustlines }: { numContacts: number; fundContacts: boolean; addTrustlines: boolean }) {
+export async function addContacts({
+    numContacts,
+    fundContacts,
+    addTrustlines,
+}: {
+    numContacts: number
+    fundContacts: boolean
+    addTrustlines: boolean
+}) {
     // Fetch some user names from dummyjson.com, just so we don't have to think
     // of any ourselves.
     let usersRes = await fetch(
         `https://dummyjson.com/users?limit=${numContacts}&skip=${
-            get(contacts).length
+            contacts.list.length
         }&select=firstName`,
     )
     let json = await usersRes.json()

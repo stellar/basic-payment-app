@@ -8,20 +8,18 @@
 
 // The `get` function allows us to read the value of a Svelte store from outside
 // a `*.svelte` file.
-import { get } from 'svelte/store'
 
 // The `goto` function from SvelteKit's navigation store allows us to redirect a
 // user from the client-side.
 import { goto } from '$app/navigation'
 
-// We import our `walletStore` to ensure the user has actually registered.
-import { walletStore } from '$lib/stores/walletStore'
+// We import our `wallet` state to ensure the user has actually registered.
+import { wallet } from '$lib/state/Wallet.svelte'
 
 import type { PageLoad } from './$types'
 export const load: PageLoad = () => {
-    const wallet = get(walletStore)
     // If neither a valid public key, nor a keyId pointing to an encrypted
-    // keypair, are present in the wallet store, we redirect the user to the
+    // keypair, are present in the wallet state, we redirect the user to the
     // signup page.
     if (!wallet.publicKey || !wallet.keyId) {
         goto('/signup')

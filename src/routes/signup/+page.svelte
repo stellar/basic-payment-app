@@ -24,9 +24,9 @@ circumstance.
 
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
+    import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
     const { open } = getContext('simple-modal')
@@ -45,7 +45,7 @@ circumstance.
      */
     const onConfirm = async () => {
         // Register the encrypted keypair in the user's browser
-        await walletStore.register({
+        await wallet.register({
             publicKey: publicKey,
             secretKey: secretKey,
             pincode: pincode,
@@ -53,7 +53,7 @@ circumstance.
         // Fund the account with a request to Friendbot
         await fundWithFriendbot(publicKey)
         // If the registration was successful, redirect to the dashboard
-        if ($walletStore.publicKey) {
+        if (wallet.publicKey) {
             goto('/dashboard')
         }
     }
@@ -92,13 +92,13 @@ circumstance.
                             <label for="publicKey" class="label">
                                 <span class="label-text">Public Key</span>
                             </label>
-                            <div class="input input-bordered flex">
+                            <div class="input-bordered input flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
                             <label for="publicKey" class="label">
                                 <button
                                     onclick={() => (keypair = Keypair.random())}
-                                    class="link-hover link label-text-alt"
+                                    class="label-text-alt link link-hover"
                                 >
                                     Generate new address?
                                 </button>
@@ -121,7 +121,7 @@ circumstance.
                                 <label for="secretKey" class="label">
                                     <span class="label-text">Secret Key</span>
                                 </label>
-                                <div class="input input-bordered flex">
+                                <div class="input-bordered input flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ circumstance.
                                 id="pincode"
                                 name="pincode"
                                 type="password"
-                                class="input input-bordered"
+                                class="input-bordered input"
                                 minlength="6"
                                 maxlength="6"
                                 required
@@ -145,11 +145,11 @@ circumstance.
                             <button type="submit" class="btn btn-primary">Signup</button>
                         </div>
                         <div class="form-control mt-2">
-                            <WalletKitProvider buttonText="Sign up with wallet" />
+                            <WalletKitComponent buttonText="Sign up with wallet" />
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
-                                <a class="link-hover link label-text-alt" href="/login">
+                                <a class="label-text-alt link link-hover" href="/login">
                                     Existing users, login here.
                                 </a>
                             </div>

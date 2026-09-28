@@ -8,8 +8,8 @@ transfers the user has initiated with an anchor.
 <script>
     // We import any stores we will need to read and/or write
     import { page } from '$app/state'
-    import { transfers } from '$lib/stores/transfersStore'
-    import { webAuthStore } from '$lib/stores/webAuthStore'
+    import { transfers } from '$lib/state/Transfers.svelte'
+    import { webAuth } from '$lib/state/WebAuth.svelte'
 
     // We import some of our `$lib` functions
     import { queryTransfers24 } from '$lib/stellar/sep24'
@@ -32,7 +32,7 @@ transfers the user has initiated with an anchor.
         new Promise((resolve) => {
             protocol === 'sep6'
                 ? queryTransfers6({
-                      authToken: $webAuthStore[homeDomain],
+                      authToken: webAuth.requireToken(homeDomain),
                       assetCode: assetCode,
                       publicKey: page.data.publicKey,
                       homeDomain: homeDomain,
@@ -44,7 +44,7 @@ transfers the user has initiated with an anchor.
                       ),
                   )
                 : queryTransfers24({
-                      authToken: $webAuthStore[homeDomain],
+                      authToken: webAuth.requireToken(homeDomain),
                       assetCode: assetCode,
                       homeDomain: homeDomain,
                   }).then(({ transactions }) =>
@@ -59,15 +59,11 @@ transfers the user has initiated with an anchor.
     const transfersPromise = async () => {
         /** @type {Promise<Object>[]}*/
         let transfersPromises = []
-        if ($transfers) {
-            for (let homeDomain in $transfers) {
-                if ($webAuthStore[homeDomain] && !webAuthStore.isTokenExpired(homeDomain)) {
-                    for (let protocol in $transfers[homeDomain]) {
-                        let uniqueAssets = [
-                            ...new Set(
-                                $transfers[homeDomain][protocol].map((item) => item.asset_code),
-                            ),
-                        ]
+        if (transfers.all) {
+            for (let homeDomain in transfers.all) {
+                if (webAuth.getToken(homeDomain) && !webAuth.isTokenExpired(homeDomain)) {
+                    for (const [protocol, entries] of Object.entries(transfers.all[homeDomain])) {
+                        let uniqueAssets = [...new Set(entries.map((item) => item.asset_code))]
                         uniqueAssets.forEach(async (assetcode) => {
                             transfersPromises.push(query(protocol, assetcode, homeDomain))
                         })
@@ -84,7 +80,7 @@ transfers the user has initiated with an anchor.
     }
 </script>
 
-{#if $transfers}
+{#if transfers.all}
     <h3>Transfer History</h3>
     {#await transfersPromise() then allTransfers}
         <table class="table-compact table">

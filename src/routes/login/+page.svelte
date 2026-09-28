@@ -18,21 +18,18 @@ for submission to the network.
     // load data from our `+page.js` file.
 
     // We import any Svelte components we will need
-    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import { walletStore } from '$lib/stores/walletStore'
-    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
-    /**
-     * @typedef {Object} Props
-     * @property {import('./$types').PageData} data
-     */
+    import { alert } from '$lib/state/Alert.svelte'
+    import { wallet } from '$lib/state/Wallet.svelte'
+    import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
+    import Alert from '$lib/components/Alert.svelte'
+    import type { PageProps } from './$types'
 
-    /** @type {Props} */
-    let { data } = $props()
+    let { data }: PageProps = $props()
+
     // Define some component variables that will be used throughout the page
     let pincode = $state('')
 
@@ -43,12 +40,17 @@ for submission to the network.
      */
     const login = async () => {
         try {
-            await walletStore.confirmPincode({ pincode: pincode })
+            await wallet.confirmPincode({ pincode: pincode })
             goto('/dashboard')
         } catch (err) {
             // Notify the user about the error that has taken place.
-            // @ts-ignore
-            errorMessage.set(err.body.message)
+            console.error('error logging in', err)
+            alert.setAlert({
+                // @ts-ignore
+                message: err.body.message,
+                type: 'error',
+                dismissible: true,
+            })
         }
     }
 </script>
@@ -65,14 +67,14 @@ for submission to the network.
         </div>
         <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
             <div class="card-body">
-                <ErrorAlert dismissible={false} />
+                <Alert />
                 <form onsubmit={preventDefault(login)}>
                     <div class="form-control">
                         <label class="label" for="publicKey">
                             <span class="label-text">Public Key</span>
                         </label>
-                        <div class="input input-bordered flex">
-                            <TruncatedKey keyText={data.publicKey} />
+                        <div class="input-bordered input flex">
+                            <TruncatedKey keyText={data.publicKey} lookupName={false} />
                         </div>
                     </div>
                     <div class="form-control">
@@ -83,7 +85,7 @@ for submission to the network.
                             id="pincode"
                             name="pincode"
                             type="password"
-                            class="input input-bordered"
+                            class="input-bordered input"
                             minlength="6"
                             maxlength="6"
                             required
@@ -95,7 +97,7 @@ for submission to the network.
                     </div>
 
                     <div class="form-control mt-2">
-                        <WalletKitProvider buttonText="Login with wallet" />
+                        <WalletKitComponent buttonText="Login with wallet" />
                     </div>
                 </form>
             </div>
