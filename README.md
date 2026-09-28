@@ -103,3 +103,9 @@ the SvelteKit components by reading the comments in the
 We also have implemented a few custom stores to keep track of contact names and
 addresses, user KYC information, a list of anchor transfers, etc. A good place
 to start exploring these stores is the `/src/lib/stores/contactsStore.js` file.
+
+---
+
+> **Note:** This repository is not in scope for the Stellar Development
+> Foundation bug bounty program. Vulnerabilities found in this repo are not
+> eligible for rewards.
