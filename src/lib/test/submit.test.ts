@@ -4,7 +4,7 @@ import { submit, server } from '../stellar/horizonQueries'
 describe('submit', () => {
     it('should submit the transaction successfully', async () => {
         const transaction = {
-            toXDR: () => 'transactionXDR',
+            toXdr: () => 'transactionXDR',
         }
 
         const submitTransactionMock = vi.spyOn(server, 'submitTransaction').mockResolvedValue({

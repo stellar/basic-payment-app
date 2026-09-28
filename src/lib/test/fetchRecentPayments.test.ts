@@ -9,17 +9,19 @@ const callMock = vi.fn().mockResolvedValue({
 })
 
 vi.mock('@stellar/stellar-sdk', () => {
-    const Server = vi.fn().mockImplementation(() => ({
-        payments: () => ({
-            forAccount: () => ({
-                limit: () => ({
-                    order: () => ({
-                        call: callMock,
+    const Server = vi.fn().mockImplementation(function () {
+        return {
+            payments: () => ({
+                forAccount: () => ({
+                    limit: () => ({
+                        order: () => ({
+                            call: callMock,
+                        }),
                     }),
                 }),
             }),
-        }),
-    }))
+        }
+    })
 
     return {
         Horizon: { Server },

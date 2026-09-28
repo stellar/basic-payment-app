@@ -1,27 +1,38 @@
 import tailwindcss from '@tailwindcss/vite'
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vitest/config'
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
 export default defineConfig({
     plugins: [tailwindcss(), sveltekit()],
-    optimizeDeps: {
-        esbuildOptions: {
-            define: { global: 'globalThis' },
-            plugins: [NodeGlobalsPolyfillPlugin({ buffer: true })],
-        },
-    },
-    ssr: {
-        noExternal: [
-            '@creit.tech/stellar-wallets-kit',
-            '@stellar/freighter-api',
-            '@lobstrco/signer-extension-api',
-        ],
-    },
     test: {
-        include: ['src/**/*.{test,spec}.{js,ts}'],
-        environment: 'jsdom',
-        globals: true,
-        setupFiles: './src/setupTest.js',
+        projects: [
+            {
+                extends: './vite.config.ts',
+                test: {
+                    name: 'unit',
+                    environment: 'node',
+                    include: ['src/**/*.{test,spec}.{js,ts}'],
+                    exclude: [
+                        'src/**/*.svelte.{test,spec}.{js,ts}',
+                        'src/**/*.integration.test.{js,ts}',
+                        'tests/**/*.integration.test.{js,ts}',
+                    ],
+                    setupFiles: ['src/setupTest.ts']
+                },
+            },
+
+            // {
+            //     extends: './vite.config.ts',
+            //     test: {
+            //         name: 'integration',
+            //         environment: 'node',
+            //         include: [
+            //             'src/**/*.integration.test.{js,ts}',
+            //             'tests/**/*.integration.test.{js,ts}',
+            //         ],
+            //         testTimeout: 30_000,
+            //     },
+            // }
+        ],
     },
 })

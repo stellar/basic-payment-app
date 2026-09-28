@@ -11,16 +11,20 @@ const loadAccountMock = vi.fn().mockResolvedValue({
 
 vi.mock('@stellar/stellar-sdk', () => {
     return {
-        TransactionBuilder: vi.fn().mockImplementation(() => ({
-            addOperation: addOperationMock,
-            addMemo: addMemoMock,
-            setTimeout: setTimeoutMock,
-            build: buildMock,
-        })),
+        TransactionBuilder: vi.fn().mockImplementation(function () {
+            return {
+                addOperation: addOperationMock,
+                addMemo: addMemoMock,
+                setTimeout: setTimeoutMock,
+                build: buildMock,
+            }
+        }),
         Horizon: {
-            Server: vi.fn().mockImplementation(() => ({
-                loadAccount: loadAccountMock,
-            })),
+            Server: vi.fn().mockImplementation(function () {
+                return {
+                    loadAccount: loadAccountMock,
+                }
+            }),
         },
         Networks: {
             TESTNET: 'Test SDF Network ; September 2015',

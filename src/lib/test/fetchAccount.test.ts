@@ -28,7 +28,9 @@ vi.mock('@stellar/stellar-sdk', () => {
     }
 
     const Horizon = {
-        Server: vi.fn(() => mockServerInstance),
+        Server: vi.fn(function () {
+            return mockServerInstance
+        }),
     }
 
     return {
@@ -53,13 +55,15 @@ describe('fetchAccount', () => {
 
         const { Horizon } = await import('@stellar/stellar-sdk')
         // @ts-ignore
-        Horizon.Server.mockImplementation(() => ({
-            accounts: () => ({
-                accountId: () => ({
-                    call: vi.fn().mockResolvedValue(mockServerResponse),
+        Horizon.Server.mockImplementation(function () {
+            return {
+                accounts: () => ({
+                    accountId: () => ({
+                        call: vi.fn().mockResolvedValue(mockServerResponse),
+                    }),
                 }),
-            }),
-        }))
+            }
+        })
 
         const accountInfo = await fetchAccount(publicKey)
         expect(accountInfo).toEqual(mockServerResponse)

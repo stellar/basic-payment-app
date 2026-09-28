@@ -1,3 +1,14 @@
-onlyBuiltDependencies:
-  - esbuild
-  - '@tailwindcss/oxide'
+allowBuilds:
+  esbuild: true
+  '@reown/appkit': false
+  '@stellar/stellar-sdk': false
+  blake-hash: false
+  bufferutil: false
+  msw: false
+  protobufjs: false
+  secp256k1: false
+  tiny-secp256k1: false
+  usb: false
+  utf-8-validate: false
+overrides:
+  '@stellar/stellar-sdk@^17': 17.0.1
