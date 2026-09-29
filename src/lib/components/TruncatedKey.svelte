@@ -19,8 +19,8 @@ copy/paste the value of `keyText`.
     // display the contact names, when possible. This `lookupName` prop allows
     // us to determine if the TruncatedKey component should bother with that.
     interface Props {
-        keyText: string;
-        lookupName: boolean;
+        keyText: string
+        lookupName: boolean
     }
     let { keyText = '', lookupName = true }: Props = $props()
 

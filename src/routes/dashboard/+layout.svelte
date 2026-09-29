@@ -6,7 +6,7 @@
      * @see {@link https://kit.svelte.dev/docs/routing#layout-layout-svelte}
      */
 
-    import type { LayoutProps } from './$types';
+    import type { LayoutProps } from './$types'
 
     // `$props()` in a Svelte layout will load data returned by the
     // file's accompanying `+layout.js` file. The data here will then be

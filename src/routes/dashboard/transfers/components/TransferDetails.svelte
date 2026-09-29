@@ -7,9 +7,9 @@ Here's some documentation for this component. It will show up on hover.
     import TransferField from './TransferField.svelte'
 
     interface Props {
-        formData?: Record<string, string>;
-        transferData?: Record<string, string|boolean>;
-        sep6Info?: Record<string, Object>;
+        formData?: Record<string, string>
+        transferData?: Record<string, string | boolean>
+        sep6Info?: Record<string, Object>
     }
 
     let { formData = $bindable({}), transferData = $bindable({}), sep6Info = {} }: Props = $props()
@@ -21,7 +21,7 @@ Here's some documentation for this component. It will show up on hover.
         <span class="label-text">What kind of transfer would you like to make?</span>
     </label>
     <select
-        class="select select-bordered"
+        class="select-bordered select"
         id="endpoint-select"
         name="endpoint-select"
         bind:value={transferData.endpoint}
@@ -43,7 +43,7 @@ Here's some documentation for this component. It will show up on hover.
             <span class="label-text">Please choose an asset</span>
         </label>
         <select
-            class="select select-bordered"
+            class="select-bordered select"
             id="asset-select"
             name="asset-select"
             bind:value={formData.asset_code}
@@ -76,7 +76,7 @@ Here's some documentation for this component. It will show up on hover.
                 <select
                     name="transfer-type"
                     id="transfer-type"
-                    class="select select-bordered"
+                    class="select-bordered select"
                     bind:value={formData.type}
                 >
                     <option value="" disabled selected>Select one</option>
@@ -102,7 +102,7 @@ Here's some documentation for this component. It will show up on hover.
         </label>
         <input
             bind:value={formData.amount}
-            class="input input-bordered"
+            class="input-bordered input"
             type="text"
             name="amount"
             id="amount"

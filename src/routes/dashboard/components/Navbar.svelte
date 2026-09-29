@@ -28,7 +28,7 @@ More information about SEP-33 can be found here:
     </div>
     <div class="flex-none">
         <div class="dropdown dropdown-end">
-            <button tabindex="0" class="avatar btn btn-circle btn-ghost">
+            <button tabindex="0" class="btn avatar btn-circle btn-ghost">
                 <div class="w-10 rounded-full">
                     <img
                         src={`https://id.lobstr.co/${page.data.publicKey}.png`}

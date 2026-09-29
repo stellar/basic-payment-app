@@ -22,6 +22,6 @@ implemented this is for stylistic consistency of the UI.
     let { onClose = () => {} } = $props()
 </script>
 
-<button class="btn btn-square absolute right-6 top-3 z-10 bg-base-300" onclick={onClose}>
+<button class="btn absolute top-3 right-6 z-10 btn-square bg-base-300" onclick={onClose}>
     <XIcon />
 </button>

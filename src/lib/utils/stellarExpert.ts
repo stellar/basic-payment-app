@@ -7,29 +7,29 @@ const baseUrl = `https://api.stellar.expert/explorer/${network}`
  */
 export interface RankedAsset {
     /** Asset identifier */
-    asset: string;
+    asset: string
     /** Total traded amount (in stroops) */
-    traded_amount: number;
+    traded_amount: number
     /** Total payments amount (in stroops) */
-    payments_amount: number;
+    payments_amount: number
     /** Timestamp of the first recorder operation with asset */
-    created: number;
+    created: number
     /** Total issued asset supply */
-    supply: number;
+    supply: number
     /** Trustlines established to an asset */
-    trustlines: object;
+    trustlines: object
     /** Total number of trades */
-    trades: number;
+    trades: number
     /** Total number of payments */
-    payments: number;
+    payments: number
     /** Associated `home_domain` */
-    domain: string;
+    domain: string
     /** Asset information from stellar.toml file */
-    tomlInfo: object;
+    tomlInfo: object
     /** Composite asset rating */
-    rating: object;
+    rating: object
     /** Paging token */
-    paging_token: number;
+    paging_token: number
 }
 
 /**

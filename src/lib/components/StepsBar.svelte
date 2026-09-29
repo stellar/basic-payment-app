@@ -15,7 +15,7 @@ This component has been **heavily** influenced by this Svelte REPL:
 <script lang="ts">
     interface Props {
         steps?: string[]
-        currentActive?: number;
+        currentActive?: number
     }
     let { steps = [], currentActive = $bindable(1) }: Props = $props()
 

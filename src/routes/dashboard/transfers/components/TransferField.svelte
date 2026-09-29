@@ -1,12 +1,12 @@
 <script lang="ts">
     interface Props {
-        field?: string;
+        field?: string
         fieldInfo?: {
-            optional: boolean;
-            choices: string[];
-            description: string;
-        };
-        value?: string;
+            optional: boolean
+            choices: string[]
+            description: string
+        }
+        value?: string
     }
 
     let {
@@ -29,7 +29,7 @@
     </label>
     {#if 'choices' in fieldInfo}
         <select
-            class="select select-bordered"
+            class="select-bordered select"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
@@ -42,7 +42,7 @@
     {:else}
         <input
             type="text"
-            class="input input-bordered"
+            class="input-bordered input"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}

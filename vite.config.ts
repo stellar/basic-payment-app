@@ -17,7 +17,7 @@ export default defineConfig({
                         'src/**/*.integration.test.{js,ts}',
                         'tests/**/*.integration.test.{js,ts}',
                     ],
-                    setupFiles: ['src/setupTest.ts']
+                    setupFiles: ['src/setupTest.ts'],
                 },
             },
 
