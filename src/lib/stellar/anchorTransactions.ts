@@ -19,6 +19,10 @@ export interface AnchorTransaction {
     status: string
     /** A human-readable explanation of the transfer's status */
     message?: string
+    /** When the transfer was started (an ISO 8601 date string) */
+    started_at?: string
+    /** Hash of the Stellar transaction that moved the funds, once there is one */
+    stellar_transaction_id?: string
     /** A page where the user can learn more about their transfer */
     more_info_url?: string
     /** Amount received by the anchor */

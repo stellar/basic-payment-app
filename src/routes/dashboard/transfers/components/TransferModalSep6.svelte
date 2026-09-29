@@ -5,6 +5,7 @@
     import KycStatus from './KYCStatus.svelte'
     import Confirmation from './Confirmation.svelte'
     import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
+    import type { Sep6Info } from '$lib/stellar/sep6'
 
     let sep12Fields: string[] = $state([])
 
@@ -12,13 +13,13 @@
         title?: string
         body?: string
         homeDomain?: string
-        sep6Info?: Record<string, object>
+        sep6Info?: Sep6Info
         assetIssuer?: string
         transferData?: {
-            endpoint: string
-            customer_id: string
-            transfer_id: string
-            transfer_submitted: boolean
+            endpoint: 'deposit' | 'withdraw'
+            customer_id?: string
+            transfer_id?: string
+            transfer_submitted?: boolean
         }
         formData?: {
             asset_code: string
@@ -35,7 +36,7 @@
         title = 'Initiate SEP-6 Transfer',
         body = 'Please follow the steps to begin a transfer with your chosen anchor.',
         homeDomain = $bindable(''),
-        sep6Info = {},
+        sep6Info = { deposit: {}, withdraw: {} },
         assetIssuer = '',
         transferData = $bindable(),
         formData = $bindable(),
@@ -47,7 +48,7 @@
     let activeStep = $derived(steps[currentActive - 1])
 
     const handleStep = (stepIncrement: number) => {
-        stepsBar.handleStep(stepIncrement)
+        stepsBar?.handleStep(stepIncrement)
     }
 </script>
 

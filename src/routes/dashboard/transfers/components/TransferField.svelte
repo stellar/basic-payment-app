@@ -1,11 +1,9 @@
 <script lang="ts">
+    import type { Sep6Field } from '$lib/stellar/sep6'
+
     interface Props {
         field?: string
-        fieldInfo?: {
-            optional: boolean
-            choices: string[]
-            description: string
-        }
+        fieldInfo?: Sep6Field
         value?: string
     }
 

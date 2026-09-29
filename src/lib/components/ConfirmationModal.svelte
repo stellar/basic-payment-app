@@ -37,7 +37,8 @@ on the following occasions:
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
     import { getContext } from 'svelte'
-    const { close } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { close } = getContext<ModalContext>('simple-modal')
 
     // `onConfirm` is a dummy function that will be overridden from the
 

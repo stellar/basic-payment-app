@@ -47,9 +47,11 @@ features have been implemented:
 
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
-    const { open } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { open } = getContext<ModalContext>('simple-modal')
 
     import type { PageProps } from './$types'
+    import type { Horizon } from '@stellar/stellar-sdk'
     let { data }: PageProps = $props()
 
     // Define some component variables that will be used throughout the page
@@ -63,8 +65,7 @@ features have been implemented:
     let memo = $state('')
     let createAccount: boolean | null = $state(null)
     let pathPayment = $state(false)
-    /** @type {import('@stellar/stellar-sdk').Horizon.ServerApi.PaymentPathRecord[]} */
-    let availablePaths = $state([])
+    let availablePaths: Horizon.ServerApi.PaymentPathRecord[] = $state([])
     let strictReceive = $state(false)
     let paymentXDR = ''
     let paymentNetwork = ''
@@ -163,8 +164,8 @@ features have been implemented:
      * Takes an action after the pincode has been confirmed by the user.
      * @async
      * @function onConfirm
-     * @param {string} pincode Pincode that was confirmed by the modal window */
-    const onConfirm = async (pincode) => {
+     * @param pincode Pincode that was confirmed by the modal window (wallet users don't have one) */
+    const onConfirm = async (pincode?: string) => {
         // Use the wallet to sign the transaction
         let signedTransaction = await wallet.sign({
             transactionXDR: paymentXDR,

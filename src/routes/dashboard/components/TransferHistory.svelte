@@ -5,16 +5,20 @@ The `TransferHistory` component will display a listing of details concerning any
 transfers the user has initiated with an anchor.
 -->
 
-<script>
+<script lang="ts">
     import { resolve } from '$app/paths'
     // We import any stores we will need to read and/or write
     import { page } from '$app/state'
-    import { transfers } from '$lib/state/Transfers.svelte'
+    import { transfers, type TransferProtocol } from '$lib/state/Transfers.svelte'
     import { webAuth } from '$lib/state/WebAuth.svelte'
 
     // We import some of our `$lib` functions
     import { queryTransfers24 } from '$lib/stellar/sep24'
     import { queryTransfers6 } from '$lib/stellar/sep6'
+    import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
+
+    /** A transfer from an anchor's history, along with the asset and protocol it used */
+    type TransferRecord = AnchorTransaction & { asset_code: string; protocol: TransferProtocol }
 
     let expiredToken = $state(false)
     const protocolBadgeClasses = {
@@ -23,62 +27,53 @@ transfers the user has initiated with an anchor.
     }
 
     /**
-     * @typedef {Object} Sep6Transaction
-     * @property {string} id
-     * @property {('deposit'|'withdrawal')} kind
-     * @property {string} status
+     * Asks an anchor for the user's transfers of one asset, using one protocol.
+     * @param protocol Which protocol the transfers were made with
+     * @param assetCode Asset code of the transfers
+     * @param homeDomain Home domain of the anchor
      */
-
-    const query = (protocol, assetCode, homeDomain) =>
-        new Promise((resolve) => {
-            if (protocol === 'sep6') {
-                queryTransfers6({
-                    authToken: webAuth.requireToken(homeDomain),
-                    assetCode: assetCode,
-                    publicKey: page.data.publicKey,
-                    homeDomain: homeDomain,
-                }).then(({ transactions }) =>
-                    resolve(
-                        transactions.map((item) => {
-                            return { ...item, asset_code: assetCode, protocol: protocol }
-                        }),
-                    ),
-                )
-            } else {
-                queryTransfers24({
-                    authToken: webAuth.requireToken(homeDomain),
-                    assetCode: assetCode,
-                    homeDomain: homeDomain,
-                }).then(({ transactions }) =>
-                    resolve(
-                        transactions.map((item) => {
-                            return { ...item, asset_code: assetCode, protocol: protocol }
-                        }),
-                    ),
-                )
-            }
+    const query = async (
+        protocol: TransferProtocol,
+        assetCode: string,
+        homeDomain: string,
+    ): Promise<TransferRecord[]> => {
+        const { transactions } =
+            protocol === 'sep6'
+                ? await queryTransfers6({
+                      authToken: webAuth.requireToken(homeDomain),
+                      assetCode: assetCode,
+                      publicKey: page.data.publicKey,
+                      homeDomain: homeDomain,
+                  })
+                : await queryTransfers24({
+                      authToken: webAuth.requireToken(homeDomain),
+                      assetCode: assetCode,
+                      homeDomain: homeDomain,
+                  })
+        return transactions.map((item) => {
+            return { ...item, asset_code: assetCode, protocol: protocol }
         })
+    }
 
     const transfersPromise = async () => {
-        /** @type {Promise<Object>[]}*/
-        let transfersPromises = []
-        if (transfers.all) {
-            for (let homeDomain in transfers.all) {
-                if (webAuth.getToken(homeDomain) && !webAuth.isTokenExpired(homeDomain)) {
-                    for (const [protocol, entries] of Object.entries(transfers.all[homeDomain])) {
-                        let uniqueAssets = [...new Set(entries.map((item) => item.asset_code))]
-                        uniqueAssets.forEach(async (assetcode) => {
-                            transfersPromises.push(query(protocol, assetcode, homeDomain))
-                        })
+        let transfersPromises: Promise<TransferRecord[]>[] = []
+        for (let homeDomain in transfers.all) {
+            if (webAuth.getToken(homeDomain) && !webAuth.isTokenExpired(homeDomain)) {
+                for (const protocol of ['sep6', 'sep24'] as const) {
+                    const entries = transfers.all[homeDomain][protocol] ?? []
+                    const uniqueAssets = [...new Set(entries.map((item) => item.asset_code))]
+                    for (const assetCode of uniqueAssets) {
+                        transfersPromises.push(query(protocol, assetCode, homeDomain))
                     }
-                } else {
-                    expiredToken = true
                 }
+            } else {
+                expiredToken = true
             }
         }
         let allTransfers = await Promise.all(transfersPromises)
+        // Show the most recent transfers first
         return allTransfers.flat().sort((a, b) => {
-            return new Date(b.started_at) - new Date(a.started_at)
+            return new Date(b.started_at ?? 0).getTime() - new Date(a.started_at ?? 0).getTime()
         })
     }
 </script>
@@ -111,7 +106,7 @@ transfers the user has initiated with an anchor.
                             </div></td
                         >
                         <td>{transfer.status}</td>
-                        <td>{new Date(Date.parse(transfer.started_at)).toLocaleString()}</td>
+                        <td>{new Date(transfer.started_at ?? 0).toLocaleString()}</td>
                         <td>
                             {#if transfer.status === 'completed'}
                                 <a

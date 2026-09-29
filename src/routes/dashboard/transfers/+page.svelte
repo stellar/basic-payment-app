@@ -34,7 +34,7 @@ couple read-throughs to understand everything.
     // We import some of our `$lib` functions
     import { submit } from '$lib/stellar/horizonQueries'
     import { fetchStellarToml } from '$lib/stellar/sep1'
-    import { getSep6Info } from '$lib/stellar/sep6'
+    import { getSep6Info, type Sep6Info } from '$lib/stellar/sep6'
     import { getChallengeTransaction, submitChallengeTransaction } from '$lib/stellar/sep10'
     import { getSep24Info, getTransferStatus24, initiateTransfer24 } from '$lib/stellar/sep24'
     import { createPaymentTransaction } from '$lib/stellar/transactions'
@@ -44,7 +44,8 @@ couple read-throughs to understand everything.
 
     // The `open` and `close` Svelte context functions control the modal window
     import { getContext } from 'svelte'
-    const { open, close } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { open, close } = getContext<ModalContext>('simple-modal')
 
     // Define some component variables that will be used throughout the page
     let challengeXDR = ''
@@ -158,7 +159,7 @@ couple read-throughs to understand everything.
         homeDomain: string
         assetCode: string
         assetIssuer: string
-        sep6Info: object
+        sep6Info: Sep6Info
         endpoint: 'deposit' | 'withdraw'
     }) => {
         // Open the SEP-6 transfer modal, supplying the relevant props for our

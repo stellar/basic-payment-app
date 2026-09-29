@@ -19,7 +19,7 @@ balances.
 
     // We import the `EffectRecord` type from the stellar-sdk so we can
     // predictably display who was the recipient of an `account_merge` operation
-    /** @typedef {import('stellar-sdk').ServerApi.EffectRecord} EffectRecord */
+    /** @typedef {import('@stellar/stellar-sdk').Horizon.ServerApi.EffectRecord} EffectRecord */
 </script>
 
 <h3>Recent Payments</h3>

@@ -20,7 +20,7 @@ copy/paste the value of `keyText`.
     // us to determine if the TruncatedKey component should bother with that.
     interface Props {
         keyText: string
-        lookupName: boolean
+        lookupName?: boolean
     }
     let { keyText = '', lookupName = true }: Props = $props()
 

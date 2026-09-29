@@ -11,13 +11,46 @@ import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
  */
 
 /**
+ * A piece of information the anchor asks for about a transfer (e.g., which bank
+ * transfer method to use)
+ */
+export interface Sep6Field {
+    /** A human-readable description of the field */
+    description: string
+    /** Whether the field can be left out */
+    optional?: boolean
+    /** The values the field can take */
+    choices?: string[]
+}
+
+/** What an anchor supports for transfers of a single asset */
+export interface Sep6AssetInfo {
+    /** Whether transfers of this asset are available */
+    enabled: boolean
+    /** Whether the user needs to authenticate (with SEP-10) first */
+    authentication_required?: boolean
+    min_amount?: number
+    max_amount?: number
+    /** For deposits, the information the anchor asks for */
+    fields?: Record<string, Sep6Field>
+    /** For withdrawals, the kinds of withdrawal (e.g., `bank_account`), and what each one needs */
+    types?: Record<string, { fields?: Record<string, Sep6Field> }>
+}
+
+/** The anchor's SEP-6 `/info` response: which assets can be deposited and withdrawn */
+export interface Sep6Info {
+    deposit: Record<string, Sep6AssetInfo>
+    withdraw: Record<string, Sep6AssetInfo>
+}
+
+/**
  * Fetches and returns basic information about what the SEP-6 transfer server suppports.
  * @async
  * @function getSep6Info
  * @param {string} domain Domain to get the SEP-6 info for
- * @returns {Promise<Object>} SEP-6 info published by the domain
+ * @returns {Promise<Sep6Info>} SEP-6 info published by the domain
  */
-export async function getSep6Info(domain: string): Promise<object> {
+export async function getSep6Info(domain: string): Promise<Sep6Info> {
     const transferServer = await getTransferServerSep6(domain)
     const res = await fetch(`${transferServer}/info`)
     const json = await res.json()
@@ -143,7 +176,7 @@ export async function queryTransfers6({
     assetCode: string
     publicKey: string
     homeDomain: string
-}): Promise<object> {
+}): Promise<{ transactions: AnchorTransaction[] }> {
     const transferServer = await getTransferServerSep6(homeDomain)
 
     const res = await fetch(

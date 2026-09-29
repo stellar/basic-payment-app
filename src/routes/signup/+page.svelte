@@ -30,7 +30,8 @@ circumstance.
     import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
-    const { open } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { open } = getContext<ModalContext>('simple-modal')
 
     // Define some component variables that will be used throughout the page
     let keypair = $state(Keypair.random())

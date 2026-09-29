@@ -140,7 +140,7 @@ export async function queryTransfers24({
     authToken: string
     assetCode: string
     homeDomain: string
-}): Promise<object> {
+}): Promise<{ transactions: AnchorTransaction[] }> {
     const transferServerSep24 = await getTransferServerSep24(homeDomain)
 
     const res = await fetch(
