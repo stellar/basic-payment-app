@@ -92,7 +92,6 @@ export async function getSep12Fields({
     const res = await fetch(url, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
     })
@@ -173,7 +172,6 @@ export async function deleteSep12Customer({
     const res = await fetch(`${kycServer}/customer/${publicKey}`, {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
     })

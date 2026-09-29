@@ -21,6 +21,8 @@ transfers the user has initiated with an anchor.
     type TransferRecord = AnchorTransaction & { asset_code: string; protocol: TransferProtocol }
 
     let expiredToken = $state(false)
+    // Anchors we couldn't get transfers from (e.g., their server had an error)
+    let unavailableAnchors: string[] = $state([])
     const protocolBadgeClasses = {
         sep6: 'badge badge-secondary',
         sep24: 'badge badge-accent',
@@ -56,23 +58,37 @@ transfers the user has initiated with an anchor.
     }
 
     const transfersPromise = async () => {
-        let transfersPromises: Promise<TransferRecord[]>[] = []
+        let requests: { homeDomain: string; transfers: Promise<TransferRecord[]> }[] = []
         for (let homeDomain in transfers.all) {
             if (webAuth.getToken(homeDomain) && !webAuth.isTokenExpired(homeDomain)) {
                 for (const protocol of ['sep6', 'sep24'] as const) {
                     const entries = transfers.all[homeDomain][protocol] ?? []
                     const uniqueAssets = [...new Set(entries.map((item) => item.asset_code))]
                     for (const assetCode of uniqueAssets) {
-                        transfersPromises.push(query(protocol, assetCode, homeDomain))
+                        requests.push({
+                            homeDomain,
+                            transfers: query(protocol, assetCode, homeDomain),
+                        })
                     }
                 }
             } else {
                 expiredToken = true
             }
         }
-        let allTransfers = await Promise.all(transfersPromises)
+        // If one anchor has a problem, we still show the transfers from the others
+        const results = await Promise.allSettled(requests.map((request) => request.transfers))
+        let allTransfers: TransferRecord[] = []
+        results.forEach((result, i) => {
+            if (result.status === 'fulfilled') {
+                allTransfers.push(...result.value)
+            } else {
+                const { homeDomain } = requests[i]
+                console.error(`Could not get transfers from ${homeDomain}`, result.reason)
+                if (!unavailableAnchors.includes(homeDomain)) unavailableAnchors.push(homeDomain)
+            }
+        })
         // Show the most recent transfers first
-        return allTransfers.flat().sort((a, b) => {
+        return allTransfers.sort((a, b) => {
             return new Date(b.started_at ?? 0).getTime() - new Date(a.started_at ?? 0).getTime()
         })
     }
@@ -130,6 +146,12 @@ transfers the user has initiated with an anchor.
                 {/each}
             </tbody>
         </table>
+        {#if unavailableAnchors.length}
+            <p>
+                We couldn't load your transfers from {unavailableAnchors.join(', ')} right now. Please
+                try again later.
+            </p>
+        {/if}
         {#if expiredToken}
             <p>
                 It looks like there may be a problem with some of your anchor authentication. Head

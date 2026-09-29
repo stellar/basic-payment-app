@@ -150,7 +150,6 @@ export async function queryTransfers24({
         {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
         },

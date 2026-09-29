@@ -92,7 +92,6 @@ export async function initiateTransfer6({
         method: 'GET',
         mode: 'cors',
         headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
     })
@@ -137,7 +136,6 @@ export async function getTransferStatus6({
             method: 'GET',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
         },
@@ -187,7 +185,6 @@ export async function queryTransfers6({
         {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${authToken}`,
             },
         },
