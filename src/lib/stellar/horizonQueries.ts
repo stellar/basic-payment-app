@@ -69,12 +69,39 @@ export async function fetchAccountBalances(publicKey: string) {
 }
 
 /**
- * Fetches and returns recent `payment`, `createAccount` operations that had an effect on this account.
+ * One row in the "Recent Payments" table: how much of which asset moved, in
+ * which direction, and who was on the other side.
+ */
+export interface RecentPayment {
+    id: string
+    amount: string
+    asset: string
+    direction: 'Sent' | 'Received'
+    address: string
+}
+
+/**
+ * Fetches recent payments to or from this account, and turns each one into a
+ * `RecentPayment` row we can display.
+ *
+ * Horizon's `/payments` endpoint returns a few different kinds of records, and
+ * each one describes "who paid whom" a little differently, so we handle each
+ * type on its own:
+ *
+ * - `payment`, `path_payment_strict_receive`, and `path_payment_strict_send`
+ *   have `from`, `to`, `amount`, and the asset.
+ * - `create_account` has a `funder`, the new `account`, and a
+ *   `starting_balance` (always XLM).
+ * - `account_merge` has where the merged account went (`into`), but no amount.
+ *   We look that up in the operation's effects.
+ * - `invoke_host_function` is a smart contract call. When that call moves
+ *   assets (like an anchor paying out a deposit through an asset's Stellar
+ *   Asset Contract), Horizon lists each transfer in `asset_balance_changes`.
  * @async
  * @function fetchRecentPayments
- * @param {string} publicKey Public Stellar address to query recent payment operations to/from
- * @param {number} [limit] Number of operations to request from the server
- * @returns {Promise<PaymentOperationRecord[]>} Array containing details for each recent payment
+ * @param {string} publicKey Public Stellar address to query recent payments to/from
+ * @param {number} [limit] Number of payment records to request from the server
+ * @returns {Promise<RecentPayment[]>} Array containing details for each recent payment
  */
 export async function fetchRecentPayments(publicKey: string, limit = 10) {
     const { records } = await server
@@ -83,7 +110,61 @@ export async function fetchRecentPayments(publicKey: string, limit = 10) {
         .limit(limit)
         .order('desc')
         .call()
-    return records
+
+    const payments: RecentPayment[] = []
+    for (const record of records) {
+        if (
+            record.type === 'payment' ||
+            record.type === 'path_payment_strict_receive' ||
+            record.type === 'path_payment_strict_send'
+        ) {
+            const received = record.to === publicKey
+            payments.push({
+                id: record.id,
+                amount: record.amount,
+                asset: record.asset_type === 'native' ? 'XLM' : record.asset_code!,
+                direction: received ? 'Received' : 'Sent',
+                address: received ? record.from : record.to,
+            })
+        } else if (record.type === 'create_account') {
+            const received = record.account === publicKey
+            payments.push({
+                id: record.id,
+                amount: record.starting_balance,
+                asset: 'XLM',
+                direction: received ? 'Received' : 'Sent',
+                address: received ? record.funder : record.account,
+            })
+        } else if (record.type === 'account_merge') {
+            const received = record.into === publicKey
+            // The merged XLM shows up as an `account_credited` effect
+            const effects = await record.effects()
+            const credit = effects.records.find((effect) => effect.type === 'account_credited')
+            payments.push({
+                id: record.id,
+                amount: credit && 'amount' in credit ? credit.amount : '0',
+                asset: 'XLM',
+                direction: received ? 'Received' : 'Sent',
+                // The account being merged away is the operation's source
+                address: received ? record.source_account : record.into,
+            })
+        } else if (record.type === 'invoke_host_function') {
+            // A single contract call can move several assets, so each balance
+            // change that involves this account gets its own row
+            record.asset_balance_changes.forEach((change, index) => {
+                const received = change.to === publicKey
+                if (!received && change.from !== publicKey) return
+                payments.push({
+                    id: `${record.id}-${index}`,
+                    amount: change.amount,
+                    asset: change.asset_type === 'native' ? 'XLM' : change.asset_code!,
+                    direction: received ? 'Received' : 'Sent',
+                    address: received ? change.from : change.to,
+                })
+            })
+        }
+    }
+    return payments
 }
 
 /**
