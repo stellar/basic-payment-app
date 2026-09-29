@@ -20,10 +20,8 @@ initiated.
 </p>
 <p><small>(Changes are automatically saved.)</small></p>
 {#each Object.keys(kyc.fields) as key (key)}
-    <div class="form-control my-1">
-        <label for={`kyc-field-${key}`} class="label">
-            <span class="label-text uppercase">{key.replaceAll('_', ' ')}</span>
-        </label>
+    <fieldset class="my-1 fieldset">
+        <label for={`kyc-field-${key}`} class="label uppercase">{key.replaceAll('_', ' ')}</label>
         <input
             name={`kyc-field-${key}`}
             id={`kyc-field-${key}`}
@@ -31,5 +29,5 @@ initiated.
             class="input"
             bind:value={kyc.fields[key]}
         />
-    </div>
+    </fieldset>
 {/each}

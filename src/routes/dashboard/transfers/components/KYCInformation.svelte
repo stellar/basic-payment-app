@@ -63,12 +63,10 @@
             </div>
             <div class="collapse-content">
                 {#each Object.entries(json.provided_fields ?? {}) as [field, details] (field)}
-                    <div class="form-control">
+                    <fieldset class="fieldset">
                         <label class="label" for={field}>
-                            <span class="label-text">{details.description}</span>
-                            {#if details.optional}
-                                <span class="label-text-alt">Optional</span>
-                            {/if}
+                            {details.description}
+                            {#if details.optional}(optional){/if}
                         </label>
                         {#if details.type === 'binary'}
                             <input type="file" class="file-input" disabled />
@@ -83,7 +81,7 @@
                                 disabled
                             />
                         {/if}
-                    </div>
+                    </fieldset>
                 {/each}
                 <button type="button" class="btn btn-error" onclick={deleteCustomer}
                     >Delete Customer Data</button
@@ -93,12 +91,10 @@
     {/if}
 
     {#each Object.entries(json.fields ?? {}) as [field, details] (field)}
-        <div class="form-control">
-            <label class="label" for="field">
-                <span class="label-text">{details.description}</span>
-                {#if details.optional}
-                    <span class="label-text-alt">Optional</span>
-                {/if}
+        <fieldset class="fieldset">
+            <label class="label" for={field}>
+                {details.description}
+                {#if details.optional}(optional){/if}
             </label>
             {#if details.type === 'binary'}
                 <input type="file" class="file-input my-1" />
@@ -112,7 +108,7 @@
                     required={!details.optional}
                 />
             {/if}
-        </div>
+        </fieldset>
     {/each}
 {:catch err}
     <p class="text-error">

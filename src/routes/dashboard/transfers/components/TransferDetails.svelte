@@ -21,10 +21,8 @@ Here's some documentation for this component. It will show up on hover.
 </script>
 
 <p>Let's begin by deciding what kind of transfer you want to make.</p>
-<div class="form-control my-1">
-    <label class="label" for="endpoint-select">
-        <span class="label-text">What kind of transfer would you like to make?</span>
-    </label>
+<fieldset class="my-1 fieldset">
+    <label class="label" for="endpoint-select">What kind of transfer would you like to make?</label>
     <select
         class="select"
         id="endpoint-select"
@@ -38,15 +36,11 @@ Here's some documentation for this component. It will show up on hover.
             {/if}
         {/each}
     </select>
-    <label class="label" for="endpoint-select">
-        <span class="label-text-alt">Only transfer types supported by this anchor are listed.</span>
-    </label>
-</div>
+    <p class="label">Only transfer types supported by this anchor are listed.</p>
+</fieldset>
 {#if transferData.endpoint}
-    <div class="form-control my-1">
-        <label class="label" for="asset-select">
-            <span class="label-text">Please choose an asset</span>
-        </label>
+    <fieldset class="my-1 fieldset">
+        <label class="label" for="asset-select">Please choose an asset</label>
         <select
             class="select"
             id="asset-select"
@@ -58,12 +52,8 @@ Here's some documentation for this component. It will show up on hover.
                 <option value={asset}>{asset}</option>
             {/each}
         </select>
-        <label class="label" for="asset-select">
-            <span class="label-text-alt"
-                >Only transferrable assets supported by this anchor are listed.</span
-            >
-        </label>
-    </div>
+        <p class="label">Only transferrable assets supported by this anchor are listed.</p>
+    </fieldset>
 {/if}
 {#if formData.asset_code}
     <h4>Transfer Fields</h4>
@@ -73,10 +63,8 @@ Here's some documentation for this component. It will show up on hover.
             <TransferField field={field} fieldInfo={fieldInfo} bind:value={formData[field]} />
         {/each}
     {:else if transferData.endpoint === 'withdraw'}
-        <div class="form-control w-full max-w-xs">
-            <label class="label" for="transfer-type">
-                <span class="label-text">Transfer Type</span>
-            </label>
+        <fieldset class="fieldset w-full max-w-xs">
+            <label class="label" for="transfer-type">Transfer Type</label>
             <select
                 name="transfer-type"
                 id="transfer-type"
@@ -88,17 +76,15 @@ Here's some documentation for this component. It will show up on hover.
                     <option>{transferType}</option>
                 {/each}
             </select>
-        </div>
+        </fieldset>
         {#if formData.type}
             {#each Object.entries(sep6Info.withdraw[formData.asset_code]?.types?.[formData.type]?.fields ?? {}) as [field, fieldInfo] (field)}
                 <TransferField field={field} fieldInfo={fieldInfo} bind:value={formData[field]} />
             {/each}
         {/if}
     {/if}
-    <div class="form-control my-1">
-        <label class="label" for="amount">
-            <span class="label-text">Amount</span>
-        </label>
+    <fieldset class="my-1 fieldset">
+        <label class="label" for="amount">Amount</label>
         <input
             bind:value={formData.amount}
             class="input"
@@ -107,5 +93,5 @@ Here's some documentation for this component. It will show up on hover.
             id="amount"
             required
         />
-    </div>
+    </fieldset>
 {/if}

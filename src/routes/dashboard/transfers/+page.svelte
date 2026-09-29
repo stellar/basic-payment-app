@@ -414,13 +414,7 @@ couple read-throughs to understand everything.
                     class="btn btn-primary"
                     onclick={() => auth(asset.home_domain)}>Authenticate with Anchor</button
                 >
-                <div class="form-control">
-                    <label class="label" for={`authButton${asset.asset_code}`}>
-                        <span class="label-text"
-                            >Please authenticate before attempting any transfers.</span
-                        >
-                    </label>
-                </div>
+                <p class="label">Please authenticate before attempting any transfers.</p>
             {:else}
                 <div class="flex w-full flex-col lg:flex-row">
                     {#if 'TRANSFER_SERVER' in stellarToml}

@@ -70,18 +70,14 @@ for submission to the network.
             <div class="card-body">
                 <Alert />
                 <form onsubmit={preventDefault(login)}>
-                    <div class="form-control">
-                        <label class="label" for="publicKey">
-                            <span class="label-text">Public Key</span>
-                        </label>
+                    <fieldset class="fieldset">
+                        <p class="label">Public Key</p>
                         <div class="input flex">
                             <TruncatedKey keyText={data.publicKey} lookupName={false} />
                         </div>
-                    </div>
-                    <div class="form-control">
-                        <label for="pincode" class="label">
-                            <span class="label-text">Pincode</span>
-                        </label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <label for="pincode" class="label">Pincode</label>
                         <input
                             id="pincode"
                             name="pincode"
@@ -92,12 +88,12 @@ for submission to the network.
                             required
                             bind:value={pincode}
                         />
-                    </div>
-                    <div class="form-control mt-6">
+                    </fieldset>
+                    <div class="mt-6">
                         <button class="btn btn-primary">Login</button>
                     </div>
 
-                    <div class="form-control mt-2">
+                    <div class="mt-2">
                         <WalletKitComponent buttonText="Login with wallet" />
                     </div>
                 </form>

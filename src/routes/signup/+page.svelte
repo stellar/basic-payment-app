@@ -90,25 +90,23 @@ circumstance.
             <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
                 <div class="card-body">
                     <form onsubmit={preventDefault(signup)}>
-                        <div class="form-control my-1">
-                            <label for="publicKey" class="label">
-                                <span class="label-text">Public Key</span>
-                            </label>
+                        <fieldset class="my-1 fieldset">
+                            <p class="label">Public Key</p>
                             <div class="input flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
-                            <label for="publicKey" class="label">
+                            <p class="label">
                                 <button
+                                    type="button"
                                     onclick={() => (keypair = Keypair.random())}
-                                    class="label-text-alt link link-hover"
+                                    class="link link-hover"
                                 >
                                     Generate new address?
                                 </button>
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="label cursor-pointer pb-0">
-                                <span class="label-text">Show secret key?</span>
+                            </p>
+                        </fieldset>
+                        <fieldset class="fieldset">
+                            <label class="label">
                                 <input
                                     id="showSecret"
                                     name="showSecret"
@@ -116,22 +114,19 @@ circumstance.
                                     class="toggle toggle-accent"
                                     bind:checked={showSecret}
                                 />
+                                Show secret key?
                             </label>
-                        </div>
+                        </fieldset>
                         {#if showSecret}
-                            <div class="form-control mb-1">
-                                <label for="secretKey" class="label">
-                                    <span class="label-text">Secret Key</span>
-                                </label>
+                            <fieldset class="mb-1 fieldset">
+                                <p class="label">Secret Key</p>
                                 <div class="input flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
-                            </div>
+                            </fieldset>
                         {/if}
-                        <div class="form-control my-1">
-                            <label for="pincode" class="label">
-                                <span class="label-text">Pincode</span>
-                            </label>
+                        <fieldset class="my-1 fieldset">
+                            <label for="pincode" class="label">Pincode</label>
                             <input
                                 id="pincode"
                                 name="pincode"
@@ -142,20 +137,18 @@ circumstance.
                                 required
                                 bind:value={pincode}
                             />
-                        </div>
-                        <div class="form-control mt-6">
+                        </fieldset>
+                        <div class="mt-6">
                             <button type="submit" class="btn btn-primary">Signup</button>
                         </div>
-                        <div class="form-control mt-2">
+                        <div class="mt-2">
                             <WalletKitComponent buttonText="Sign up with wallet" />
                         </div>
-                        <div class="form-control my-1">
-                            <div class="label">
-                                <a class="label-text-alt link link-hover" href={resolve('/login')}>
-                                    Existing users, login here.
-                                </a>
-                            </div>
-                        </div>
+                        <p class="my-1 label">
+                            <a class="link link-hover" href={resolve('/login')}>
+                                Existing users, login here.
+                            </a>
+                        </p>
                     </form>
                 </div>
             </div>

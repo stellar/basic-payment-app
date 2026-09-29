@@ -57,9 +57,7 @@ the main `/dashboard` page.
                 />
             </th>
             <td>
-                <label for="name">
-                    <span class="label-text hidden">Name</span>
-                </label>
+                <label for="name" class="sr-only">Name</label>
                 <input
                     bind:value={newContact.name}
                     id="name"
@@ -70,9 +68,7 @@ the main `/dashboard` page.
                 />
             </td>
             <td>
-                <label for="address">
-                    <span class="label-text hidden">Address</span>
-                </label>
+                <label for="address" class="sr-only">Address</label>
                 <input
                     bind:value={newContact.address}
                     id="address"

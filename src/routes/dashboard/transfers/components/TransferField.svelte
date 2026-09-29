@@ -18,12 +18,10 @@
     }: Props = $props()
 </script>
 
-<div class="form-control my-1">
+<fieldset class="my-1 fieldset">
     <label class="label" for={`transfer-field-${field}`}>
-        <span class="label-text">{field}</span>
-        {#if fieldInfo.optional}
-            <span class="label-text-alt">Optional</span>
-        {/if}
+        {field}
+        {#if fieldInfo.optional}(optional){/if}
     </label>
     {#if 'choices' in fieldInfo}
         <select
@@ -47,8 +45,6 @@
         />
     {/if}
     {#if fieldInfo.description}
-        <label class="label" for={`transfer-field-${field}`}>
-            <span class="label-text-alt">{fieldInfo.description}</span>
-        </label>
+        <p class="label">{fieldInfo.description}</p>
     {/if}
-</div>
+</fieldset>

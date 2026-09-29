@@ -249,10 +249,8 @@ features have been implemented:
 <p>Please complete the fields below to send a payment on the Stellar network.</p>
 
 <!-- Destination -->
-<div class="form-control my-5">
-    <label for="destination" class="label">
-        <span class="label-text">Destination</span>
-    </label>
+<fieldset class="my-5 fieldset">
+    <label for="destination" class="label">Destination</label>
     <select
         bind:value={destination}
         onchange={() => checkDestination(destination)}
@@ -266,15 +264,13 @@ features have been implemented:
         {/each}
         <option value="other">Other...</option>
     </select>
-</div>
+</fieldset>
 <!-- /Destination -->
 
 <!-- OtherDestination -->
 {#if otherDestination}
-    <div class="form-control my-5">
-        <label for="otherPublicKey" class="label">
-            <span class="label-text">Destination Public Key</span>
-        </label>
+    <fieldset class="my-5 fieldset">
+        <label for="otherPublicKey" class="label">Destination Public Key</label>
         <input
             bind:value={otherPublicKey}
             onchange={() => checkDestination(otherPublicKey)}
@@ -284,17 +280,17 @@ features have been implemented:
             placeholder="G..."
             class="input"
         />
-    </div>
+    </fieldset>
 {/if}
 <!-- /OtherDestination -->
 
 {#if createAccount !== null && !createAccount}
-    <div class="form-control my-1">
-        <label class="label cursor-pointer">
-            <span class="label-text">Send and Receive different assets?</span>
+    <fieldset class="my-1 fieldset">
+        <label class="label">
             <input type="checkbox" class="toggle toggle-accent" bind:checked={pathPayment} />
+            Send and Receive different assets?
         </label>
-    </div>
+    </fieldset>
 {/if}
 
 <!-- PathPayment -->
@@ -302,25 +298,21 @@ features have been implemented:
     <div class="flex w-full">
         <div class="grid w-5/12">
             <h3>Sending</h3>
-            <div class="form-control w-full">
+            <fieldset class="fieldset w-full">
                 <label for="sendAmount" class="label">
-                    <span class="label-text">You send... {strictReceive ? '(estimated)' : ''}</span>
+                    You send... {strictReceive ? '(estimated)' : ''}
                 </label>
                 <div class="join">
-                    <div class="grow">
-                        <div>
-                            <input
-                                bind:value={sendAmount}
-                                onchange={findPaths}
-                                id="sendAmount"
-                                name="sendAmount"
-                                placeholder="0.01"
-                                type="text"
-                                class="input join-item w-full"
-                                disabled={strictReceive}
-                            />
-                        </div>
-                    </div>
+                    <input
+                        bind:value={sendAmount}
+                        onchange={findPaths}
+                        id="sendAmount"
+                        name="sendAmount"
+                        placeholder="0.01"
+                        type="text"
+                        class="input join-item grow"
+                        disabled={strictReceive}
+                    />
                     <select class="select join-item" bind:value={sendAsset} onchange={selectPath}>
                         <option value="" disabled>Select asset</option>
                         {#if strictReceive && availablePaths}
@@ -343,7 +335,7 @@ features have been implemented:
                         {/if}
                     </select>
                 </div>
-            </div>
+            </fieldset>
         </div>
         <div class="divider mx-5 divider-horizontal w-1/6">
             Strict {strictReceive ? 'Receive' : 'Send'}
@@ -351,27 +343,21 @@ features have been implemented:
         </div>
         <div class="grid w-5/12">
             <h3>Receiving</h3>
-            <div class="form-control w-full">
+            <fieldset class="fieldset w-full">
                 <label for="receiveAmount" class="label">
-                    <span class="label-text"
-                        >They receive... {!strictReceive ? '(estimated)' : ''}</span
-                    >
+                    They receive... {!strictReceive ? '(estimated)' : ''}
                 </label>
                 <div class="join">
-                    <div class="grow">
-                        <div>
-                            <input
-                                bind:value={receiveAmount}
-                                onchange={findPaths}
-                                id="receiveAmount"
-                                name="receiveAmount"
-                                type="text"
-                                placeholder="0.01"
-                                class="input join-item w-full"
-                                disabled={!strictReceive}
-                            />
-                        </div>
-                    </div>
+                    <input
+                        bind:value={receiveAmount}
+                        onchange={findPaths}
+                        id="receiveAmount"
+                        name="receiveAmount"
+                        type="text"
+                        placeholder="0.01"
+                        class="input join-item grow"
+                        disabled={!strictReceive}
+                    />
                     <select
                         bind:value={receiveAsset}
                         onchange={selectPath}
@@ -405,28 +391,22 @@ features have been implemented:
                         {/if}
                     </select>
                 </div>
-            </div>
+            </fieldset>
         </div>
     </div>
 {:else}
     <!-- Amount -->
-    <div class="form-control my-5 max-w-full">
-        <label for="amount" class="label">
-            <span class="label-text">Amount</span>
-        </label>
-        <div class="join">
-            <div class="grow">
-                <div>
-                    <input
-                        id="amount"
-                        name="amount"
-                        class="input join-item w-full"
-                        type="text"
-                        placeholder="0.01"
-                        bind:value={sendAmount}
-                    />
-                </div>
-            </div>
+    <fieldset class="my-5 fieldset max-w-full">
+        <label for="amount" class="label">Amount</label>
+        <div class="join max-w-md">
+            <input
+                id="amount"
+                name="amount"
+                class="input join-item grow"
+                type="text"
+                placeholder="0.01"
+                bind:value={sendAmount}
+            />
             <select
                 id="asset"
                 name="asset"
@@ -444,17 +424,14 @@ features have been implemented:
                 {/each}
             </select>
         </div>
-    </div>
+    </fieldset>
     <!-- /Amount -->
 {/if}
 <!-- /PathPayment -->
 
 <!-- Memo -->
-<div class="form-control my-5">
-    <label for="memo" class="label">
-        <span class="label-text">Text Memo</span>
-        <span class="label-text-alt">Optional</span>
-    </label>
+<fieldset class="my-5 fieldset">
+    <label for="memo" class="label">Text Memo (optional)</label>
     <input
         id="memo"
         name="memo"
@@ -464,11 +441,11 @@ features have been implemented:
         maxlength="28"
         bind:value={memo}
     />
-</div>
+</fieldset>
 <!-- /Memo -->
 
 <!-- Button -->
-<div class="form-control my-5">
+<div class="my-5">
     <button class="btn btn-primary" onclick={previewPaymentTransaction}>Preview Transaction</button>
 </div>
 <!-- /Button -->

@@ -230,12 +230,10 @@ on the following occasions:
     <!-- Display the pincode form: the input element, and the "confirm" and "reject" buttons -->
     {#if hasPincodeForm && !isWalletUser}
         <form>
-            <div class="form-control">
-                <label class="label" for="pincode">
-                    <span class="label-text">Confirm Pincode</span>
-                </label>
+            <fieldset class="fieldset">
+                <label class="label" for="pincode">Confirm Pincode</label>
                 <input type="password" id="pincode" class="input" bind:value={pincode} />
-            </div>
+            </fieldset>
             <div class="my-6 flex justify-end gap-3">
                 <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>
                     {#if isWaiting}<span class="loading loading-sm loading-spinner"></span>{/if}
