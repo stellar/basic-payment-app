@@ -27,6 +27,7 @@ couple read-throughs to understand everything.
 
     // We import any stores we will need to read and/or write
     import { invalidateAll } from '$app/navigation'
+    import { resolve } from '$app/paths'
     import { transfers } from '$lib/state/Transfers.svelte'
     import { wallet } from '$lib/state/Wallet.svelte'
     import { webAuth } from '$lib/state/WebAuth.svelte'
@@ -393,7 +394,8 @@ couple read-throughs to understand everything.
     most of the transfer initiation.
 </p>
 
-{#each data.homeDomainBalances as asset (`${asset.asset_code}:${asset.asset_issuer}`)}
+<!-- An asset can be listed under more than one anchor, so the key includes the home domain -->
+{#each data.homeDomainBalances as asset (`${asset.home_domain}:${asset.asset_code}:${asset.asset_issuer}`)}
     {#await fetchStellarToml(asset.home_domain) then stellarToml}
         {#if 'WEB_AUTH_ENDPOINT' in stellarToml || 'TRANSFER_SERVER' in stellarToml}
             {@const authStatus = getAuthStatus(asset.home_domain)}
@@ -401,9 +403,9 @@ couple read-throughs to understand everything.
                 {asset.asset_code} <small>({asset.home_domain})</small>
                 <div class={authStatusClasses[authStatus]}>{authStatus}</div>
             </h3>
-            {@const assetDescription = stellarToml.CURRENCIES?.filter(
-                ({ code }) => code === asset.asset_code,
-            )[0].desc}
+            {@const assetDescription = stellarToml.CURRENCIES?.find(
+                ({ code, issuer }) => code === asset.asset_code && issuer === asset.asset_issuer,
+            )?.desc}
             {#if assetDescription}
                 <p>{assetDescription}</p>
             {/if}
@@ -497,4 +499,12 @@ couple read-throughs to understand everything.
             {/if}
         {/if}
     {/await}
+{/each}
+
+{#each data.missingTrustlines as { homeDomain, assetCode, assetIssuer } (`${homeDomain}:${assetCode}:${assetIssuer}`)}
+    <h3 class="card-title">{assetCode} <small>({homeDomain})</small></h3>
+    <p>
+        This anchor also supports <strong>{assetCode}</strong>. To transfer it, first
+        <a href={resolve('/dashboard/assets')}>add a trustline</a> for it on the Assets page.
+    </p>
 {/each}

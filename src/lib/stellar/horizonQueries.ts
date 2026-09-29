@@ -143,8 +143,8 @@ interface HomeDomainObject {
     home_domain: string
 }
 
-type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject
-// /** @typedef {BalanceLineAsset & HomeDomainObject} HomeDomainBalanceLine */
+/** A trusted asset's balance, along with the home domain of the anchor that handles its transfers */
+export type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject
 
 /**
  * Fetches `home_domain` from asset issuer accounts on the Stellar network and returns an array of balances.
