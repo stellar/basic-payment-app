@@ -6,7 +6,7 @@ subset of a user's contact who have the `favorite` flag set as `true` on their
 contact entry. This is displayed to the user on the `/dashboard` page.
 -->
 
-<script>
+<script lang="ts">
     // We import any Svelte components we will need
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
@@ -19,12 +19,15 @@ contact entry. This is displayed to the user on the `/dashboard` page.
 </script>
 
 <h3>Favorite Contacts</h3>
-<table class="table w-full">
+<!-- The `prose` styles around this table line cells up by their text baseline, which
+     pushes text down next to the avatars, so we center the cells with `align-middle` -->
+<table class="table">
     <thead>
         <tr>
             <th>Favorite</th>
             <th>Name</th>
             <th>Address</th>
+            <th></th>
         </tr>
     </thead>
     {#if favoriteContacts}
@@ -39,13 +42,14 @@ contact entry. This is displayed to the user on the `/dashboard` page.
                             onclick={() => contacts.favorite(contact.id)}
                         />
                     </th>
-                    <td>
+                    <td class="align-middle">
                         <div class="flex items-center space-x-3">
                             <div class="avatar">
-                                <div class="not-prose w-10 rounded-full">
+                                <!-- <div class="not-prose w-10 rounded-full"> -->
+                                <div class="not-prose mask h-10 w-10 mask-circle">
                                     <img
                                         src="https://id.lobstr.co/{contact.address}.png"
-                                        alt="Avatar Tailwind CSS Component"
+                                        alt={`Stellar Identicon for ${contact.address}`}
                                     />
                                 </div>
                             </div>
@@ -54,11 +58,15 @@ contact entry. This is displayed to the user on the `/dashboard` page.
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td class="align-middle">
                         <TruncatedKey keyText={contact.address} lookupName={false} />
                     </td>
                     <th>
-                        <button class="btn btn-ghost btn-xs">Stellar.Expert</button>
+                        <a
+                            href={`https://stellar.expert/explorer/testnet/account/${contact.address}`}
+                            class="btn btn-ghost btn-xs"
+                            target="_blank">Stellar.Expert</a
+                        >
                     </th>
                 </tr>
             {/each}

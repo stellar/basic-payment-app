@@ -375,7 +375,7 @@ couple read-throughs to understand everything.
 <p>
     Below, are listed all your trusted assets with the required infrastructure to facilitate deposit
     and/or withdrawals. We have implemented both <a
-        href="https://www.stellar.org/protocol/sep-1"
+        href="https://www.stellar.org/protocol/sep-6"
         target="_blank"><code>SEP-6</code></a
     >
     and <a href="https://www.stellar.org/protocol/sep-24" target="_blank"><code>SEP-24</code></a> transfer

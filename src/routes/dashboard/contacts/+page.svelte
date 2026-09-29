@@ -36,6 +36,8 @@ the main `/dashboard` page.
 
 <h3>All contacts</h3>
 
+<!-- The `prose` styles around this table line cells up by their text baseline, which
+     pushes text down next to the avatars, so we center the cells with `align-middle` -->
 <table class="table w-full">
     <thead>
         <tr>
@@ -56,7 +58,7 @@ the main `/dashboard` page.
                     class="checkbox checkbox-sm checkbox-accent"
                 />
             </th>
-            <td>
+            <td class="align-middle">
                 <label for="name" class="sr-only">Name</label>
                 <input
                     bind:value={newContact.name}
@@ -67,7 +69,7 @@ the main `/dashboard` page.
                     class="input w-full input-sm"
                 />
             </td>
-            <td>
+            <td class="align-middle">
                 <label for="address" class="sr-only">Address</label>
                 <input
                     bind:value={newContact.address}
@@ -78,7 +80,7 @@ the main `/dashboard` page.
                     class="input w-full input-sm"
                 />
             </td>
-            <td class="text-center">
+            <td class="text-center align-middle">
                 <button
                     onclick={() => contacts.add(newContact)}
                     id="addContactButton"
@@ -102,7 +104,7 @@ the main `/dashboard` page.
                         class="checkbox checkbox-sm checkbox-accent"
                     />
                 </th>
-                <td>
+                <td class="align-middle">
                     <div class="flex items-center space-x-3">
                         <div class="avatar">
                             <div class="not-prose w-10 rounded-full">
@@ -117,10 +119,10 @@ the main `/dashboard` page.
                         </div>
                     </div>
                 </td>
-                <td>
+                <td class="align-middle">
                     <TruncatedKey keyText={contact.address} lookupName={false} />
                 </td>
-                <td class="text-center">
+                <td class="text-center align-middle">
                     <button
                         onclick={() => contacts.remove(contact.id)}
                         id={`removeContact${contact.id}`}
