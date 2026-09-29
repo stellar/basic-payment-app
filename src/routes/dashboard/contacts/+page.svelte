@@ -66,7 +66,7 @@ the main `/dashboard` page.
                     name="name"
                     type="text"
                     placeholder="Name"
-                    class="input-bordered input w-full input-sm"
+                    class="input w-full input-sm"
                 />
             </td>
             <td>
@@ -79,7 +79,7 @@ the main `/dashboard` page.
                     name="address"
                     type="text"
                     placeholder="Address"
-                    class="input-bordered input w-full input-sm"
+                    class="input w-full input-sm"
                 />
             </td>
             <td class="text-center">

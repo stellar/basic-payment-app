@@ -94,7 +94,7 @@ circumstance.
                             <label for="publicKey" class="label">
                                 <span class="label-text">Public Key</span>
                             </label>
-                            <div class="input-bordered input flex">
+                            <div class="input flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
                             <label for="publicKey" class="label">
@@ -123,7 +123,7 @@ circumstance.
                                 <label for="secretKey" class="label">
                                     <span class="label-text">Secret Key</span>
                                 </label>
-                                <div class="input-bordered input flex">
+                                <div class="input flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
                             </div>
@@ -136,7 +136,7 @@ circumstance.
                                 id="pincode"
                                 name="pincode"
                                 type="password"
-                                class="input-bordered input"
+                                class="input"
                                 minlength="6"
                                 maxlength="6"
                                 required

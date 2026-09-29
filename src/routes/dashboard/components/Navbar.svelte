@@ -38,7 +38,7 @@ More information about SEP-33 can be found here:
                 </div>
             </button>
             <ul
-                class="menu-compact menu dropdown-content z-10 mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
+                class="menu dropdown-content z-10 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
             >
                 <li>
                     <a href={resolve('/dashboard/settings/kyc')} class="justify-between">

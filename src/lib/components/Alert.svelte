@@ -1,15 +1,25 @@
 <script lang="ts">
     import { alert } from '$lib/state/Alert.svelte'
     let { title, message, type, dismissible } = $derived(alert)
+
+    // Tailwind only includes classes it finds written out in full, so we list
+    // each alert style here rather than building it like `alert-${type}`
+    const alertClasses = {
+        '': '',
+        info: 'alert-info',
+        success: 'alert-success',
+        warning: 'alert-warning',
+        error: 'alert-error',
+    }
 </script>
 
 {#if message}
-    <div role="alert" class={`alert alert-${type}`}>
+    <div role="alert" class={['alert', alertClasses[type]]}>
         {@render icon(type)}
         {#if title}
             <div>
                 <h3 class="font-bold">{title}</h3>
-                <div class="text-sx">{message}</div>
+                <div class="text-xs">{message}</div>
             </div>
         {:else}
             <span>{message}</span>

@@ -109,7 +109,7 @@ that already exist on their account.
 <h2>Add Trusted Assets</h2>
 <p>Add a trustline on your account, allowing you to hold the specified asset.</p>
 
-<select class="select-bordered select my-2 w-full" bind:value={addAsset}>
+<select class="select my-2 w-full" bind:value={addAsset}>
     <option disabled selected value="">Select Asset</option>
     <option disabled
         >These two assets are issued by the SDF testanchor, and are great for using in tests</option
@@ -138,13 +138,13 @@ that already exist on their account.
     <div class="join my-2 w-full flex-wrap">
         <input
             type="text"
-            class="input-bordered input join-item grow"
+            class="input join-item grow"
             placeholder="Asset Code"
             bind:value={customAssetCode}
         />
         <input
             type="text"
-            class="input-bordered input join-item grow"
+            class="input join-item grow"
             placeholder="Asset Issuer"
             bind:value={customAssetIssuer}
         />

@@ -81,7 +81,7 @@ start fresh.
             <input
                 id="numContacts"
                 name="numContacts"
-                class="input-bordered input join-item"
+                class="input join-item"
                 type="number"
                 placeholder="Number of contacts to add"
                 bind:value={addContactsOpts.numContacts}

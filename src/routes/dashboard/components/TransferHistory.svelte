@@ -81,7 +81,7 @@ transfers the user has initiated with an anchor.
 {#if transfers.all}
     <h3>Transfer History</h3>
     {#await transfersPromise() then allTransfers}
-        <table class="table-compact table">
+        <table class="table table-sm">
             <thead>
                 <tr>
                     <th>Amount</th>

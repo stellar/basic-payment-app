@@ -74,7 +74,7 @@ for submission to the network.
                         <label class="label" for="publicKey">
                             <span class="label-text">Public Key</span>
                         </label>
-                        <div class="input-bordered input flex">
+                        <div class="input flex">
                             <TruncatedKey keyText={data.publicKey} lookupName={false} />
                         </div>
                     </div>
@@ -86,7 +86,7 @@ for submission to the network.
                             id="pincode"
                             name="pincode"
                             type="password"
-                            class="input-bordered input"
+                            class="input"
                             minlength="6"
                             maxlength="6"
                             required

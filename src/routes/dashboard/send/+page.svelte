@@ -258,7 +258,7 @@ features have been implemented:
         onchange={() => checkDestination(destination)}
         id="destination"
         name="destination"
-        class="select-bordered select"
+        class="select"
     >
         <option value="" disabled selected>Select Recipient</option>
         {#each contacts.list as contact (contact.id)}
@@ -282,7 +282,7 @@ features have been implemented:
             name="otherPublicKey"
             type="text"
             placeholder="G..."
-            class="input-bordered input"
+            class="input"
         />
     </div>
 {/if}
@@ -316,16 +316,12 @@ features have been implemented:
                                 name="sendAmount"
                                 placeholder="0.01"
                                 type="text"
-                                class="input-bordered input join-item w-full"
+                                class="input join-item w-full"
                                 disabled={strictReceive}
                             />
                         </div>
                     </div>
-                    <select
-                        class="select-bordered select join-item"
-                        bind:value={sendAsset}
-                        onchange={selectPath}
-                    >
+                    <select class="select join-item" bind:value={sendAsset} onchange={selectPath}>
                         <option value="" disabled>Select asset</option>
                         {#if strictReceive && availablePaths}
                             {#each availablePaths as path (path)}
@@ -371,7 +367,7 @@ features have been implemented:
                                 name="receiveAmount"
                                 type="text"
                                 placeholder="0.01"
-                                class="input-bordered input join-item w-full"
+                                class="input join-item w-full"
                                 disabled={!strictReceive}
                             />
                         </div>
@@ -379,7 +375,7 @@ features have been implemented:
                     <select
                         bind:value={receiveAsset}
                         onchange={selectPath}
-                        class="select-bordered select join-item"
+                        class="select join-item"
                     >
                         <option value="" disabled>Select asset</option>
                         {#if !strictReceive && availablePaths}
@@ -424,7 +420,7 @@ features have been implemented:
                     <input
                         id="amount"
                         name="amount"
-                        class="input-bordered input join-item w-full"
+                        class="input join-item w-full"
                         type="text"
                         placeholder="0.01"
                         bind:value={sendAmount}
@@ -434,7 +430,7 @@ features have been implemented:
             <select
                 id="asset"
                 name="asset"
-                class="select-bordered select join-item"
+                class="select join-item"
                 bind:value={sendAsset}
                 disabled={createAccount}
             >
@@ -463,7 +459,7 @@ features have been implemented:
         id="memo"
         name="memo"
         type="text"
-        class="input-bordered input"
+        class="input"
         placeholder="Maximum 28 characters"
         maxlength="28"
         bind:value={memo}

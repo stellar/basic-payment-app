@@ -71,11 +71,11 @@
                             {/if}
                         </label>
                         {#if details.type === 'binary'}
-                            <input type="file" class="file-input-bordered file-input" disabled />
+                            <input type="file" class="file-input" disabled />
                         {:else}
                             <input
                                 bind:value={kyc.fields[field]}
-                                class="input-bordered input"
+                                class="input"
                                 type="text"
                                 name={field}
                                 id={field}
@@ -101,11 +101,11 @@
                 {/if}
             </label>
             {#if details.type === 'binary'}
-                <input type="file" class="file-input-bordered file-input my-1" />
+                <input type="file" class="file-input my-1" />
             {:else}
                 <input
                     bind:value={kyc.fields[field]}
-                    class="input-bordered input my-1"
+                    class="input my-1"
                     type="text"
                     name={field}
                     id={field}

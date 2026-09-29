@@ -234,12 +234,7 @@ on the following occasions:
                 <label class="label" for="pincode">
                     <span class="label-text">Confirm Pincode</span>
                 </label>
-                <input
-                    type="password"
-                    id="pincode"
-                    class="input-bordered input"
-                    bind:value={pincode}
-                />
+                <input type="password" id="pincode" class="input" bind:value={pincode} />
             </div>
             <div class="my-6 flex justify-end gap-3">
                 <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>

@@ -27,7 +27,7 @@
     </label>
     {#if 'choices' in fieldInfo}
         <select
-            class="select-bordered select"
+            class="select"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
@@ -40,7 +40,7 @@
     {:else}
         <input
             type="text"
-            class="input-bordered input"
+            class="input"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
