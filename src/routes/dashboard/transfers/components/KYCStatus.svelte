@@ -4,19 +4,18 @@
     import { putSep12Fields, getSep12Fields } from '$lib/stellar/sep12'
 
     interface Props {
-        sep12Fields?: any
+        sep12Fields?: string[]
         homeDomain?: string
-        transferData?: any
+        transferData?: { customer_id?: string }
     }
 
-    /** @type {Props} */
-    let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) } = $props()
+    let { sep12Fields = [], homeDomain = '', transferData = $bindable({}) }: Props = $props()
 
     const putCustomerFields = async () => {
-        let submittedCustomerFields = sep12Fields.reduce((fields, item) => {
-            if (kyc.fields[item]) fields[item] = kyc.fields[item]
-            return fields
-        }, {})
+        let submittedCustomerFields: Record<string, string> = {}
+        for (const field of sep12Fields) {
+            if (kyc.fields[field]) submittedCustomerFields[field] = kyc.fields[field]
+        }
         let json = await putSep12Fields({
             authToken: webAuth.requireToken(homeDomain),
             fields: submittedCustomerFields,

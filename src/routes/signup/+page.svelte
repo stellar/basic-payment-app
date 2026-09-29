@@ -13,6 +13,7 @@ circumstance.
 -->
 
 <script lang="ts">
+    import { resolve } from '$app/paths'
     import { preventDefault } from 'svelte/legacy'
 
     // We import things from external packages that will be needed
@@ -54,7 +55,7 @@ circumstance.
         await fundWithFriendbot(publicKey)
         // If the registration was successful, redirect to the dashboard
         if (wallet.publicKey) {
-            goto('/dashboard')
+            goto(resolve('/dashboard'))
         }
     }
 
@@ -149,7 +150,7 @@ circumstance.
                         </div>
                         <div class="form-control my-1">
                             <div class="label">
-                                <a class="label-text-alt link link-hover" href="/login">
+                                <a class="label-text-alt link link-hover" href={resolve('/login')}>
                                     Existing users, login here.
                                 </a>
                             </div>

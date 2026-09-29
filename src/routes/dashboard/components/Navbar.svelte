@@ -12,6 +12,7 @@ More information about SEP-33 can be found here:
 -->
 
 <script>
+    import { resolve } from '$app/paths'
     // We import things from external packages that will be needed
     import { MenuIcon } from 'svelte-feather-icons'
 
@@ -24,7 +25,7 @@ More information about SEP-33 can be found here:
         ><MenuIcon size="24" /></label
     >
     <div class="flex-1">
-        <a href="/dashboard" class="btn btn-ghost text-xl normal-case">BasicPay</a>
+        <a href={resolve('/dashboard')} class="btn btn-ghost text-xl normal-case">BasicPay</a>
     </div>
     <div class="flex-none">
         <div class="dropdown dropdown-end">
@@ -40,11 +41,11 @@ More information about SEP-33 can be found here:
                 class="menu-compact menu dropdown-content z-10 mt-3 w-52 rounded-box bg-base-100 p-2 shadow"
             >
                 <li>
-                    <a href="/dashboard/settings/kyc" class="justify-between">
+                    <a href={resolve('/dashboard/settings/kyc')} class="justify-between">
                         Manage KYC Information
                     </a>
                 </li>
-                <li><a href="/dashboard/settings/dev">Dev Helpers</a></li>
+                <li><a href={resolve('/dashboard/settings/dev')}>Dev Helpers</a></li>
             </ul>
         </div>
     </div>

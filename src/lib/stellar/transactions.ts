@@ -77,9 +77,9 @@ export async function createCreateAccountTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
-    let transaction = new TransactionBuilder(sourceAccount, {
+    const server = new Horizon.Server(horizonUrl)
+    const sourceAccount = await server.loadAccount(source)
+    const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
     })
@@ -99,7 +99,7 @@ export async function createCreateAccountTransaction({
 
     // Before the transaction can be signed, it requires timebounds, and it must
     // be "built"
-    let builtTransaction = transaction.setTimeout(standardTimebounds).build()
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
         transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
@@ -158,9 +158,9 @@ export async function createPaymentTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
-    let transaction = new TransactionBuilder(sourceAccount, {
+    const server = new Horizon.Server(horizonUrl)
+    const sourceAccount = await server.loadAccount(source)
+    const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
     })
@@ -189,7 +189,7 @@ export async function createPaymentTransaction({
 
     // Before the transaction can be signed, it requires timebounds, and it must
     // be "built"
-    let builtTransaction = transaction.setTimeout(standardTimebounds).build()
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
         transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
@@ -217,17 +217,17 @@ export async function createChangeTrustTransaction({
 }): Promise<TransactionResponse> {
     // We start by converting the asset provided in string format into a Stellar
     // Asset() object
-    let trustAsset = new Asset(asset.split(':')[0], asset.split(':')[1])
+    const trustAsset = new Asset(asset.split(':')[0], asset.split(':')[1])
 
     // Next, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
+    const server = new Horizon.Server(horizonUrl)
+    const sourceAccount = await server.loadAccount(source)
 
     // Chaning everything together from the `transaction` declaration means we
     // don't have to assign anything to `builtTransaction` later on. Either
     // method will have the same results.
-    let transaction = new TransactionBuilder(sourceAccount, {
+    const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
     })
@@ -283,27 +283,27 @@ export async function createPathPaymentStrictSendTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
-    let transaction = new TransactionBuilder(sourceAccount, {
+    const server = new Horizon.Server(horizonUrl)
+    const sourceAccount = await server.loadAccount(source)
+    const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
     })
 
     // We work out the assets to be sent by the source account and received by
     // the destination account
-    let sendAsset =
+    const sendAsset =
         sourceAsset === 'native'
             ? Asset.native()
             : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
-    let destAsset =
+    const destAsset =
         destinationAsset === 'native'
             ? Asset.native()
             : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
 
     /** @todo Figure out a good number to use for slippage. And why! And how to calculate it?? */
     // We will calculate an acceptable 2% slippage here for... reasons?
-    let destMin = ((98 * parseFloat(destinationAmount)) / 100).toFixed(7)
+    const destMin = ((98 * parseFloat(destinationAmount)) / 100).toFixed(7)
 
     // If a memo was supplied, add it to the transaction
     if (memo) {
@@ -323,7 +323,7 @@ export async function createPathPaymentStrictSendTransaction({
 
     // Before the transaction can be signed, it requires timebounds, and it must
     // be "built"
-    let builtTransaction = transaction.setTimeout(standardTimebounds).build()
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
         transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
@@ -364,27 +364,27 @@ export async function createPathPaymentStrictReceiveTransaction({
     // First, we setup our transaction by loading the source account from the
     // network, and initializing the TransactionBuilder. This is the first step
     // in constructing all Stellar transactions.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
-    let transaction = new TransactionBuilder(sourceAccount, {
+    const server = new Horizon.Server(horizonUrl)
+    const sourceAccount = await server.loadAccount(source)
+    const transaction = new TransactionBuilder(sourceAccount, {
         networkPassphrase: networkPassphrase,
         fee: maxFeePerOperation,
     })
 
     // We work out the assets to be sent by the source account and received by
     // the destination account
-    let sendAsset =
+    const sendAsset =
         sourceAsset === 'native'
             ? Asset.native()
             : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
-    let destAsset =
+    const destAsset =
         destinationAsset === 'native'
             ? Asset.native()
             : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
 
     /** @todo Figure out a good number to use for slippage. And why! And how to calculate it?? */
     // We will calculate an acceptable 2% slippage here for... reasons?
-    let sendMax = ((100 * parseFloat(sourceAmount)) / 98).toFixed(7)
+    const sendMax = ((100 * parseFloat(sourceAmount)) / 98).toFixed(7)
 
     // If a memo was supplied, add it to the transaction
     if (memo) {
@@ -404,7 +404,7 @@ export async function createPathPaymentStrictReceiveTransaction({
 
     // Before the transaction can be signed, it requires timebounds, and it must
     // be "built"
-    let builtTransaction = transaction.setTimeout(standardTimebounds).build()
+    const builtTransaction = transaction.setTimeout(standardTimebounds).build()
     return {
         transaction: builtTransaction.toXdr(),
         network_passphrase: networkPassphrase,
@@ -456,7 +456,6 @@ export async function createContractTransferTransaction({
     const builtTransaction = transaction.setTimeout(standardTimebounds).build()
 
     // Simulate the transaction
-    const rpcServer = new rpc.Server(rpcUrl)
     const simulatedTx = await server.prepareTransaction(builtTransaction)
 
     return {

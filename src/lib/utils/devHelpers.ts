@@ -41,13 +41,13 @@ export async function addContacts({
 }) {
     // Fetch some user names from dummyjson.com, just so we don't have to think
     // of any ourselves.
-    let usersRes = await fetch(
+    const usersRes = await fetch(
         `https://dummyjson.com/users?limit=${numContacts}&skip=${
             contacts.list.length
         }&select=firstName`,
     )
-    let json = await usersRes.json()
-    let users: DummyJsonUser[] = json.users
+    const json = await usersRes.json()
+    const users: DummyJsonUser[] = json.users
 
     // If the user has selected to add trustlines to the new contacts, query the
     // top-ranked assets from stellar.expert now, so we only have to do it once.
@@ -59,7 +59,7 @@ export async function addContacts({
     // For each of the contacts, generate a random keypair and add them to our
     // contacts store, making every other one a favorite.
     users.map(async (user) => {
-        let kp = Keypair.random()
+        const kp = Keypair.random()
         contacts.add({
             name: user.firstName,
             address: kp.publicKey(),
@@ -91,7 +91,7 @@ export async function addContacts({
  */
 async function addContactTrustlines(keypair: Keypair, assets: RankedAsset[]) {
     // Begin a transaction using the typical properties.
-    let transaction = await startTransaction(keypair.publicKey())
+    const transaction = await startTransaction(keypair.publicKey())
 
     // Add the `SRT` asset to get started with testanchor interoperability
     transaction.addOperation(
@@ -102,8 +102,8 @@ async function addContactTrustlines(keypair: Keypair, assets: RankedAsset[]) {
 
     // Add the top 3 assets, as ranked by Stellar.Expert (we skip index 0
     // because that will be XLM, and we can't add a trustline for that anyway)
-    for (let { asset } of assets.slice(1, 4)) {
-        let assetObj = new Asset(asset.split('-')[0], asset.split('-')[1])
+    for (const { asset } of assets.slice(1, 4)) {
+        const assetObj = new Asset(asset.split('-')[0], asset.split('-')[1])
         transaction.addOperation(
             Operation.changeTrust({
                 asset: assetObj,
@@ -112,7 +112,7 @@ async function addContactTrustlines(keypair: Keypair, assets: RankedAsset[]) {
     }
 
     // Build, sign, and submit the transaction to the network
-    let builtTransaction = transaction.setTimeout(30).build()
+    const builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(keypair)
     await submit(builtTransaction)
 }
@@ -133,17 +133,17 @@ export function emptyContacts() {
  * @param {string} publicKey Public Stellar address that should have the freshly funded account merged into it
  */
 export async function mergeFriendbotAccount(publicKey: string) {
-    let kp = Keypair.random()
+    const kp = Keypair.random()
     await fundWithFriendbot(kp.publicKey())
 
-    let transaction = await startTransaction(kp.publicKey())
+    const transaction = await startTransaction(kp.publicKey())
     transaction.addOperation(
         Operation.accountMerge({
             destination: publicKey,
         }),
     )
 
-    let builtTransaction = transaction.setTimeout(30).build()
+    const builtTransaction = transaction.setTimeout(30).build()
     builtTransaction.sign(kp)
     await submit(builtTransaction)
 }

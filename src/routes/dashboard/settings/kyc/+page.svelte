@@ -19,7 +19,7 @@ initiated.
     to the KYC server the next time a SEP-6 transfer is initiated.
 </p>
 <p><small>(Changes are automatically saved.)</small></p>
-{#each Object.keys(kyc.fields) as key}
+{#each Object.keys(kyc.fields) as key (key)}
     <div class="form-control my-1">
         <label for={`kyc-field-${key}`} class="label">
             <span class="label-text uppercase">{key.replaceAll('_', ' ')}</span>

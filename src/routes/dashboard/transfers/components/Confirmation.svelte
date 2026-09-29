@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onDestroy } from 'svelte'
+    import { isHttpError } from '@sveltejs/kit'
     import KycInformation from './KYCInformation.svelte'
     import { initiateTransfer6, getTransferStatus6 } from '$lib/stellar/sep6'
     import { getSep12Fields, putSep12Fields } from '$lib/stellar/sep12'
@@ -133,9 +134,8 @@
             }
         } catch (err) {
             kycStatus = 'needed'
-            // Errors from our SEP-12 helpers carry the anchor's message in `body`
-            const { body, message } = err as { body?: { message: string }; message: string }
-            kycError = body?.message ?? message
+            // Errors from our SEP-12 helpers carry the anchor's message
+            kycError = isHttpError(err) ? err.body.message : 'Unable to send your information'
             return
         }
 

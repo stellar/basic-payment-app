@@ -9,6 +9,7 @@
 import type { LayoutLoad } from './$types'
 
 import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 
 import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
 import { wallet } from '$lib/state/Wallet.svelte'
@@ -20,7 +21,7 @@ export const load: LayoutLoad = async () => {
     // same affect on any nested pages visited.
     const { publicKey } = wallet
     if (!publicKey) {
-        goto('/signup')
+        goto(resolve('/signup'))
     }
 
     // We return the `balances` and `payments` using await to avoid

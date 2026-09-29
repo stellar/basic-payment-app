@@ -17,7 +17,6 @@ couple read-throughs to understand everything.
 <script lang="ts">
     import type { PageProps } from './$types'
     let { data }: PageProps = $props()
-    $inspect('routes/dashboard/transfers/+page.svelte data', data)
 
     // We import things from external packages that will be needed
     import { LogInIcon, LogOutIcon } from 'svelte-feather-icons'
@@ -393,7 +392,7 @@ couple read-throughs to understand everything.
     most of the transfer initiation.
 </p>
 
-{#each data.homeDomainBalances as asset}
+{#each data.homeDomainBalances as asset (`${asset.asset_code}:${asset.asset_issuer}`)}
     {#await fetchStellarToml(asset.home_domain) then stellarToml}
         {#if 'WEB_AUTH_ENDPOINT' in stellarToml || 'TRANSFER_SERVER' in stellarToml}
             {@const authStatus = getAuthStatus(asset.home_domain)}
@@ -431,7 +430,7 @@ couple read-throughs to understand everything.
                                 <div class="card-body w-full">
                                     <h4>SEP-6 Transfers</h4>
                                     <div class="join w-full join-vertical lg:join-horizontal">
-                                        {#each Object.entries(sep6Info) as [endpoint, details]}
+                                        {#each Object.entries(sep6Info) as [endpoint, details] (endpoint)}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
@@ -441,7 +440,6 @@ couple read-throughs to understand everything.
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
                                                             assetIssuer: asset.asset_issuer,
-                                                            // @ts-ignore
                                                             endpoint: endpoint,
                                                             sep6Info: sep6Info,
                                                         })}
@@ -472,7 +470,7 @@ couple read-throughs to understand everything.
                                 <div class="card-body w-full">
                                     <h4>SEP-24 Transfers</h4>
                                     <div class="join w-full join-vertical lg:join-horizontal">
-                                        {#each Object.entries(sep24Info) as [endpoint, details]}
+                                        {#each Object.entries(sep24Info) as [endpoint, details] (endpoint)}
                                             {#if (endpoint === 'deposit' || endpoint === 'withdraw') && asset.asset_code in details}
                                                 <button
                                                     class={transferButtonClasses[endpoint]}
@@ -482,7 +480,6 @@ couple read-throughs to understand everything.
                                                             homeDomain: asset.home_domain,
                                                             assetCode: asset.asset_code,
                                                             assetIssuer: asset.asset_issuer,
-                                                            // @ts-ignore
                                                             endpoint: endpoint,
                                                         })}
                                                 >

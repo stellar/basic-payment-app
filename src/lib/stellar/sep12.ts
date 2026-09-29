@@ -80,7 +80,7 @@ export async function getSep12Fields({
     transactionId?: string
     type?: string
 }): Promise<Sep12Customer> {
-    let kycServer = await getKycServer(homeDomain)
+    const kycServer = await getKycServer(homeDomain)
 
     // Some information depends on the transfer (e.g., more may be needed for
     // larger amounts), so we can ask about a specific transfer
@@ -89,14 +89,14 @@ export async function getSep12Fields({
         url += `?${new URLSearchParams({ transaction_id: transactionId, type: type })}`
     }
 
-    let res = await fetch(url, {
+    const res = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
     })
-    let json = await readResponse<Sep12Customer>(res)
+    const json = await readResponse<Sep12Customer>(res)
     console.log('getSep12Fields json', json)
 
     return json
@@ -132,9 +132,9 @@ export async function putSep12Fields({
     if (transactionId && type) {
         fields = { ...fields, transaction_id: transactionId, type: type }
     }
-    let kycServer = await getKycServer(homeDomain)
+    const kycServer = await getKycServer(homeDomain)
 
-    let res = await fetch(`${kycServer}/customer`, {
+    const res = await fetch(`${kycServer}/customer`, {
         method: 'PUT',
         mode: 'cors',
         headers: {
@@ -143,7 +143,7 @@ export async function putSep12Fields({
         },
         body: JSON.stringify(fields),
     })
-    let json = await readResponse<{ id: string }>(res)
+    const json = await readResponse<{ id: string }>(res)
     console.log('putSep12Fields json', json)
 
     return json
@@ -168,9 +168,9 @@ export async function deleteSep12Customer({
     publicKey: string
     homeDomain: string
 }): Promise<void> {
-    let kycServer = await getKycServer(homeDomain)
+    const kycServer = await getKycServer(homeDomain)
 
-    let res = await fetch(`${kycServer}/customer/${publicKey}`, {
+    const res = await fetch(`${kycServer}/customer/${publicKey}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ for each asset they hold a trustline to.
 
 <h3>Assets Overview</h3>
 <div class="stats w-full stats-vertical bg-primary text-primary-content shadow lg:stats-horizontal">
-    {#each page.data.balances as balance}
+    {#each page.data.balances as balance (balance)}
         <div class="stat">
             <div class="stat-title">{balance.asset_code ?? 'XLM'} Balance</div>
             <div class="stat-value">

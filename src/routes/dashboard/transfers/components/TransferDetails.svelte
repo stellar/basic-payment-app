@@ -9,7 +9,7 @@ Here's some documentation for this component. It will show up on hover.
     interface Props {
         formData?: Record<string, string>
         transferData?: Record<string, string | boolean>
-        sep6Info?: Record<string, Object>
+        sep6Info?: Record<string, object>
     }
 
     let { formData = $bindable({}), transferData = $bindable({}), sep6Info = {} }: Props = $props()
@@ -27,7 +27,7 @@ Here's some documentation for this component. It will show up on hover.
         bind:value={transferData.endpoint}
     >
         <option value="" disabled selected>Select one</option>
-        {#each Object.keys(sep6Info) as endpoint}
+        {#each Object.keys(sep6Info) as endpoint (endpoint)}
             {#if endpoint === 'deposit' || endpoint === 'withdraw'}
                 <option value={endpoint}>{endpoint}</option>
             {/if}
@@ -49,7 +49,7 @@ Here's some documentation for this component. It will show up on hover.
             bind:value={formData.asset_code}
         >
             <option value="" disabled selected>Select one</option>
-            {#each Object.keys(sep6Info[transferData.endpoint]) as asset}
+            {#each Object.keys(sep6Info[transferData.endpoint]) as asset (asset)}
                 <option value={asset}>{asset}</option>
             {/each}
         </select>
@@ -63,9 +63,9 @@ Here's some documentation for this component. It will show up on hover.
 {#if formData.asset_code}
     <h4>Transfer Fields</h4>
     <p>The anchor has requested the following information about your transfer</p>
-    {#each Object.entries(sep6Info) as [endpoint, details]}
+    {#each Object.entries(sep6Info) as [endpoint, details] (endpoint)}
         {#if transferData.endpoint === 'deposit' && endpoint === 'deposit'}
-            {#each Object.entries(details[formData.asset_code].fields) as [field, fieldInfo]}
+            {#each Object.entries(details[formData.asset_code].fields) as [field, fieldInfo] (field)}
                 <TransferField field={field} fieldInfo={fieldInfo} bind:value={formData[field]} />
             {/each}
         {:else if transferData.endpoint === 'withdraw' && endpoint === 'withdraw'}
@@ -80,13 +80,13 @@ Here's some documentation for this component. It will show up on hover.
                     bind:value={formData.type}
                 >
                     <option value="" disabled selected>Select one</option>
-                    {#each Object.keys(details[formData.asset_code].types) as transferType}
+                    {#each Object.keys(details[formData.asset_code].types) as transferType (transferType)}
                         <option>{transferType}</option>
                     {/each}
                 </select>
             </div>
             {#if formData.type}
-                {#each Object.entries(details[formData.asset_code].types[formData.type].fields) as [field, fieldInfo]}
+                {#each Object.entries(details[formData.asset_code].types[formData.type].fields) as [field, fieldInfo] (field)}
                     <TransferField
                         field={field}
                         fieldInfo={fieldInfo}

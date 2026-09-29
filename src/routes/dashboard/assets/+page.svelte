@@ -124,7 +124,7 @@ that already exist on their account.
         <option disabled
             >The following assets have been ranked by Stellar.Expert to be high-quality</option
         >
-        {#each assets as { asset }}
+        {#each assets as { asset } (asset)}
             {#if asset !== 'XLM'}
                 {@const assetString = `${asset.split('-')[0]}:${asset.split('-')[1]}`}
                 <option value={assetString}>{assetString}</option>
@@ -168,7 +168,7 @@ that already exist on their account.
             </tr>
         </thead>
         <tbody>
-            {#each balances as balance}
+            {#each balances as balance (balance)}
                 <tr>
                     <th>
                         {#if 'asset_code' in balance}

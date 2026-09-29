@@ -12,6 +12,7 @@
 // The `goto` function from SvelteKit's navigation store allows us to redirect a
 // user from the client-side.
 import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 
 // We import our `wallet` state to ensure the user has actually registered.
 import { wallet } from '$lib/state/Wallet.svelte'
@@ -22,7 +23,7 @@ export const load: PageLoad = () => {
     // keypair, are present in the wallet state, we redirect the user to the
     // signup page.
     if (!wallet.publicKey || !wallet.keyId) {
-        goto('/signup')
+        goto(resolve('/signup'))
     }
 
     // Return to the `+page.svelte` file

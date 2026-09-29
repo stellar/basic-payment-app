@@ -3,20 +3,6 @@ import { findStrictReceivePaths, server } from '../stellar/horizonQueries'
 
 vi.restoreAllMocks()
 
-vi.mock('@sveltejs/kit', () => {
-    return {
-        // @ts-ignore
-        error: (status, { message }) => {
-            const err = new Error(message)
-            // @ts-ignore
-            err.status = status
-            // @ts-ignore
-            err.body = { message }
-            return err
-        },
-    }
-})
-
 vi.mock('@stellar/stellar-sdk', async () => {
     const actual = await vi.importActual('@stellar/stellar-sdk')
 
@@ -64,6 +50,9 @@ describe('findStrictReceivePaths', () => {
                 destinationAsset: 'native',
                 destinationAmount: 10,
             }),
-        ).rejects.toThrow('no strict receive paths available')
+        ).rejects.toMatchObject({
+            status: 400,
+            body: { message: 'no strict receive paths available' },
+        })
     })
 })

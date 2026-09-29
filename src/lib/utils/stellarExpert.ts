@@ -39,7 +39,7 @@ export interface RankedAsset {
  * @returns {Promise<RankedAsset[]>} Array of objects containing details for each asset
  */
 export async function fetchAssets(): Promise<RankedAsset[]> {
-    let res = await fetch(
+    const res = await fetch(
         `${baseUrl}/asset?${new URLSearchParams({
             // these are all the defaults, but you could customize them if needed
             search: '',
@@ -49,8 +49,8 @@ export async function fetchAssets(): Promise<RankedAsset[]> {
             cursor: '0',
         })}`,
     )
-    let json = await res.json()
+    const json = await res.json()
 
-    let records = json._embedded.records
+    const records = json._embedded.records
     return records
 }

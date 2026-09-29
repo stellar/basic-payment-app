@@ -20,10 +20,10 @@ import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
  * @throws Will throw an error if the server response is not `ok`.
  */
 export async function getSep24Info(domain: string): Promise<object> {
-    let transferServerSep24 = await getTransferServerSep24(domain)
+    const transferServerSep24 = await getTransferServerSep24(domain)
 
-    let res = await fetch(`${transferServerSep24}/info`)
-    let json = await res.json()
+    const res = await fetch(`${transferServerSep24}/info`)
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {
@@ -57,9 +57,9 @@ export async function initiateTransfer24({
     homeDomain: string
     urlFields?: object
 }): Promise<{ type: string; url: string; id: string }> {
-    let transferServerSep24 = await getTransferServerSep24(homeDomain)
+    const transferServerSep24 = await getTransferServerSep24(homeDomain)
 
-    let res = await fetch(`${transferServerSep24}/transactions/${endpoint}/interactive`, {
+    const res = await fetch(`${transferServerSep24}/transactions/${endpoint}/interactive`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -68,7 +68,7 @@ export async function initiateTransfer24({
         },
         body: JSON.stringify(urlFields),
     })
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {
@@ -99,9 +99,9 @@ export async function getTransferStatus24({
     transferId: string
     homeDomain: string
 }): Promise<AnchorTransaction> {
-    let transferServerSep24 = await getTransferServerSep24(homeDomain)
+    const transferServerSep24 = await getTransferServerSep24(homeDomain)
 
-    let res = await fetch(
+    const res = await fetch(
         `${transferServerSep24}/transaction?${new URLSearchParams({ id: transferId })}`,
         {
             method: 'GET',
@@ -110,7 +110,7 @@ export async function getTransferStatus24({
             },
         },
     )
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {
@@ -141,9 +141,9 @@ export async function queryTransfers24({
     assetCode: string
     homeDomain: string
 }): Promise<object> {
-    let transferServerSep24 = await getTransferServerSep24(homeDomain)
+    const transferServerSep24 = await getTransferServerSep24(homeDomain)
 
-    let res = await fetch(
+    const res = await fetch(
         `${transferServerSep24}/transactions?${new URLSearchParams({
             asset_code: assetCode,
         })}`,
@@ -155,7 +155,7 @@ export async function queryTransfers24({
             },
         },
     )
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {

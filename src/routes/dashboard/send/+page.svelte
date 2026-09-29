@@ -24,6 +24,7 @@ features have been implemented:
     import ConfirmationModal from '$lib/components/ConfirmationModal.svelte'
 
     // We import any stores we will need to read and/or write
+    import { isHttpError } from '@sveltejs/kit'
     import { alert } from '$lib/state/Alert.svelte'
     import { contacts } from '$lib/state/Contacts.svelte'
     import { wallet } from '$lib/state/Wallet.svelte'
@@ -87,9 +88,9 @@ features have been implemented:
                 if (createAccount) alert.clear()
                 createAccount = false
             } catch (err) {
-                // Otherwise, inform the user about what will take place
-                // @ts-ignore
-                if (err.status === 404) {
+                // A 404 means the account doesn't exist yet, so we inform the
+                // user about what will take place
+                if (isHttpError(err) && err.status === 404) {
                     createAccount = true
                     sendAsset = 'native'
                     alert.setAlert({
@@ -326,7 +327,7 @@ features have been implemented:
                     >
                         <option value="" disabled>Select asset</option>
                         {#if strictReceive && availablePaths}
-                            {#each availablePaths as path}
+                            {#each availablePaths as path (path)}
                                 {#if path.source_asset_type === 'native'}
                                     <option value="native">XLM</option>
                                 {:else}
@@ -336,7 +337,7 @@ features have been implemented:
                             {/each}
                         {:else if !strictReceive}
                             <option value="native">XLM</option>
-                            {#each data.balances as balance}
+                            {#each data.balances as balance (balance)}
                                 {#if 'asset_code' in balance}
                                     {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                                     <option value={assetString}>{balance.asset_code}</option>
@@ -381,7 +382,7 @@ features have been implemented:
                     >
                         <option value="" disabled>Select asset</option>
                         {#if !strictReceive && availablePaths}
-                            {#each availablePaths as path}
+                            {#each availablePaths as path (path)}
                                 {#if path.destination_asset_type === 'native'}
                                     <option value="native">XLM</option>
                                 {:else}
@@ -395,7 +396,7 @@ features have been implemented:
                             <option value="native">XLM</option>
                             {#if otherPublicKey || destination}
                                 {#await fetchAccountBalances(otherPublicKey || destination) then balances}
-                                    {#each balances as balance}
+                                    {#each balances as balance (balance)}
                                         {#if 'asset_code' in balance}
                                             {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                                             <option value={assetString}>{balance.asset_code}</option
@@ -438,7 +439,7 @@ features have been implemented:
             >
                 <option value="" disabled>Select Asset</option>
                 <option value="native">XLM</option>
-                {#each data.balances as balance}
+                {#each data.balances as balance (balance)}
                     {#if 'asset_code' in balance}
                         {@const assetString = `${balance.asset_code}:${balance.asset_issuer}`}
                         <option value={assetString}>{balance.asset_code}</option>

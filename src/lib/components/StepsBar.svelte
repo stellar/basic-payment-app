@@ -53,7 +53,7 @@ This component has been **heavily** influenced by this Svelte REPL:
 
 <div class="not-prose">
     <ul class="steps w-full">
-        {#each steps as step, i}
+        {#each steps as step, i (step)}
             {@const stepClasses = `step ${i === 0 ? 'step-primary' : ''}`}
             <li class={stepClasses}>{step}</li>
         {/each}

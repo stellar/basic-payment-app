@@ -35,7 +35,7 @@
             bind:value={value}
         >
             <option value="" disabled selected>Select one</option>
-            {#each fieldInfo.choices as choice}
+            {#each fieldInfo.choices as choice (choice)}
                 <option>{choice}</option>
             {/each}
         </select>

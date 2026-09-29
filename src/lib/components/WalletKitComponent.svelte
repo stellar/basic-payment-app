@@ -1,5 +1,6 @@
 <!-- src/lib/components/WalletKitComponent.svelte -->
 <script lang="ts">
+    import { resolve } from '$app/paths'
     import { goto } from '$app/navigation'
     import { wallet } from '$lib/state/Wallet.svelte'
     // The kit itself is initialized once, in `src/routes/+layout.svelte`
@@ -15,7 +16,7 @@
         try {
             const { address } = await StellarWalletsKit.authModal()
             wallet.connectWallet({ publicKey: address })
-            goto('/dashboard')
+            goto(resolve('/dashboard'))
         } catch (error) {
             console.error('Error connecting wallet:', error)
         }

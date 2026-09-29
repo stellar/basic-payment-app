@@ -33,7 +33,7 @@ balances.
         </tr>
     </thead>
     <tbody>
-        {#each page.data.payments as payment}
+        {#each page.data.payments as payment (payment.id)}
             <tr>
                 <th>
                     {#if payment.amount}
@@ -42,7 +42,7 @@ balances.
                         {parseFloat(payment.starting_balance).toFixed(2)}
                     {:else if payment.type === 'account_merge'}
                         {#await payment.effects() then effects}
-                            {#each effects.records.filter((/** @type {EffectRecord} */ e) => e.type === 'account_credited') as effect}
+                            {#each effects.records.filter((/** @type {EffectRecord} */ e) => e.type === 'account_credited') as effect (effect.id)}
                                 {parseFloat(effect.amount).toFixed(2)}
                             {/each}
                         {/await}

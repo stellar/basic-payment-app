@@ -26,7 +26,7 @@ export async function getChallengeTransaction({
     publicKey: string
     homeDomain: string
 }) {
-    let { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(homeDomain)
+    const { WEB_AUTH_ENDPOINT, TRANSFER_SERVER, SIGNING_KEY } = await fetchStellarToml(homeDomain)
 
     // In order for the SEP-10 flow to work, we must have at least a server
     // signing key, and a web auth endpoint (which can be the transfer server as
@@ -38,14 +38,14 @@ export async function getChallengeTransaction({
     }
 
     // Request a challenge transaction for the users's account
-    let res = await fetch(
+    const res = await fetch(
         `${WEB_AUTH_ENDPOINT || TRANSFER_SERVER}?${new URLSearchParams({
             // Possible parameters are `account`, `memo`, `home_domain`, and
             // `client_domain`. For our purposes, we only supply `account`.
             account: publicKey,
         })}`,
     )
-    let json = await res.json()
+    const json = await res.json()
 
     // Validate the challenge transaction meets all the requirements for SEP-10
     validateChallengeTransaction({
@@ -92,7 +92,7 @@ function validateChallengeTransaction({
     try {
         // Use the `readChallengeTx` function from Stellar SDK to read and
         // verify most of the challenge transaction information
-        let results = WebAuth.readChallengeTx(
+        const results = WebAuth.readChallengeTx(
             transactionXDR,
             serverSigningKey,
             network,
@@ -127,17 +127,17 @@ export async function submitChallengeTransaction({
     transactionXDR: string
     homeDomain: string
 }): Promise<string> {
-    let webAuthEndpoint = await getWebAuthEndpoint(homeDomain)
+    const webAuthEndpoint = await getWebAuthEndpoint(homeDomain)
 
     if (!webAuthEndpoint)
         throw error(500, { message: 'could not authenticate with server (missing toml entry)' })
-    let res = await fetch(webAuthEndpoint, {
+    const res = await fetch(webAuthEndpoint, {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transaction: transactionXDR }),
     })
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(400, { message: json.error })

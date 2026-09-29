@@ -18,9 +18,9 @@ import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
  * @returns {Promise<Object>} SEP-6 info published by the domain
  */
 export async function getSep6Info(domain: string): Promise<object> {
-    let transferServer = await getTransferServerSep6(domain)
-    let res = await fetch(`${transferServer}/info`)
-    let json = await res.json()
+    const transferServer = await getTransferServerSep6(domain)
+    const res = await fetch(`${transferServer}/info`)
+    const json = await res.json()
     return json
 }
 
@@ -47,15 +47,15 @@ export async function initiateTransfer6({
     formData: { [s: string]: string }
     domain: string
 }): Promise<{ id: string }> {
-    let transferServer = await getTransferServerSep6(domain)
+    const transferServer = await getTransferServerSep6(domain)
     // SEP-6 replaced the `type` parameter with `funding_method`. We send both,
     // so older anchors (that only know about `type`) still understand us.
     if (formData.type && !formData.funding_method) {
         formData = { ...formData, funding_method: formData.type }
     }
-    let searchParams = new URLSearchParams(formData)
+    const searchParams = new URLSearchParams(formData)
 
-    let res = await fetch(`${transferServer}/${endpoint}?${searchParams}`, {
+    const res = await fetch(`${transferServer}/${endpoint}?${searchParams}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -63,7 +63,7 @@ export async function initiateTransfer6({
             Authorization: `Bearer ${authToken}`,
         },
     })
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {
@@ -94,9 +94,9 @@ export async function getTransferStatus6({
     transferId: string
     domain: string
 }): Promise<AnchorTransaction> {
-    let transferServer = await getTransferServerSep6(domain)
+    const transferServer = await getTransferServerSep6(domain)
 
-    let res = await fetch(
+    const res = await fetch(
         `${transferServer}/transaction?${new URLSearchParams({
             id: transferId,
         })}`,
@@ -109,14 +109,14 @@ export async function getTransferStatus6({
             },
         },
     )
-    let json = await res.json()
+    const json = await res.json()
 
     if (!res.ok) {
         throw error(res.status, {
             message: json.error,
         })
     } else {
-        let { transaction } = json
+        const { transaction } = json
         return transaction
     }
 }
@@ -144,9 +144,9 @@ export async function queryTransfers6({
     publicKey: string
     homeDomain: string
 }): Promise<object> {
-    let transferServer = await getTransferServerSep6(homeDomain)
+    const transferServer = await getTransferServerSep6(homeDomain)
 
-    let res = await fetch(
+    const res = await fetch(
         `${transferServer}/transactions?${new URLSearchParams({
             asset_code: assetCode,
             account: publicKey,
@@ -160,7 +160,7 @@ export async function queryTransfers6({
         },
     )
 
-    let json = await res.json()
+    const json = await res.json()
     if (!res.ok) {
         throw error(res.status, {
             message: json.error,

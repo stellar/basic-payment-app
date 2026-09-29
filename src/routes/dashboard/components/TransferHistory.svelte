@@ -6,6 +6,7 @@ transfers the user has initiated with an anchor.
 -->
 
 <script>
+    import { resolve } from '$app/paths'
     // We import any stores we will need to read and/or write
     import { page } from '$app/state'
     import { transfers } from '$lib/state/Transfers.svelte'
@@ -30,30 +31,32 @@ transfers the user has initiated with an anchor.
 
     const query = (protocol, assetCode, homeDomain) =>
         new Promise((resolve) => {
-            protocol === 'sep6'
-                ? queryTransfers6({
-                      authToken: webAuth.requireToken(homeDomain),
-                      assetCode: assetCode,
-                      publicKey: page.data.publicKey,
-                      homeDomain: homeDomain,
-                  }).then(({ transactions }) =>
-                      resolve(
-                          transactions.map((item) => {
-                              return { ...item, asset_code: assetCode, protocol: protocol }
-                          }),
-                      ),
-                  )
-                : queryTransfers24({
-                      authToken: webAuth.requireToken(homeDomain),
-                      assetCode: assetCode,
-                      homeDomain: homeDomain,
-                  }).then(({ transactions }) =>
-                      resolve(
-                          transactions.map((item) => {
-                              return { ...item, asset_code: assetCode, protocol: protocol }
-                          }),
-                      ),
-                  )
+            if (protocol === 'sep6') {
+                queryTransfers6({
+                    authToken: webAuth.requireToken(homeDomain),
+                    assetCode: assetCode,
+                    publicKey: page.data.publicKey,
+                    homeDomain: homeDomain,
+                }).then(({ transactions }) =>
+                    resolve(
+                        transactions.map((item) => {
+                            return { ...item, asset_code: assetCode, protocol: protocol }
+                        }),
+                    ),
+                )
+            } else {
+                queryTransfers24({
+                    authToken: webAuth.requireToken(homeDomain),
+                    assetCode: assetCode,
+                    homeDomain: homeDomain,
+                }).then(({ transactions }) =>
+                    resolve(
+                        transactions.map((item) => {
+                            return { ...item, asset_code: assetCode, protocol: protocol }
+                        }),
+                    ),
+                )
+            }
         })
 
     const transfersPromise = async () => {
@@ -117,6 +120,7 @@ transfers the user has initiated with an anchor.
                                     >View Stellar transaction</a
                                 >
                             {:else if 'more_info_url' in transfer}
+                                <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- this links to the anchor's site, not a page in our app -->
                                 <a target="_blank" href={transfer.more_info_url}>View more info</a>
                             {/if}
                         </td>
@@ -134,7 +138,8 @@ transfers the user has initiated with an anchor.
         {#if expiredToken}
             <p>
                 It looks like there may be a problem with some of your anchor authentication. Head
-                over to the <a href="/dashboard/transfers">Transfers Page</a> to check that out.
+                over to the <a href={resolve('/dashboard/transfers')}>Transfers Page</a> to check that
+                out.
             </p>
         {/if}
     {/await}

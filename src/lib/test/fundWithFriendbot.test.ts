@@ -7,39 +7,10 @@ describe('fundWithFriendbot', () => {
 
         const callMock = vi.fn().mockResolvedValue(true)
 
-        const friendbotMock = vi.spyOn(server, 'friendbot').mockReturnValue({
-            call: callMock,
-            // @ts-ignore
-            url: undefined,
-            filter: [],
-            originalSegments: [],
-            neighborRoot: '',
-            stream: function (options) {
-                throw new Error('Function not implemented.')
-            },
-            cursor: function (cursor) {
-                throw new Error('Function not implemented.')
-            },
-            limit: function (recordsNumber) {
-                throw new Error('Function not implemented.')
-            },
-            order: function (direction) {
-                throw new Error('Function not implemented.')
-            },
-            join: function (include) {
-                throw new Error('Function not implemented.')
-            },
-            forEndpoint: function (endpoint, param) {
-                throw new Error('Function not implemented.')
-            },
-            checkFilter: undefined,
-            _requestFnForLink: undefined,
-            _parseRecord: undefined,
-            _sendNormalRequest: undefined,
-            _parseResponse: undefined,
-            _toCollectionPage: undefined,
-            _handleNetworkError: undefined,
-        })
+        // We only need the `call()` method of friendbot's call builder
+        const friendbotMock = vi
+            .spyOn(server, 'friendbot')
+            .mockReturnValue({ call: callMock } as unknown as ReturnType<typeof server.friendbot>)
 
         await fundWithFriendbot(publicKey)
 

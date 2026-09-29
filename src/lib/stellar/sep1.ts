@@ -18,7 +18,7 @@ type StellarToml = StellarToml.Api.StellarToml
  * @returns {Promise<StellarToml>} A `Promise` that resolves to the parsed `stellar.toml` object
  */
 export async function fetchStellarToml(domain: string): Promise<StellarToml> {
-    let stellarToml = await StellarToml.Resolver.resolve(domain)
+    const stellarToml = await StellarToml.Resolver.resolve(domain)
     return stellarToml
 }
 
@@ -30,7 +30,7 @@ export async function fetchStellarToml(domain: string): Promise<StellarToml> {
  * @returns {Promise<string|undefined>} The passphrase for the specific Stellar network this infrastructure operates on
  */
 export async function getNetworkPassphrase(domain: string): Promise<string | undefined> {
-    let { NETWORK_PASSPHRASE } = await fetchStellarToml(domain)
+    const { NETWORK_PASSPHRASE } = await fetchStellarToml(domain)
     return NETWORK_PASSPHRASE
 }
 
@@ -42,7 +42,7 @@ export async function getNetworkPassphrase(domain: string): Promise<string | und
  * @returns {Promise<string|undefined>} The endpoint for clients to resolve stellar addresses for users on domain via SEP-2 federation protocol
  */
 export async function getFederationServer(domain: string): Promise<string | undefined> {
-    let { FEDERATION_SERVER } = await fetchStellarToml(domain)
+    const { FEDERATION_SERVER } = await fetchStellarToml(domain)
     return FEDERATION_SERVER
 }
 
@@ -54,7 +54,7 @@ export async function getFederationServer(domain: string): Promise<string | unde
  * @returns {Promise<string|undefined>} The endpoint used for SEP-6 Anchor/Client interoperability
  */
 export async function getTransferServerSep6(domain: string): Promise<string | undefined> {
-    let { TRANSFER_SERVER } = await fetchStellarToml(domain)
+    const { TRANSFER_SERVER } = await fetchStellarToml(domain)
     return TRANSFER_SERVER
 }
 
@@ -66,7 +66,7 @@ export async function getTransferServerSep6(domain: string): Promise<string | un
  * @returns {Promise<string|undefined>} The endpoint used for SEP-24 Anchor/Client interoperability
  */
 export async function getTransferServerSep24(domain: string): Promise<string | undefined> {
-    let { TRANSFER_SERVER_SEP0024 } = await fetchStellarToml(domain)
+    const { TRANSFER_SERVER_SEP0024 } = await fetchStellarToml(domain)
     return TRANSFER_SERVER_SEP0024
 }
 
@@ -78,7 +78,7 @@ export async function getTransferServerSep24(domain: string): Promise<string | u
  * @returns {Promise<string|undefined>} The endpoint used for KYC customer info transfer
  */
 export async function getKycServer(domain: string): Promise<string | undefined> {
-    let { KYC_SERVER, TRANSFER_SERVER } = await fetchStellarToml(domain)
+    const { KYC_SERVER, TRANSFER_SERVER } = await fetchStellarToml(domain)
     // If `KYC_SERVER` is undefined in the domain's TOML file, `TRANSFER_SERVER`
     // will be used
     return KYC_SERVER ?? TRANSFER_SERVER
@@ -92,7 +92,7 @@ export async function getKycServer(domain: string): Promise<string | undefined> 
  * @returns {Promise<string|undefined>} The endpoint used for SEP-10 Web Authentication
  */
 export async function getWebAuthEndpoint(domain: string): Promise<string | undefined> {
-    let { WEB_AUTH_ENDPOINT } = await fetchStellarToml(domain)
+    const { WEB_AUTH_ENDPOINT } = await fetchStellarToml(domain)
     return WEB_AUTH_ENDPOINT
 }
 
@@ -104,6 +104,6 @@ export async function getWebAuthEndpoint(domain: string): Promise<string | undef
  * @returns {Promise<string|undefined>} The public key of the keypair used for SEP-10 authentication
  */
 export async function getServerSigningKey(domain: string): Promise<string | undefined> {
-    let { SIGNING_KEY } = await fetchStellarToml(domain)
+    const { SIGNING_KEY } = await fetchStellarToml(domain)
     return SIGNING_KEY
 }

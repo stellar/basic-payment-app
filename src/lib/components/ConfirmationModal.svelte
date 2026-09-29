@@ -22,6 +22,7 @@ on the following occasions:
     // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
+    import { isHttpError } from '@sveltejs/kit'
     import { alert } from '$lib/state/Alert.svelte'
     import Alert from './Alert.svelte'
 
@@ -71,8 +72,11 @@ on the following occasions:
             // If there was an error, we set our alert
             console.error('error in confirmation modal', err)
             alert.setAlert({
-                // @ts-ignore
-                message: err.body?.message || err.message || 'Transaction failed',
+                message: isHttpError(err)
+                    ? err.body.message
+                    : err instanceof Error
+                      ? err.message
+                      : 'Transaction failed',
                 type: 'error',
             })
         }
@@ -189,10 +193,10 @@ on the following occasions:
         <!-- Specifics about the operation(s) present in the transaction -->
         <h2>Operations</h2>
         <ol start="0">
-            {#each transaction.operations as operation, i}
+            {#each transaction.operations as operation, i (operation)}
                 <li>Operation {i}</li>
                 <ul>
-                    {#each Object.entries(operation) as [key, value]}
+                    {#each Object.entries(operation) as [key, value] (key)}
                         <li>{key}: <code>{formatValue(value)}</code></li>
                     {/each}
                 </ul>

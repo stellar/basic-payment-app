@@ -12,7 +12,7 @@
         title?: string
         body?: string
         homeDomain?: string
-        sep6Info?: any
+        sep6Info?: Record<string, object>
         assetIssuer?: string
         transferData?: {
             endpoint: string
@@ -35,7 +35,7 @@
         title = 'Initiate SEP-6 Transfer',
         body = 'Please follow the steps to begin a transfer with your chosen anchor.',
         homeDomain = $bindable(''),
-        sep6Info = $bindable({}),
+        sep6Info = {},
         assetIssuer = '',
         transferData = $bindable(),
         formData = $bindable(),
@@ -60,7 +60,7 @@
             <TransferDetails
                 bind:transferData={transferData}
                 bind:formData={formData}
-                bind:sep6Info={sep6Info}
+                sep6Info={sep6Info}
             />
         {:else if activeStep === 'KYC Information'}
             <KycInformation homeDomain={homeDomain} sep12Fields={sep12Fields} />

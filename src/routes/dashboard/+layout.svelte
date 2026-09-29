@@ -13,10 +13,8 @@
     // available to this layout, the corresponding `+page.svelte`, andy any
     // `+layout.svelte` files nested underneath this directory. (It should be
     // noted, we aren't actually _doing_ anything with the `data` in this
-    // layout, except logging it to the console. You could safely delete these
-    // lines, and the loaded data would still flow down to where it's needed.)
-    let { data, children }: LayoutProps = $props()
-    $inspect('routes/dashboard/+layout.svelte data', data)
+    // layout. The loaded data still flows down to where it's needed.)
+    let { children }: LayoutProps = $props()
 
     import Navbar from './components/Navbar.svelte'
     import Drawer from './components/Drawer.svelte'

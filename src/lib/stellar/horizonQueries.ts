@@ -1,6 +1,13 @@
-// @ts-nocheck
 import { error } from '@sveltejs/kit'
-import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
+import {
+    TransactionBuilder,
+    Networks,
+    StrKey,
+    Asset,
+    Horizon,
+    type NetworkError,
+    type Transaction,
+} from '@stellar/stellar-sdk'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org'
 export const server = new Horizon.Server(horizonUrl)
@@ -16,13 +23,8 @@ export const server = new Horizon.Server(horizonUrl)
 
 // We'll import some type definitions that already exists within the
 // `@stellar/stellar-sdk` package, so our functions will know what to expect.
-type AccountRecord = import('@stellar/stellar-sdk').Horizon.ServerApi.AccountRecord
-type ErrorResponseData = import('@stellar/stellar-sdk').Horizon.ErrorResponseData
-type PaymentOperationRecord = import('@stellar/stellar-sdk').ServerApi.PaymentOperationRecord
-type BalanceLine = import('@stellar/stellar-sdk').Horizon.BalanceLine
-type BalanceLineAsset = import('@stellar/stellar-sdk').Horizon.BalanceLineAsset
-type Transaction = import('@stellar/stellar-sdk').Transaction
-type PaymentPathRecord = import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord
+type BalanceLine = Horizon.HorizonApi.BalanceLine
+type BalanceLineAsset = Horizon.HorizonApi.BalanceLineAsset
 
 /**
  * Fetches and returns details about an account on the Stellar network.
@@ -32,16 +34,21 @@ type PaymentPathRecord = import('@stellar/stellar-sdk').ServerApi.PaymentPathRec
  * @returns {Promise<AccountRecord>} Object containing whether or not the account is funded, and (if it is) account details
  * @throws {error} Will throw an error if the account is not funded on the Stellar network, or if an invalid public key was provided.
  */
-export async function fetchAccount(publicKey) {
+export async function fetchAccount(publicKey: string) {
     if (StrKey.isValidEd25519PublicKey(publicKey)) {
         try {
-            let account = await server.accounts().accountId(publicKey).call()
+            const account = await server.accounts().accountId(publicKey).call()
             return account
         } catch (err) {
+            // When Horizon can't find the account, the SDK puts Horizon's error
+            // details (`status`, `title`, and `detail`) in `err.response`
+            const problem = (
+                err as { response?: { status?: number; title?: string; detail?: string } }
+            ).response
             // A 404 here means the account isn't funded yet. We pass the status
             // along, so the send page can offer a `createAccount` operation.
-            throw error(err.response?.status ?? 400, {
-                message: `${err.response?.title} - ${err.response?.detail}`,
+            throw error(problem?.status ?? 400, {
+                message: `${problem?.title} - ${problem?.detail}`,
             })
         }
     } else {
@@ -56,7 +63,7 @@ export async function fetchAccount(publicKey) {
  * @param {string} publicKey Public Stellar address holding balances to query
  * @returns {Promise<BalanceLine[]>} Array containing balance information for each asset the account holds
  */
-export async function fetchAccountBalances(publicKey) {
+export async function fetchAccountBalances(publicKey: string) {
     const { balances } = await fetchAccount(publicKey)
     return balances
 }
@@ -69,7 +76,7 @@ export async function fetchAccountBalances(publicKey) {
  * @param {number} [limit] Number of operations to request from the server
  * @returns {Promise<PaymentOperationRecord[]>} Array containing details for each recent payment
  */
-export async function fetchRecentPayments(publicKey, limit = 10) {
+export async function fetchRecentPayments(publicKey: string, limit = 10) {
     const { records } = await server
         .payments()
         .forAccount(publicKey)
@@ -85,7 +92,7 @@ export async function fetchRecentPayments(publicKey, limit = 10) {
  * @function fundWithFriendbot
  * @param {string} publicKey Public Stellar address which should be funded using the Testnet Friendbot
  */
-export async function fundWithFriendbot(publicKey) {
+export async function fundWithFriendbot(publicKey: string) {
     console.log(`i am requesting a friendbot funding for ${publicKey}`)
     await server.friendbot(publicKey).call()
 }
@@ -97,8 +104,8 @@ export async function fundWithFriendbot(publicKey) {
  * @param {string} sourcePublicKey Public Stellar address which will be the source account for the created transaction
  * @returns {Promise<TransactionBuilder>}
  */
-export async function startTransaction(sourcePublicKey) {
-    let source = await server.loadAccount(sourcePublicKey)
+export async function startTransaction(sourcePublicKey: string) {
+    const source = await server.loadAccount(sourcePublicKey)
     const transaction = new TransactionBuilder(source, {
         networkPassphrase: Networks.TESTNET,
         fee: '100000',
@@ -114,19 +121,21 @@ export async function startTransaction(sourcePublicKey) {
  * @param {Transaction} transaction Built transaction to submit to the network
  * @throws Will throw an error if the transaction is not submitted successfully.
  */
-export async function submit(transaction) {
+export async function submit(transaction: Transaction) {
     try {
         await server.submitTransaction(transaction)
     } catch (err) {
         // Horizon's response body lives in `err.response.data`, and failed
         // transactions include result codes explaining what went wrong
-        const data = err.response?.data
-        const codes = data?.extras?.result_codes
-        throw error(400, {
-            message: codes
-                ? `${data.title} - ${[codes.transaction, ...(codes.operations ?? [])].join(', ')}`
-                : err.message,
-        })
+        const { response, message } = err as NetworkError
+        const data = response?.data
+        if (data && 'extras' in data) {
+            const codes = data.extras.result_codes
+            throw error(400, {
+                message: `${data.title} - ${[codes.transaction, ...(codes.operations ?? [])].join(', ')}`,
+            })
+        }
+        throw error(400, { message: message })
     }
 }
 
@@ -147,24 +156,26 @@ type HomeDomainBalanceLine = BalanceLineAsset & HomeDomainObject
 export async function fetchAssetsWithHomeDomains(
     balances: BalanceLine[],
 ): Promise<HomeDomainBalanceLine[]> {
-    let homeDomains = await Promise.all(
+    const homeDomains = await Promise.all(
         balances.map(async (asset) => {
             // We are only interested in issued assets (i.e., not LPs and not XLM)
             if ('asset_issuer' in asset) {
-                // Fetch the account from the network, and add its info to the array, along with the home_domain
-                let account = await fetchAccount(asset.asset_issuer)
-                if ('home_domain' in account) {
+                // Fetch the issuer's account from the network, and add its
+                // `home_domain` (if it has one) to the balance details
+                const account = await fetchAccount(asset.asset_issuer)
+                if (account.home_domain) {
                     return {
                         ...asset,
                         home_domain: account.home_domain,
                     }
                 }
             }
+            return undefined
         }),
     )
 
-    // Filter out any null array entries before returning
-    return homeDomains.filter((balance) => balance)
+    // Filter out the balances we skipped (the `undefined` entries)
+    return homeDomains.filter((balance): balance is HomeDomainBalanceLine => balance !== undefined)
 }
 
 /**
@@ -178,12 +189,20 @@ export async function fetchAssetsWithHomeDomains(
  * @returns {Promise<PaymentPathRecord[]>} Array of payment paths that can be selected for the transaction
  * @throws Will throw an error if there are no available payment paths.
  */
-export async function findStrictSendPaths({ sourceAsset, sourceAmount, destinationPublicKey }) {
-    let asset =
+export async function findStrictSendPaths({
+    sourceAsset,
+    sourceAmount,
+    destinationPublicKey,
+}: {
+    sourceAsset: string
+    sourceAmount: string | number
+    destinationPublicKey: string
+}) {
+    const asset =
         sourceAsset === 'native'
             ? Asset.native()
             : new Asset(sourceAsset.split(':')[0], sourceAsset.split(':')[1])
-    let response = await server
+    const response = await server
         .strictSendPaths(asset, sourceAmount.toString(), destinationPublicKey)
         .call()
     if (response.records.length > 0) {
@@ -208,12 +227,16 @@ export async function findStrictReceivePaths({
     sourcePublicKey,
     destinationAsset,
     destinationAmount,
+}: {
+    sourcePublicKey: string
+    destinationAsset: string
+    destinationAmount: string | number
 }) {
-    let asset =
+    const asset =
         destinationAsset === 'native'
             ? Asset.native()
             : new Asset(destinationAsset.split(':')[0], destinationAsset.split(':')[1])
-    let response = await server
+    const response = await server
         .strictReceivePaths(sourcePublicKey, asset, destinationAmount.toString())
         .call()
     if (response.records.length > 0) {

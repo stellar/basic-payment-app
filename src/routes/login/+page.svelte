@@ -12,6 +12,7 @@ for submission to the network.
 -->
 
 <script lang="ts">
+    import { resolve } from '$app/paths'
     import { preventDefault } from 'svelte/legacy'
 
     // The `export let data` declaration allows us to receive and use the page
@@ -22,6 +23,7 @@ for submission to the network.
 
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
+    import { isHttpError } from '@sveltejs/kit'
     import { alert } from '$lib/state/Alert.svelte'
     import { wallet } from '$lib/state/Wallet.svelte'
     import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
@@ -41,13 +43,12 @@ for submission to the network.
     const login = async () => {
         try {
             await wallet.confirmPincode({ pincode: pincode })
-            goto('/dashboard')
+            goto(resolve('/dashboard'))
         } catch (err) {
             // Notify the user about the error that has taken place.
             console.error('error logging in', err)
             alert.setAlert({
-                // @ts-ignore
-                message: err.body.message,
+                message: isHttpError(err) ? err.body.message : 'Unable to log in',
                 type: 'error',
                 dismissible: true,
             })
