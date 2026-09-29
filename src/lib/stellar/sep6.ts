@@ -1,0 +1,201 @@
+import { getTransferServerSep6 } from '$lib/stellar/sep1'
+import { error } from '@sveltejs/kit'
+import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
+
+/**
+ * @module $lib/stellar/sep6
+ * @description A collection of functions that make it easier to work with SEP-6
+ * transfer servers. These transfers are intended to be _programmatic_, meaning
+ * the user never has to directly interact with the anchor server. Everything is
+ * done inside our own BasicPay application.
+ */
+
+/**
+ * A piece of information the anchor asks for about a transfer (e.g., which bank
+ * transfer method to use)
+ */
+export interface Sep6Field {
+    /** A human-readable description of the field */
+    description: string
+    /** Whether the field can be left out */
+    optional?: boolean
+    /** The values the field can take */
+    choices?: string[]
+}
+
+/** What an anchor supports for transfers of a single asset */
+export interface Sep6AssetInfo {
+    /** Whether transfers of this asset are available */
+    enabled: boolean
+    /** Whether the user needs to authenticate (with SEP-10) first */
+    authentication_required?: boolean
+    min_amount?: number
+    max_amount?: number
+    /** For deposits, the information the anchor asks for */
+    fields?: Record<string, Sep6Field>
+    /** For withdrawals, the kinds of withdrawal (e.g., `bank_account`), and what each one needs */
+    types?: Record<string, { fields?: Record<string, Sep6Field> }>
+}
+
+/** The anchor's SEP-6 `/info` response: which assets can be deposited and withdrawn */
+export interface Sep6Info {
+    deposit: Record<string, Sep6AssetInfo>
+    withdraw: Record<string, Sep6AssetInfo>
+}
+
+/**
+ * Fetches and returns basic information about what the SEP-6 transfer server suppports.
+ * @async
+ * @function getSep6Info
+ * @param {string} domain Domain to get the SEP-6 info for
+ * @returns {Promise<Sep6Info>} SEP-6 info published by the domain
+ */
+export async function getSep6Info(domain: string): Promise<Sep6Info> {
+    const transferServer = await getTransferServerSep6(domain)
+    const res = await fetch(`${transferServer}/info`)
+    const json = await res.json()
+    return json
+}
+
+/**
+ * Initiates a transfer using the SEP-6 protocol.
+ * @async
+ * @function initiateTransfer6
+ * @param {Object} opts Options object
+ * @param {string} opts.authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} opts.endpoint URL endpoint to be requested, also indicates which direction the transfer is moving
+ * @param {Object<string,string>} opts.formData Big ol' object that should be done better, but it's pretty much ALL the information we gather from the user
+ * @param {string} opts.domain Domain of the anchor that is handling the transfer
+ * @returns {Promise<Object>} JSON response from the server
+ * @throws Will throw an error if the server response is not `ok`.
+ */
+export async function initiateTransfer6({
+    authToken,
+    endpoint,
+    formData,
+    domain,
+}: {
+    authToken: string
+    endpoint: string
+    formData: { [s: string]: string }
+    domain: string
+}): Promise<{ id: string }> {
+    const transferServer = await getTransferServerSep6(domain)
+    // SEP-6 replaced the `type` parameter with `funding_method`. We send both,
+    // so older anchors (that only know about `type`) still understand us.
+    if (formData.type && !formData.funding_method) {
+        formData = { ...formData, funding_method: formData.type }
+    }
+    const searchParams = new URLSearchParams(formData)
+
+    const res = await fetch(`${transferServer}/${endpoint}?${searchParams}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            Authorization: `Bearer ${authToken}`,
+        },
+    })
+    const json = await res.json()
+
+    if (!res.ok) {
+        throw error(res.status, {
+            message: json.error,
+        })
+    } else {
+        return json
+    }
+}
+
+/**
+ * Queries and returns information about an individual transfer.
+ * @async
+ * @function getTransferStatus6
+ * @param {Object} opts Options object
+ * @param {string} opts.authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} opts.transferId Unique ID of the transfer we want to know more about
+ * @param {string} opts.domain Domain of the anchor to query for transfer details
+ * @returns {Promise<Object>} JSON object with information about the transfer
+ * @throws Will throw an error if the server response is not `ok`.
+ */
+export async function getTransferStatus6({
+    authToken,
+    transferId,
+    domain,
+}: {
+    authToken: string
+    transferId: string
+    domain: string
+}): Promise<AnchorTransaction> {
+    const transferServer = await getTransferServerSep6(domain)
+
+    const res = await fetch(
+        `${transferServer}/transaction?${new URLSearchParams({
+            id: transferId,
+        })}`,
+        {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        },
+    )
+    const json = await res.json()
+
+    if (!res.ok) {
+        throw error(res.status, {
+            message: json.error,
+        })
+    } else {
+        const { transaction } = json
+        return transaction
+    }
+}
+
+/**
+ * Queries and returns information about all SEP-6 transfers for a given address and asset.
+ * @async
+ * @function queryTransfers6
+ * @param {Object} opts Options object
+ * @param {string} opts.authToken Authentication token for a Stellar account received through SEP-10 web authentication
+ * @param {string} opts.assetCode Asset code returned transfers must include
+ * @param {string} opts.publicKey Public Stellar address of the account which initiated the transfers
+ * @param {string} opts.homeDomain Domain of the anchor to query for transfer records
+ * @returns {Promise<Object>} JSON response from the server
+ * @throws Will throw an error if the server response is not `ok`.
+ */
+export async function queryTransfers6({
+    authToken,
+    assetCode,
+    publicKey,
+    homeDomain,
+}: {
+    authToken: string
+    assetCode: string
+    publicKey: string
+    homeDomain: string
+}): Promise<{ transactions: AnchorTransaction[] }> {
+    const transferServer = await getTransferServerSep6(homeDomain)
+
+    const res = await fetch(
+        `${transferServer}/transactions?${new URLSearchParams({
+            asset_code: assetCode,
+            account: publicKey,
+        })}`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        },
+    )
+
+    const json = await res.json()
+    if (!res.ok) {
+        throw error(res.status, {
+            message: json.error,
+        })
+    } else {
+        return json
+    }
+}

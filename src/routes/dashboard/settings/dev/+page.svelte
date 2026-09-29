@@ -16,7 +16,7 @@ start fresh.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
 
     // We import some of our `$lib` functions
     import {
@@ -31,11 +31,11 @@ start fresh.
     const { open } = getContext('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let addContactsOpts = {
+    let addContactsOpts = $state({
         numContacts: 1,
         fundContacts: false,
         addTrustlines: false,
-    }
+    })
 
     /**
      * Display a modal. Use this to play around with settings, props, and such.
@@ -63,12 +63,12 @@ start fresh.
 <dl>
     <dt><strong>Public Key</strong></dt>
     <dd>
-        <TruncatedKey keyText={$walletStore.publicKey} />
+        <TruncatedKey keyText={wallet.publicKey} />
     </dd>
-    {#if $walletStore.devInfo}
+    {#if wallet.devInfo}
         <dt><strong>Secret Key</strong></dt>
         <dd>
-            <TruncatedKey keyText={$walletStore.devInfo.secretKey} />
+            <TruncatedKey keyText={wallet.devInfo.secretKey} />
         </dd>
     {/if}
 </dl>
@@ -81,7 +81,7 @@ start fresh.
             <input
                 id="numContacts"
                 name="numContacts"
-                class="input-bordered input join-item"
+                class="input join-item"
                 type="number"
                 placeholder="Number of contacts to add"
                 bind:value={addContactsOpts.numContacts}
@@ -91,7 +91,7 @@ start fresh.
     <input
         id="fundContacts"
         name="fundContacts"
-        class="btn-outline join-item btn"
+        class="btn join-item btn-outline"
         type="checkbox"
         aria-label="Fund New Contacts"
         bind:checked={addContactsOpts.fundContacts}
@@ -99,32 +99,32 @@ start fresh.
     <input
         id="addContactTrustlines"
         name="addContactTrustlines"
-        class="btn-outline join-item btn"
+        class="btn join-item btn-outline"
         type="checkbox"
         aria-label="Add Trustlines"
         bind:checked={addContactsOpts.addTrustlines}
         disabled={!addContactsOpts.fundContacts}
     />
     <button
-        class="btn-primary btn-accent join-item btn"
-        on:click={() => addContacts(addContactsOpts)}>Add Contacts</button
+        class="btn join-item btn-accent btn-primary"
+        onclick={() => addContacts(addContactsOpts)}>Add Contacts</button
     >
 </div>
 
 <h2>Burn Bridges</h2>
 <p>Clear out everyone from the contacts list and start fresh</p>
-<button class="btn-warning btn" on:click={emptyContacts}>Empty Contacts List</button>
+<button class="btn btn-warning" onclick={emptyContacts}>Empty Contacts List</button>
 
 <h2>Get Rich</h2>
 <p>Get another round of funding into your account from Friendbot.</p>
-<button class="btn-success btn" on:click={() => mergeFriendbotAccount($walletStore.publicKey)}
+<button class="btn btn-success" onclick={() => mergeFriendbotAccount(wallet.publicKey)}
     >I need a friend!</button
 >
 
 <h2>Launch Modal Rocket</h2>
 <p>Test the modal thing to see what comes up... I guess?</p>
-<button class="btn-primary btn" on:click={displayModal}>svelte-simple-modal</button>
+<button class="btn btn-primary" onclick={displayModal}>svelte-simple-modal</button>
 
 <h2>Throw it On the Ground!</h2>
 <p>Tired of your BasicPay setup? Nuke the whole gosh-darn thing!</p>
-<button class="btn-error btn" on:click={nukeLocalStorage}>You can't buy me hot dog man!</button>
+<button class="btn btn-error" onclick={nukeLocalStorage}>You can't buy me hot dog man!</button>

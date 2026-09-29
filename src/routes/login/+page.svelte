@@ -11,29 +11,29 @@ pincode is still required before the keypair can be decrypted to sign anything
 for submission to the network.
 -->
 
-<script>
+<script lang="ts">
+    import { resolve } from '$app/paths'
+    import { preventDefault } from 'svelte/legacy'
+
     // The `export let data` declaration allows us to receive and use the page
     // load data from our `+page.js` file.
-    /** @type {import('./$types').PageData} */
-    export let data
 
     // We import any Svelte components we will need
-    import ErrorAlert from '$lib/components/ErrorAlert.svelte'
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import { walletStore } from '$lib/stores/walletStore'
-    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
+    import { isHttpError } from '@sveltejs/kit'
+    import { alert } from '$lib/state/Alert.svelte'
+    import { wallet } from '$lib/state/Wallet.svelte'
+    import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
+    import Alert from '$lib/components/Alert.svelte'
+    import type { PageProps } from './$types'
+
+    let { data }: PageProps = $props()
+
     // Define some component variables that will be used throughout the page
-    let pincode = ''
-
-   
-
-
-
-
+    let pincode = $state('')
 
     /**
      * Our `login` function ensures the the user has entered a valid pincode for the encrypted keypair, and then redirects them to the dashboard page.
@@ -42,12 +42,16 @@ for submission to the network.
      */
     const login = async () => {
         try {
-            await walletStore.confirmPincode({ pincode: pincode })
-            goto('/dashboard')
+            await wallet.confirmPincode({ pincode: pincode })
+            goto(resolve('/dashboard'))
         } catch (err) {
             // Notify the user about the error that has taken place.
-            // @ts-ignore
-            errorMessage.set(err.body.message)
+            console.error('error logging in', err)
+            alert.setAlert({
+                message: isHttpError(err) ? err.body.message : 'Unable to log in',
+                type: 'error',
+                dismissible: true,
+            })
         }
     }
 </script>
@@ -64,38 +68,33 @@ for submission to the network.
         </div>
         <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
             <div class="card-body">
-                <ErrorAlert dismissible={false} />
-                <form on:submit|preventDefault={login}>
-                    <div class="form-control">
-                        <label class="label" for="publicKey">
-                            <span class="label-text">Public Key</span>
-                        </label>
-                        <div class="input-bordered input flex">
-                            <TruncatedKey keyText={data.publicKey} />
+                <Alert />
+                <form onsubmit={preventDefault(login)}>
+                    <fieldset class="fieldset">
+                        <p class="label">Public Key</p>
+                        <div class="input flex">
+                            <TruncatedKey keyText={data.publicKey} lookupName={false} />
                         </div>
-                    </div>
-                    <div class="form-control">
-                        <label for="pincode" class="label">
-                            <span class="label-text">Pincode</span>
-                        </label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <label for="pincode" class="label">Pincode</label>
                         <input
                             id="pincode"
                             name="pincode"
                             type="password"
-                            class="input-bordered input"
+                            class="input"
                             minlength="6"
                             maxlength="6"
                             required
                             bind:value={pincode}
                         />
-                    </div>
-                    <div class="form-control mt-6">
-                        <button class="btn-primary btn">Login</button>
+                    </fieldset>
+                    <div class="mt-6">
+                        <button class="btn btn-primary">Login</button>
                     </div>
 
-
-                    <div class="form-control mt-2">
-                      <WalletKitProvider buttonText='Login with wallet'/>
+                    <div class="mt-2">
+                        <WalletKitComponent buttonText="Login with wallet" />
                     </div>
                 </form>
             </div>

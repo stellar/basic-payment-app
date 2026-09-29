@@ -1,45 +1,53 @@
-<script>
-    export let field = ''
-    export let fieldInfo = {
-        optional: false,
-        choices: [],
-        description: '',
+<script lang="ts">
+    import type { Sep6Field } from '$lib/stellar/sep6'
+
+    interface Props {
+        field?: string
+        fieldInfo?: Sep6Field
+        value?: string
     }
 
-    export let value = ''
+    let {
+        field = '',
+        fieldInfo = {
+            optional: false,
+            choices: [],
+            description: '',
+        },
+        // No fallback here: the parent's `formData` owns this value, and starts
+        // out without one. (Svelte doesn't allow binding `undefined` to a prop
+        // that has a fallback value.)
+        value = $bindable(),
+    }: Props = $props()
 </script>
 
-<div class="form-control my-1">
+<fieldset class="my-1 fieldset">
     <label class="label" for={`transfer-field-${field}`}>
-        <span class="label-text">{field}</span>
-        {#if fieldInfo.optional}
-            <span class="label-text-alt">Optional</span>
-        {/if}
+        {field}
+        {#if fieldInfo.optional}(optional){/if}
     </label>
     {#if 'choices' in fieldInfo}
         <select
-            class="select-bordered select"
+            class="select"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
         >
             <option value="" disabled selected>Select one</option>
-            {#each fieldInfo.choices as choice}
+            {#each fieldInfo.choices as choice (choice)}
                 <option>{choice}</option>
             {/each}
         </select>
     {:else}
         <input
             type="text"
-            class="input-bordered input"
+            class="input"
             name={`transfer-field-${field}`}
             id={`transfer-field-${field}`}
             bind:value={value}
         />
     {/if}
     {#if fieldInfo.description}
-        <label class="label" for={`transfer-field-${field}`}>
-            <span class="label-text-alt">{fieldInfo.description}</span>
-        </label>
+        <p class="label">{fieldInfo.description}</p>
     {/if}
-</div>
+</fieldset>

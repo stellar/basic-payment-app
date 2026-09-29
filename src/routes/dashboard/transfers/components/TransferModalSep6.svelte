@@ -1,41 +1,54 @@
-<script>
+<script lang="ts">
     import StepsBar from '$lib/components/StepsBar.svelte'
     import TransferDetails from './TransferDetails.svelte'
     import KycInformation from './KYCInformation.svelte'
     import KycStatus from './KYCStatus.svelte'
     import Confirmation from './Confirmation.svelte'
+    import type { AnchorTransaction } from '$lib/stellar/anchorTransactions'
+    import type { Sep6Info } from '$lib/stellar/sep6'
 
-    export let title = 'Initiate SEP-6 Transfer'
-    export let body = 'Please follow the steps to begin a transfer with your chosen anchor.'
-    export let homeDomain = ''
-    export let sep6Info = {}
-    export let assetIssuer = ''
+    let sep12Fields: string[] = $state([])
 
-    export let transferData = {
-        endpoint: '',
-        customer_id: '',
-        transfer_id: '',
-        transfer_submitted: false,
+    interface Props {
+        title?: string
+        body?: string
+        homeDomain?: string
+        sep6Info?: Sep6Info
+        assetIssuer?: string
+        transferData?: {
+            endpoint: 'deposit' | 'withdraw'
+            customer_id?: string
+            transfer_id?: string
+            transfer_submitted?: boolean
+        }
+        formData?: {
+            asset_code: string
+            amount: string
+        }
+        payAnchor?: (opts: {
+            transaction: AnchorTransaction
+            assetCode: string
+            assetIssuer: string
+        }) => Promise<void>
     }
-    export let formData = {
-        asset_code: '',
-        amount: '',
-    }
 
-    /** @type {string[]} */
-    let sep12Fields = []
-    let transferJson = {}
-    /** @param {Object} [opts] Options object */
-    export let submitPayment = async (opts) => {}
+    let {
+        title = 'Initiate SEP-6 Transfer',
+        body = 'Please follow the steps to begin a transfer with your chosen anchor.',
+        homeDomain = $bindable(''),
+        sep6Info = { deposit: {}, withdraw: {} },
+        assetIssuer = '',
+        transferData = $bindable(),
+        formData = $bindable(),
+        payAnchor = async () => {},
+    }: Props = $props()
     let steps = ['Transfer Details', 'KYC Information', 'KYC Status', 'Submit Transfer']
-    let currentActive = 1
-    /** @type {StepsBar} */
-    let stepsBar
-    $: activeStep = steps[currentActive - 1]
+    let currentActive = $state(1)
+    let stepsBar: StepsBar | null = $state(null)
+    let activeStep = $derived(steps[currentActive - 1])
 
-    /** @param {number} stepIncrement */
-    const handleStep = (stepIncrement) => {
-        stepsBar.handleStep(stepIncrement)
+    const handleStep = (stepIncrement: number) => {
+        stepsBar?.handleStep(stepIncrement)
     }
 </script>
 
@@ -48,43 +61,32 @@
             <TransferDetails
                 bind:transferData={transferData}
                 bind:formData={formData}
-                bind:sep6Info={sep6Info}
+                sep6Info={sep6Info}
             />
         {:else if activeStep === 'KYC Information'}
-            <KycInformation bind:homeDomain={homeDomain} bind:sep12Fields={sep12Fields} />
+            <KycInformation homeDomain={homeDomain} sep12Fields={sep12Fields} />
         {:else if activeStep === 'KYC Status'}
             <KycStatus
-                bind:homeDomain={homeDomain}
-                bind:sep12Fields={sep12Fields}
+                homeDomain={homeDomain}
+                sep12Fields={sep12Fields}
                 bind:transferData={transferData}
             />
         {:else if activeStep === 'Submit Transfer'}
             <Confirmation
                 bind:transferData={transferData}
-                bind:homeDomain={homeDomain}
-                bind:formData={formData}
-                bind:transferJson={transferJson}
+                homeDomain={homeDomain}
+                formData={formData}
+                assetIssuer={assetIssuer}
+                payAnchor={payAnchor}
             />
-            {#if transferData.endpoint === 'withdraw'}
-                <button
-                    class="btn-primary btn my-1"
-                    on:click={() =>
-                        submitPayment({
-                            withdrawDetails: transferJson,
-                            assetCode: formData.asset_code,
-                            assetIssuer: assetIssuer,
-                            amount: formData.amount,
-                        })}>Send Stellar Payment</button
-                >
-            {/if}
         {/if}
     </form>
 
     <div class="my-4">
-        <button class="btn" on:click={() => handleStep(-1)} disabled={currentActive === 1}
+        <button class="btn" onclick={() => handleStep(-1)} disabled={currentActive === 1}
             >Prev</button
         >
-        <button class="btn" on:click={() => handleStep(1)} disabled={currentActive === steps.length}
+        <button class="btn" onclick={() => handleStep(1)} disabled={currentActive === steps.length}
             >Next</button
         >
     </div>

@@ -18,30 +18,30 @@ on the following occasions:
    sign, before it is sent back to the authentication server.
 -->
 
-<script>
+<script lang="ts">
     // We import various UI elements from either packages or other components
     import { copy } from 'svelte-copy'
     import { CopyIcon } from 'svelte-feather-icons'
-    import { errorMessage } from '$lib/stores/alertsStore'
-    import ErrorAlert from './ErrorAlert.svelte'
+    import { isHttpError } from '@sveltejs/kit'
+    import { alert } from '$lib/state/Alert.svelte'
+    import Alert from './Alert.svelte'
 
-    // We will use the `walletStore.confirmPincode` to ensure the user knows the
+    // We will use the `wallet.confirmPincode` to ensure the user knows the
     // encryption password to the keypair before we attempt to sign anything
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
 
     // We need a couple things from the stellar-sdk to reconstruct the
     // Transaction object from the XDR string, when the time comes
-    import { Networks, TransactionBuilder } from '@stellar/stellar-sdk'
+    import { Networks, TransactionBuilder, type Transaction, type Memo } from '@stellar/stellar-sdk'
 
     // A Svelte "context" is used to control when to `open` and `close` a given
     // modal from within other components
     import { getContext } from 'svelte'
-    import { get } from 'svelte/store'
-    const { close } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { close } = getContext<ModalContext>('simple-modal')
 
     // `onConfirm` is a dummy function that will be overridden from the
-    // component that launches the modal
-    export let onConfirm = async () => {}
+
     // `_onConfirm` is actually run when the user clicks the modal's "confirm"
     // button, and calls (in-turn) the supplied `onConfirm` function
     const _onConfirm = async () => {
@@ -50,13 +50,9 @@ on the following occasions:
         isWaiting = true
 
         try {
-            // Check if this is a wallet user
-            const { keyId, publicKey } = get(walletStore)
-            const isWalletUser = keyId === publicKey
-
-            if (!isWalletUser) {
+            if (!wallet.isWalletUser) {
                 // Only verify pincode for non-wallet users
-                await walletStore.confirmPincode({
+                await wallet.confirmPincode({
                     pincode: pincode,
                     firstPincode: firstPincode,
                     signup: firstPincode ? true : false,
@@ -65,26 +61,31 @@ on the following occasions:
 
             // We call the `onConfirm` function that was given to the modal by
             // the outside component. This method allows each page that needs to
-            // display a modal to independantly customize the behavior that
+            // display a modal to independently customize the behavior that
             // should take place when the pincode is confirmed. (i.e., submit
             // the transaction to the network, login to the app, etc.)
-            // @ts-ignore
             // Pass pincode only for non-wallet users
-            await onConfirm(isWalletUser ? undefined : pincode)
+            await onConfirm(wallet.isWalletUser ? undefined : pincode)
 
             // Now we can close the modal window
             close()
-        } catch (err) {
-            // If there was an error, we set our `errorMessage` alert
-            // @ts-ignore
-            errorMessage.set(err.body?.message || err.message || 'Transaction failed')
+        } catch (err: unknown) {
+            // If there was an error, we set our alert
+            console.error('error in confirmation modal', err)
+            alert.setAlert({
+                message: isHttpError(err)
+                    ? err.body.message
+                    : err instanceof Error
+                      ? err.message
+                      : 'Transaction failed',
+                type: 'error',
+            })
         }
         isWaiting = false
     }
 
     // Just like above, `onReject` is a dummy function that will be overridden
-    // from the component that launches the modal
-    export let onReject = () => {}
+
     // Just like above, `_onReject` is actually run when the user clicks the
     // modal's "reject" button, and calls (if provided) the supplied `onReject`
     // function
@@ -101,38 +102,75 @@ on the following occasions:
     // Svelte's way of exposing props of a component. Each of the variables here
     // are available to set (and bind to) by outside components when they are
     // launching this modal. We are using this here to provide some default
-    // variables for our modal which can be modified to suit the launching
-    // component's needs.
-    export let title = 'Transaction Preview'
-    export let body =
-        'Please confirm the transaction below in order to sign and submit it to the network.'
-    export let confirmButton = 'Confirm'
-    export let rejectButton = 'Reject'
-    export let hasPincodeForm = true
-    export let transactionXDR = ''
-    export let transactionNetwork = ''
-    // The `firstPincode` is only used during the signup process
-    export let firstPincode = ''
+    // variables for our modal which can be modified to suit the launching component's needs.
+
+    interface Props {
+        onConfirm?: (pincode: undefined | string) => Promise<void>
+        onReject?: () => void
+        title?: string
+        body?: string
+        confirmButton?: string
+        rejectButton?: string
+        hasPincodeForm?: boolean
+        transactionXDR?: string
+        transactionNetwork?: string
+        /** Only used during user signup */
+        firstPincode?: string
+    }
+
+    let {
+        onConfirm = async () => {},
+        onReject = () => {},
+        title = 'Transaction Preview',
+        body = 'Please confirm the transaction below in order to sign and submit it to the network.',
+        confirmButton = 'Confirm',
+        rejectButton = 'Reject',
+        hasPincodeForm = true,
+        transactionXDR = '',
+        transactionNetwork = '',
+        firstPincode = '',
+    }: Props = $props()
 
     // All variable assignment declarations are automatically reactive. If
     // `isWaiting = true` is executed elsewhere in the code, any dependent
     // components would be updated accordingly.
-    let isWaiting = false
-    let pincode = ''
+    let isWaiting = $state(false)
+    let pincode = $state('')
 
-    // Get wallet status
-    let wallet = get(walletStore)
-    $: isWalletUser = wallet.keyId && wallet.keyId === wallet.publicKey
+    // Wallet users sign with their wallet, so they don't need to enter a pincode
+    let isWalletUser = $derived(wallet.isWalletUser)
 
     // The `$: variableName` syntax marks the output of some **expression** (as
     // opposed to an assignment) as _reactive_. In this case, every time
     // `transactionXDR` or `transactionNetwork` changes, `transaction` will be
     // recomputed and any dependent components would be updated accordingly.
-    /** @type {import('@stellar/stellar-sdk').Transaction}*/
-    // @ts-ignore
-    $: transaction = transactionXDR
-        ? TransactionBuilder.fromXDR(transactionXDR, transactionNetwork || Networks.TESTNET)
-        : null
+    let transaction = $derived(
+        transactionXDR
+            ? (TransactionBuilder.fromXdr(
+                  transactionXDR,
+                  transactionNetwork || Networks.TESTNET,
+              ) as Transaction)
+            : null,
+    )
+
+    // Memos decoded from XDR hold raw bytes (a `Uint8Array`), so we decode text
+    // memos as UTF-8, and display hash and return memos as base64
+    const formatMemo = ({ type, value }: Memo) => {
+        if (value === null || typeof value === 'string') return value
+        if (type === 'text') return new TextDecoder().decode(value)
+        return btoa(String.fromCharCode(...value))
+    }
+
+    // Some operation fields (like a `manageData` value) are raw bytes too. We show
+    // them as text when they are valid UTF-8, and as base64 otherwise.
+    const formatValue = (value: unknown) => {
+        if (!(value instanceof Uint8Array)) return value
+        try {
+            return new TextDecoder('utf-8', { fatal: true }).decode(value)
+        } catch {
+            return btoa(String.fromCharCode(...value))
+        }
+    }
 </script>
 
 <div class="prose p-3">
@@ -149,24 +187,18 @@ on the following occasions:
         {#if 'memo' in transaction}
             <p>
                 Memo ({transaction.memo.type}):
-                <code
-                    >{transaction.memo.type === 'text'
-                        ? transaction.memo?.value?.toString('utf-8')
-                        : transaction.memo.type === 'hash'
-                          ? transaction.memo?.value?.toString('base64')
-                          : transaction.memo.value}</code
-                >
+                <code>{formatMemo(transaction.memo)}</code>
             </p>
         {/if}
 
         <!-- Specifics about the operation(s) present in the transaction -->
         <h2>Operations</h2>
         <ol start="0">
-            {#each transaction.operations as operation, i}
+            {#each transaction.operations as operation, i (operation)}
                 <li>Operation {i}</li>
                 <ul>
-                    {#each Object.entries(operation) as [key, value]}
-                        <li>{key}: <code>{value}</code></li>
+                    {#each Object.entries(operation) as [key, value] (key)}
+                        <li>{key}: <code>{formatValue(value)}</code></li>
                     {/each}
                 </ul>
             {/each}
@@ -183,9 +215,9 @@ on the following occasions:
             >.
         </p>
         <div class="relative">
-            <pre class="whitespace-normal break-words">{transactionXDR}</pre>
+            <pre class="break-words whitespace-normal">{transactionXDR}</pre>
             <button
-                class="btn-ghost btn-square btn-sm btn absolute bottom-1 right-1"
+                class="btn absolute right-1 bottom-1 btn-square btn-ghost btn-sm"
                 use:copy={transactionXDR}
             >
                 <CopyIcon size="16" />
@@ -193,37 +225,21 @@ on the following occasions:
         </div>
     {/if}
 
-    <!-- ErrorAlert will be displayed whenever the errorMessage is truthy -->
-    <ErrorAlert />
+    <Alert />
 
     <!-- Display the pincode form: the input element, and the "confirm" and "reject" buttons -->
     {#if hasPincodeForm && !isWalletUser}
         <form>
-            <div class="form-control">
-                <label class="label" for="pincode">
-                    <span class="label-text">Confirm Pincode</span>
-                </label>
-                <input
-                    type="password"
-                    id="pincode"
-                    class="input-bordered input"
-                    bind:value={pincode}
-                />
-            </div>
+            <fieldset class="fieldset">
+                <label class="label" for="pincode">Confirm Pincode</label>
+                <input type="password" id="pincode" class="input" bind:value={pincode} />
+            </fieldset>
             <div class="my-6 flex justify-end gap-3">
-                <button
-                    on:click|preventDefault={_onConfirm}
-                    class="btn-success btn"
-                    disabled={isWaiting}
-                >
-                    {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
+                <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>
+                    {#if isWaiting}<span class="loading loading-sm loading-spinner"></span>{/if}
                     {confirmButton}
                 </button>
-                <button
-                    on:click|preventDefault={_onReject}
-                    class="btn-error btn"
-                    disabled={isWaiting}
-                >
+                <button onclick={_onReject} class="btn btn-error" disabled={isWaiting}>
                     {rejectButton}
                 </button>
             </div>
@@ -231,15 +247,11 @@ on the following occasions:
     {:else if isWalletUser}
         <!-- Wallet user confirmation UI -->
         <div class="my-6 flex justify-end gap-3">
-            <button
-                on:click|preventDefault={_onConfirm}
-                class="btn-success btn"
-                disabled={isWaiting}
-            >
-                {#if isWaiting}<span class="loading loading-spinner loading-sm" />{/if}
+            <button onclick={_onConfirm} class="btn btn-success" disabled={isWaiting}>
+                {#if isWaiting}<span class="loading loading-sm loading-spinner"></span>{/if}
                 Confirm in Wallet
             </button>
-            <button on:click|preventDefault={_onReject} class="btn-error btn" disabled={isWaiting}>
+            <button onclick={_onReject} class="btn btn-error" disabled={isWaiting}>
                 {rejectButton}
             </button>
         </div>

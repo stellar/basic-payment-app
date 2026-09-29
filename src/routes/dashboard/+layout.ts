@@ -1,0 +1,34 @@
+/**
+ * @description If a directory contained within `/src/routes/` contains a
+ * `+layout.js` file, you can use it to load data which will then be available
+ * to thes sibling `+layout.svelte` and `+page.svelte` files, as well as any
+ * other layout files nested further down the directory tree.
+ * @see {@link https://svelte.dev/docs/kit/load#Layout-data}
+ */
+
+import type { LayoutLoad } from './$types'
+
+import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
+
+import { fetchAccountBalances, fetchRecentPayments } from '$lib/stellar/horizonQueries'
+import { wallet } from '$lib/state/Wallet.svelte'
+
+export const load: LayoutLoad = async () => {
+    // We check that a wallet's `publicKey` has been stored in the browser, and
+    // if it isn't there, we redirect to `/signup`. Since we define this
+    // behavior in the top-most dashboard `+layout.js` file, it will have the
+    // same affect on any nested pages visited.
+    const { publicKey } = wallet
+    if (!publicKey) {
+        goto(resolve('/signup'))
+    }
+
+    // We return the `balances` and `payments` using await to avoid
+    // waterfalls and additional loading time
+    return {
+        publicKey: publicKey,
+        balances: await fetchAccountBalances(publicKey),
+        payments: await fetchRecentPayments(publicKey),
+    }
+}

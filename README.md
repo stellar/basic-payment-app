@@ -16,13 +16,12 @@ features and SEPs in a user-facing product.
 - [Companion Tutorial](#companion-tutorial)
 - [Development Instructions](#development-instructions)
 - [Where to Start in this Repository?](#where-to-start-in-this-repository)
-  - [Stellar](#stellar)
-    - [SEPs](#seps)
-    - [Other Stellar Functionality](#other-stellar-functionality)
-  - [SvelteKit](#sveltekit)
-    - [Pages and Routes](#pages-and-routes)
-    - [Stores](#stores)
-
+    - [Stellar](#stellar)
+        - [SEPs](#seps)
+        - [Other Stellar Functionality](#other-stellar-functionality)
+    - [SvelteKit](#sveltekit)
+        - [Pages and Routes](#pages-and-routes)
+        - [Stores](#stores)
 
 ## Companion App
 

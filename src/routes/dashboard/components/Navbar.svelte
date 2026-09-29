@@ -12,39 +12,40 @@ More information about SEP-33 can be found here:
 -->
 
 <script>
+    import { resolve } from '$app/paths'
     // We import things from external packages that will be needed
     import { MenuIcon } from 'svelte-feather-icons'
 
     // We import any stores we will need to read and/or write
-    import { page } from '$app/stores'
+    import { page } from '$app/state'
 </script>
 
 <header class="navbar bg-base-300">
-    <label for="drawer-toggle" class="btn-ghost drawer-button btn-square btn lg:hidden"
+    <label for="drawer-toggle" class="btn btn-square btn-ghost drawer-button lg:hidden"
         ><MenuIcon size="24" /></label
     >
     <div class="flex-1">
-        <a href="/dashboard" class="btn-ghost btn text-xl normal-case">BasicPay</a>
+        <a href={resolve('/dashboard')} class="btn btn-ghost text-xl normal-case">BasicPay</a>
     </div>
     <div class="flex-none">
-        <div class="dropdown-end dropdown">
-            <button tabindex="0" class="btn-ghost btn-circle avatar btn">
+        <div class="dropdown dropdown-end">
+            <button tabindex="0" class="btn avatar btn-circle btn-ghost">
                 <div class="w-10 rounded-full">
                     <img
-                        src={`https://id.lobstr.co/${$page.data.publicKey}.png`}
+                        src={`https://id.lobstr.co/${page.data.publicKey}.png`}
                         alt="stellar-account-identicon"
                     />
                 </div>
             </button>
             <ul
-                class="menu-compact dropdown-content menu rounded-box z-10 mt-3 w-52 bg-base-100 p-2 shadow"
+                class="menu dropdown-content z-10 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
             >
                 <li>
-                    <a href="/dashboard/settings/kyc" class="justify-between">
+                    <a href={resolve('/dashboard/settings/kyc')} class="justify-between">
                         Manage KYC Information
                     </a>
                 </li>
-                <li><a href="/dashboard/settings/dev">Dev Helpers</a></li>
+                <li><a href={resolve('/dashboard/settings/dev')}>Dev Helpers</a></li>
             </ul>
         </div>
     </div>

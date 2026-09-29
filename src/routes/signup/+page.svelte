@@ -12,7 +12,10 @@ be absolutely certain the secret key **does not** leave the browser under any
 circumstance.
 -->
 
-<script>
+<script lang="ts">
+    import { resolve } from '$app/paths'
+    import { preventDefault } from 'svelte/legacy'
+
     // We import things from external packages that will be needed
     import { Keypair } from '@stellar/stellar-sdk'
 
@@ -22,19 +25,20 @@ circumstance.
 
     // We import any stores we will need to read and/or write
     import { goto } from '$app/navigation'
-    import { walletStore } from '$lib/stores/walletStore'
+    import { wallet } from '$lib/state/Wallet.svelte'
     import { fundWithFriendbot } from '$lib/stellar/horizonQueries'
-    import WalletKitProvider from '$lib/components/WalletKitProvider.svelte'
+    import WalletKitComponent from '$lib/components/WalletKitComponent.svelte'
     // The `open` Svelte context is used to open the confirmation modal
     import { getContext } from 'svelte'
-    const { open } = getContext('simple-modal')
+    import type { ModalContext } from '$lib/types'
+    const { open } = getContext<ModalContext>('simple-modal')
 
     // Define some component variables that will be used throughout the page
-    let keypair = Keypair.random()
-    $: publicKey = keypair.publicKey()
-    $: secretKey = keypair.secret()
-    let showSecret = false
-    let pincode = ''
+    let keypair = $state(Keypair.random())
+    let publicKey = $derived(keypair.publicKey())
+    let secretKey = $derived(keypair.secret())
+    let showSecret = $state(false)
+    let pincode = $state('')
 
     /**
      * Takes an action after the pincode has been confirmed by the user.
@@ -43,7 +47,7 @@ circumstance.
      */
     const onConfirm = async () => {
         // Register the encrypted keypair in the user's browser
-        await walletStore.register({
+        await wallet.register({
             publicKey: publicKey,
             secretKey: secretKey,
             pincode: pincode,
@@ -51,8 +55,8 @@ circumstance.
         // Fund the account with a request to Friendbot
         await fundWithFriendbot(publicKey)
         // If the registration was successful, redirect to the dashboard
-        if ($walletStore.publicKey) {
-            goto('/dashboard')
+        if (wallet.publicKey) {
+            goto(resolve('/dashboard'))
         }
     }
 
@@ -85,73 +89,66 @@ circumstance.
         <div class="flex-col">
             <div class="card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
                 <div class="card-body">
-                    <form on:submit|preventDefault={signup}>
-                        <div class="form-control my-1">
-                            <label for="publicKey" class="label">
-                                <span class="label-text">Public Key</span>
-                            </label>
-                            <div class="input-bordered input flex">
+                    <form onsubmit={preventDefault(signup)}>
+                        <fieldset class="my-1 fieldset">
+                            <p class="label">Public Key</p>
+                            <div class="input flex">
                                 <TruncatedKey keyText={publicKey} />
                             </div>
-                            <label for="publicKey" class="label">
+                            <p class="label">
                                 <button
-                                    on:click={() => (keypair = Keypair.random())}
-                                    class="link-hover label-text-alt link"
+                                    type="button"
+                                    onclick={() => (keypair = Keypair.random())}
+                                    class="link link-hover"
                                 >
                                     Generate new address?
                                 </button>
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="label cursor-pointer pb-0">
-                                <span class="label-text">Show secret key?</span>
+                            </p>
+                        </fieldset>
+                        <fieldset class="fieldset">
+                            <label class="label">
                                 <input
                                     id="showSecret"
                                     name="showSecret"
                                     type="checkbox"
-                                    class="toggle-accent toggle"
+                                    class="toggle toggle-accent"
                                     bind:checked={showSecret}
                                 />
+                                Show secret key?
                             </label>
-                        </div>
+                        </fieldset>
                         {#if showSecret}
-                            <div class="form-control mb-1">
-                                <label for="secretKey" class="label">
-                                    <span class="label-text">Secret Key</span>
-                                </label>
-                                <div class="input-bordered input flex">
+                            <fieldset class="mb-1 fieldset">
+                                <p class="label">Secret Key</p>
+                                <div class="input flex">
                                     <TruncatedKey keyText={secretKey} />
                                 </div>
-                            </div>
+                            </fieldset>
                         {/if}
-                        <div class="form-control my-1">
-                            <label for="pincode" class="label">
-                                <span class="label-text">Pincode</span>
-                            </label>
+                        <fieldset class="my-1 fieldset">
+                            <label for="pincode" class="label">Pincode</label>
                             <input
                                 id="pincode"
                                 name="pincode"
                                 type="password"
-                                class="input-bordered input"
+                                class="input"
                                 minlength="6"
                                 maxlength="6"
                                 required
                                 bind:value={pincode}
                             />
+                        </fieldset>
+                        <div class="mt-6">
+                            <button type="submit" class="btn btn-primary">Signup</button>
                         </div>
-                        <div class="form-control mt-6">
-                            <button type="submit" class="btn-primary btn">Signup</button>
+                        <div class="mt-2">
+                            <WalletKitComponent buttonText="Sign up with wallet" />
                         </div>
-                        <div class="form-control mt-2">
-                           <WalletKitProvider buttonText='Sign up with wallet'/>
-                        </div>
-                        <div class="form-control my-1">
-                            <div class="label">
-                                <a class="link-hover label-text-alt link" href="/login">
-                                    Existing users, login here.
-                                </a>
-                            </div>
-                        </div>
+                        <p class="my-1 label">
+                            <a class="link link-hover" href={resolve('/login')}>
+                                Existing users, login here.
+                            </a>
+                        </p>
                     </form>
                 </div>
             </div>

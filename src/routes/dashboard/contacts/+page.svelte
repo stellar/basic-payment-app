@@ -15,16 +15,16 @@ the main `/dashboard` page.
     import TruncatedKey from '$lib/components/TruncatedKey.svelte'
 
     // We import any stores we will need to read and/or write
-    import { contacts } from '$lib/stores/contactsStore'
+    import { contacts } from '$lib/state/Contacts.svelte'
 
     // We declare a _reactive_ component variable that will hold information for
     // a user-created contact entry, which can be added to the contacts store.
-    $: newContact = {
+    let newContact = $state({
         name: '',
         address: '',
         favorite: false,
         id: '',
-    }
+    })
 </script>
 
 <h1>Contacts</h1>
@@ -36,6 +36,8 @@ the main `/dashboard` page.
 
 <h3>All contacts</h3>
 
+<!-- The `prose` styles around this table line cells up by their text baseline, which
+     pushes text down next to the avatars, so we center the cells with `align-middle` -->
 <table class="table w-full">
     <thead>
         <tr>
@@ -53,60 +55,56 @@ the main `/dashboard` page.
                     id="favorite"
                     name="favorite"
                     type="checkbox"
-                    class="checkbox-accent checkbox checkbox-sm"
+                    class="checkbox checkbox-sm checkbox-accent"
                 />
             </th>
-            <td>
-                <label for="name">
-                    <span class="label-text hidden">Name</span>
-                </label>
+            <td class="align-middle">
+                <label for="name" class="sr-only">Name</label>
                 <input
                     bind:value={newContact.name}
                     id="name"
                     name="name"
                     type="text"
                     placeholder="Name"
-                    class="input-bordered input input-sm w-full"
+                    class="input w-full input-sm"
                 />
             </td>
-            <td>
-                <label for="address">
-                    <span class="label-text hidden">Address</span>
-                </label>
+            <td class="align-middle">
+                <label for="address" class="sr-only">Address</label>
                 <input
                     bind:value={newContact.address}
                     id="address"
                     name="address"
                     type="text"
                     placeholder="Address"
-                    class="input-bordered input input-sm w-full"
+                    class="input w-full input-sm"
                 />
             </td>
-            <td class="text-center">
+            <td class="text-center align-middle">
                 <button
-                    on:click={() => contacts.add(newContact)}
+                    onclick={() => contacts.add(newContact)}
                     id="addContactButton"
                     name="addContactButton"
                     type="submit"
-                    class="btn-success btn-sm btn-square btn"
+                    class="btn btn-square btn-sm btn-success"
                 >
                     <UserPlusIcon size="16" />
                 </button>
             </td>
         </tr>
-        {#each $contacts as contact (contact.id)}
+        {#each contacts.list as contact (contact.id)}
             <tr>
                 <th class="text-center">
                     <input
-                        on:click={() => contacts.favorite(contact.id)}
+                        onclick={() => contacts.favorite(contact.id)}
                         id={`favoriteCheckbox${contact.id}`}
                         name={`favoriteCheckbox${contact.id}`}
                         type="checkbox"
                         checked={contact.favorite}
-                        class="checkbox-accent checkbox checkbox-sm"
+                        class="checkbox checkbox-sm checkbox-accent"
                     />
                 </th>
-                <td>
+                <td class="align-middle">
                     <div class="flex items-center space-x-3">
                         <div class="avatar">
                             <div class="not-prose w-10 rounded-full">
@@ -121,15 +119,15 @@ the main `/dashboard` page.
                         </div>
                     </div>
                 </td>
-                <td>
+                <td class="align-middle">
                     <TruncatedKey keyText={contact.address} lookupName={false} />
                 </td>
-                <td class="text-center">
+                <td class="text-center align-middle">
                     <button
-                        on:click={() => contacts.remove(contact.id)}
+                        onclick={() => contacts.remove(contact.id)}
                         id={`removeContact${contact.id}`}
                         name={`removeContact${contact.id}`}
-                        class="btn-error btn-sm btn-square btn"
+                        class="btn btn-square btn-error btn-sm"
                     >
                         <Trash2Icon size="16" />
                     </button>
