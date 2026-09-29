@@ -17,6 +17,7 @@ list of menu links that can be used to navigate throughout the dashboard.
         { route: '/dashboard/assets', text: 'Assets' },
         { route: '/dashboard/contacts', text: 'Contacts' },
         { route: '/dashboard/transfers', text: 'Transfers' },
+          { route: '/dashboard/contracts', text: 'Smart Contracts' }
     ]
 </script>
 
