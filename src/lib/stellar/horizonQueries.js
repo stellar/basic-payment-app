@@ -1,9 +1,14 @@
 // @ts-nocheck
 import { error } from '@sveltejs/kit'
 import { TransactionBuilder, Networks, StrKey, Asset, Horizon } from '@stellar/stellar-sdk'
+import { Server as RpcServer } from '@stellar/stellar-sdk/rpc'
 
 const horizonUrl = 'https://horizon-testnet.stellar.org';
 export const server = new Horizon.Server(horizonUrl);
+
+// RPC server for new API calls
+const rpcUrl = 'https://soroban-testnet.stellar.org'
+const rpcServer = new RpcServer(rpcUrl)
 
 
 /**
@@ -25,7 +30,55 @@ export const server = new Horizon.Server(horizonUrl);
 /** @typedef {import('@stellar/stellar-sdk').ServerApi.PaymentPathRecord} PaymentPathRecord */
 
 /**
- * Fetches and returns details about an account on the Stellar network.
+ * Fetches and returns details about an account on the Stellar network using RPC.
+ * @async
+ * @function fetchAccountRPC
+ * @param {string} publicKey Public Stellar address to query information about
+ * @returns {Promise<AccountRecord>} Object containing whether or not the account is funded, and (if it is) account details
+ * @throws {error} Will throw an error if the account is not funded on the Stellar network, or if an invalid public key was provided.
+ */
+export async function fetchAccountRPC(publicKey) {
+    if (StrKey.isValidEd25519PublicKey(publicKey)) {
+        try {
+            let account = await rpcServer.getAccount(publicKey)
+            return account
+        } catch (err) {
+            // If account not found, try funding with friendbot first
+            if (err.message?.includes('not found')) {
+                try {
+                    await fundWithFriendbot(publicKey)
+                    let account = await rpcServer.getAccount(publicKey)
+                    return account
+                } catch (err) {
+                    throw error(500, {
+                        message: `Unable to fund account ${publicKey}: ${err.message}`,
+                    })
+                }
+            } else {
+                throw error(400, {
+                    message: `Failed to fetch account: ${err.message}`,
+                })
+            }
+        }
+    } else {
+        throw error(400, { message: 'invalid public key' })
+    }
+}
+
+/**
+ * Fetches and returns balance details for an account on the Stellar network using RPC.
+ * @async
+ * @function fetchAccountBalancesRPC
+ * @param {string} publicKey Public Stellar address holding balances to query
+ * @returns {Promise<BalanceLine[]>} Array containing balance information for each asset the account holds
+ */
+export async function fetchAccountBalancesRPC(publicKey) {
+    const account = await fetchAccountRPC(publicKey)
+    return account.balances
+}
+
+/**
+ * Fetches and returns details about an account on the Stellar network using Horizon.
  * @async
  * @function fetchAccount
  * @param {string} publicKey Public Stellar address to query information about

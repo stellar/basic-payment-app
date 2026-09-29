@@ -1,4 +1,5 @@
 import { TransactionBuilder, Networks, Operation, Asset, Memo, Contract, Horizon, rpc, nativeToScVal } from '@stellar/stellar-sdk'
+import { Server } from '@stellar/stellar-sdk/rpc'
 import { error } from '@sveltejs/kit'
 /**
  * @module $lib/stellar/transactions
@@ -19,10 +20,9 @@ import { error } from '@sveltejs/kit'
 // change it on one place as and when recommendations and/or best practices
 // evolve. Current recommended fee is `100_000` stroops.
 const maxFeePerOperation = '100000'
-const horizonUrl = 'https://horizon-testnet.stellar.org'
+const rpcUrl = 'https://soroban-testnet.stellar.org'
 const networkPassphrase = Networks.TESTNET
 const standardTimebounds = 300 // 5 minutes for the user to review/sign/submit
-const rpcUrl = 'https://soroban-testnet.stellar.org'
 
 /**
  * For consistency, all functions in this module will return the same type of object.
@@ -157,9 +157,9 @@ export async function createChangeTrustTransaction({ source, asset, limit }) {
     let trustAsset = new Asset(asset.split(':')[0], asset.split(':')[1])
 
     // Next, we setup our transaction by loading the source account from the
-    // network, and initializing the TransactionBuilder.
-    let server = new Horizon.Server(horizonUrl)
-    let sourceAccount = await server.loadAccount(source)
+    // network using RPC, and initializing the TransactionBuilder.
+    let server = new Server(rpcUrl)
+    let sourceAccount = await server.getAccount(source)
 
     // Chaning everything together from the `transaction` declaration means we
     // don't have to assign anything to `builtTransaction` later on. Either
