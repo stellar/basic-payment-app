@@ -14,7 +14,10 @@
             choices: [],
             description: '',
         },
-        value = $bindable(''),
+        // No fallback here: the parent's `formData` owns this value, and starts
+        // out without one. (Svelte doesn't allow binding `undefined` to a prop
+        // that has a fallback value.)
+        value = $bindable(),
     }: Props = $props()
 </script>
 
