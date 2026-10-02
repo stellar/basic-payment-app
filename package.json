@@ -1,53 +1,23 @@
 {
-    "name": "bpa",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "dev": "vite dev",
-        "build": "vite build",
-        "preview": "vite preview",
-        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "lint": "prettier --check . && eslint .",
-        "format": "prettier --write .",
-        "test": "vitest"
-    },
-    "type": "module",
-    "packageManager": "pnpm@11.28.2",
-    "devDependencies": {
-        "@eslint/compat": "^2.1.1",
-        "@eslint/js": "^10.0.1",
-        "@sveltejs/adapter-static": "^3.0.10",
-        "@sveltejs/kit": "^2.70.3",
-        "@sveltejs/vite-plugin-svelte": "^7.3.1",
-        "@tailwindcss/forms": "^0.5.11",
-        "@tailwindcss/typography": "^0.5.20",
-        "@tailwindcss/vite": "^4.3.3",
-        "@types/node": "^24.19.0",
-        "daisyui": "^5.7.46",
-        "eslint": "^10.11.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-svelte": "^3.23.0",
-        "globals": "^17.12.0",
-        "msw": "^2.15.0",
-        "prettier": "^3.9.9",
-        "prettier-plugin-svelte": "^4.1.1",
-        "prettier-plugin-tailwindcss": "^0.8.1",
-        "svelte": "^5.57.1",
-        "svelte-check": "^4.7.6",
-        "svelte-copy": "^2.0.0",
-        "svelte-feather-icons": "^4.2.0",
-        "svelte-simple-modal": "^2.0.0",
-        "tailwindcss": "^4.3.3",
-        "typescript": "^6.0.3",
-        "typescript-eslint": "^8.70.1",
-        "uuid": "^14.0.2",
-        "vite": "^8.3.1",
-        "vitest": "^5.0.2"
-    },
-    "dependencies": {
-        "@creit.tech/stellar-wallets-kit": "^2.7.0",
-        "@stellar/stellar-sdk": "17.0.1",
-        "@stellar/typescript-wallet-sdk-km": "^5.0.0"
-    }
+  "name": "basic-payment-app",
+  "version": "1.0.0",
+  "description": "A basic Stellar payment application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  },
+  "dependencies": {
+    "stellar-sdk": "^12.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  }
 }
