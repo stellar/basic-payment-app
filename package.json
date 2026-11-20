@@ -18,7 +18,7 @@
         "@eslint/compat": "^2.1.1",
         "@eslint/js": "^10.0.1",
         "@sveltejs/adapter-static": "^3.0.11",
-        "@sveltejs/kit": "^2.70.3",
+        "@sveltejs/kit": "^2.70.4",
         "@sveltejs/vite-plugin-svelte": "^7.3.1",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/typography": "^0.5.20",
@@ -33,7 +33,7 @@
         "prettier": "^3.9.9",
         "prettier-plugin-svelte": "^4.1.1",
         "prettier-plugin-tailwindcss": "^0.8.1",
-        "svelte": "^5.57.2",
+        "svelte": "^5.58.0",
         "svelte-check": "^4.7.6",
         "svelte-copy": "^2.0.0",
         "svelte-feather-icons": "^4.2.0",
@@ -42,12 +42,12 @@
         "typescript": "^6.0.3",
         "typescript-eslint": "^8.70.1",
         "uuid": "^14.0.3",
-        "vite": "^8.3.1",
-        "vitest": "^5.0.2"
+        "vite": "^8.3.8",
+        "vitest": "^5.1.1"
     },
     "dependencies": {
         "@creit.tech/stellar-wallets-kit": "^2.7.0",
-        "@stellar/stellar-sdk": "17.0.1",
+        "@stellar/stellar-sdk": "17.4.0",
         "@stellar/typescript-wallet-sdk-km": "^5.0.0"
     }
 }
