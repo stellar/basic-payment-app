@@ -8,6 +8,7 @@ import {
     Horizon,
     rpc,
     nativeToScVal,
+    Claimant,
 } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
 import { base64ToBytes } from '$lib/utils/base64'
@@ -178,14 +179,52 @@ export async function createPaymentTransaction({
         transaction.addMemo(buildMemo(memo, memoType))
     }
 
-    // Add a single `payment` operation
-    transaction.addOperation(
-        Operation.payment({
-            destination: destination,
-            amount: amount.toString(),
-            asset: sendAsset,
-        }),
-    )
+    // Determine if destination has a trustline for the asset (if non-native)
+    let useClaimable = false
+    if (asset && asset !== 'native') {
+        try {
+            const destAccount = await server.loadAccount(destination)
+            useClaimable = !destAccount.balances.some((b) => {
+                if ('asset_code' in b && 'asset_issuer' in b) {
+                    return (
+                        b.asset_code === sendAsset.getCode() &&
+                        b.asset_issuer === sendAsset.getIssuer()
+                    )
+                }
+                return false
+            })
+        } catch (err: unknown) {
+            // Only fallback to claimable balance if destination account is not found on ledger (404)
+            const status =
+                (err as { response?: { status?: number }; status?: number })?.response?.status ??
+                (err as { status?: number })?.status
+            if (status === 404) {
+                useClaimable = true
+            } else {
+                throw err
+            }
+        }
+    }
+
+    if (useClaimable) {
+        // Create a claimable balance for the recipient when no trustline exists
+        transaction.addOperation(
+            Operation.createClaimableBalance({
+                asset: sendAsset,
+                amount: amount.toString(),
+                claimants: [new Claimant(destination, Claimant.predicateUnconditional())],
+            }),
+        )
+    } else {
+        // Add a standard `payment` operation
+        transaction.addOperation(
+            Operation.payment({
+                destination: destination,
+                amount: amount.toString(),
+                asset: sendAsset,
+            }),
+        )
+    }
 
     // Before the transaction can be signed, it requires timebounds, and it must
     // be "built"
