@@ -8,7 +8,6 @@ import {
     Horizon,
     rpc,
     nativeToScVal,
-    ClaimPredicate,
     Claimant,
 } from '@stellar/stellar-sdk'
 import { error } from '@sveltejs/kit'
@@ -185,27 +184,35 @@ export async function createPaymentTransaction({
     if (asset && asset !== 'native') {
         try {
             const destAccount = await server.loadAccount(destination)
-            useClaimable = !destAccount.balances.some(
-                (b: any) =>
-                    b.asset_type !== 'native' &&
-                    b.asset_code === sendAsset.getCode() &&
-                    b.asset_issuer === sendAsset.getIssuer(),
-            )
-        } catch {
-            // Destination account does not exist or cannot hold asset directly; fallback to claimable balance
-            useClaimable = true
+            useClaimable = !destAccount.balances.some((b) => {
+                if ('asset_code' in b && 'asset_issuer' in b) {
+                    return (
+                        b.asset_code === sendAsset.getCode() &&
+                        b.asset_issuer === sendAsset.getIssuer()
+                    )
+                }
+                return false
+            })
+        } catch (err: unknown) {
+            // Only fallback to claimable balance if destination account is not found on ledger (404)
+            const status =
+                (err as { response?: { status?: number }; status?: number })?.response?.status ??
+                (err as { status?: number })?.status
+            if (status === 404) {
+                useClaimable = true
+            } else {
+                throw err
+            }
         }
     }
 
     if (useClaimable) {
         // Create a claimable balance for the recipient when no trustline exists
         transaction.addOperation(
-            Operation.claimableBalanceCreate({
+            Operation.createClaimableBalance({
                 asset: sendAsset,
                 amount: amount.toString(),
-                claimants: [
-                    new Claimant(destination, ClaimPredicate.predicateUnconditional()),
-                ],
+                claimants: [new Claimant(destination, Claimant.predicateUnconditional())],
             }),
         )
     } else {
